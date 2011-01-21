@@ -28,10 +28,10 @@ if __name__ == '__main__':
     router = transport.Router(outPort=SpreadPort())
     publisher = rsb.Publisher("rsb://example/informer", router, "string") 
     
-    #for i in range(1200):
-    #    publisher.publishData("blub");
+    for i in range(1200):
+        publisher.publishData("blub");
         
     print("done!")
     
-    #publisher.deactivate()
+    publisher.deactivate()
     
