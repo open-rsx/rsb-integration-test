@@ -1,0 +1,6 @@
+
+ADD_EXECUTABLE(informer informer.cpp)
+TARGET_LINK_LIBRARIES(informer ${RSB_LIBRARIES} ${RSC_LIBRARIES})
+
+ADD_EXECUTABLE(listener listener.cpp)
+TARGET_LINK_LIBRARIES(listener ${RSB_LIBRARIES} ${RSC_LIBRARIES})
