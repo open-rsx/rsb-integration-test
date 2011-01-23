@@ -93,5 +93,5 @@ int main(void) {
 			<< " messages received): " << t.elapsed() / dh->count << " s"
 			<< endl;
 
-	return (EXIT_SUCCESS);
+	return EXIT_SUCCESS;
 }

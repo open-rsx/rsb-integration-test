@@ -51,5 +51,6 @@ int main(void) {
 			<< " s" << endl;
 
 	return EXIT_SUCCESS;
+
 }
 
