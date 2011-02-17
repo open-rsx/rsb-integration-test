@@ -23,6 +23,7 @@ import os
 import time
 
 from distutils.spawn import find_executable
+from optparse import OptionParser
 
 LANG_PYTHON = "python"
 LANG_CPP = "cpp"
@@ -118,12 +119,18 @@ def run():
     logging.basicConfig()
     logging.getLogger().setLevel(logging.DEBUG)
     
+    parser = OptionParser()
+    parser.add_option("-s", "--spread", dest="spread", help="spread executable", metavar="executable")
+    (options, args) = parser.parse_args()    
+    
     spreadExecutable = find_executable("spread")
+    if options.spread:
+        spreadExecutable = options.spread
     spread = None
     if spreadExecutable:
         spread = CommandStarter([spreadExecutable, "-n", "localhost", "-c", "test/spread.conf"])
     
-    unittest.main(testRunner=xmlrunner.XMLTestRunner(output='test-reports'))
+    xmlrunner.XMLTestRunner(output='test-reports').run(unittest.TestLoader().loadTestsFromTestCase(IntegrationTest))
 
 if __name__ == "__main__":
     run()
