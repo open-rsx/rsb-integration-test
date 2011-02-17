@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 # ============================================================
 #
 # Copyright (C) 2011 by Johannes Wienke <jwienke at techfak dot uni-bielefeld dot de>
