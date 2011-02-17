@@ -24,8 +24,8 @@ from threading import Condition
 
 if __name__ == '__main__':
     
-    logging.basicConfig()
-    logging.getLogger().setLevel(logging.DEBUG)
+    #logging.basicConfig()
+    #logging.getLogger().setLevel(logging.DEBUG)
     
     router = transport.Router(inPort=SpreadPort())
     subscriber = rsb.Subscriber("rsb://example/informer", router) 

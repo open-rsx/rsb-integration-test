@@ -23,8 +23,8 @@ import logging
 
 if __name__ == '__main__':
     
-    logging.basicConfig()
-    logging.getLogger().setLevel(logging.DEBUG)
+    #logging.basicConfig()
+    #logging.getLogger().setLevel(logging.DEBUG)
     
     router = transport.Router(outPort=SpreadPort())
     publisher = rsb.Publisher("rsb://example/informer", router, "string") 
