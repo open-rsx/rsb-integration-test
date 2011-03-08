@@ -27,6 +27,7 @@
 #include <rsc/logging/Logger.h>
 
 #include <rsb/Publisher.h>
+#include <rsb/RSBFactory.h>
 
 using namespace std;
 using namespace rsc::logging;
@@ -37,8 +38,10 @@ int main(void) {
 
 	LoggerPtr l = Logger::getLogger("informer");
 
-	Publisher<string>::Ptr informer(new Publisher<string> (
-			"rsb://example/informer", "string"));
+	RSBFactory factory;
+
+	Publisher<string>::Ptr informer = factory.createPublisher<string> (
+			"rsb://example/informer", "string");
 	Publisher<string>::DataPtr s(new string("blub"));
 
 	boost::timer t;

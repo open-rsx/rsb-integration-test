@@ -32,6 +32,7 @@
 #include <rsb/Subscription.h>
 #include <rsb/Handler.h>
 #include <rsb/filter/ScopeFilter.h>
+#include <rsb/RSBFactory.h>
 
 using namespace std;
 using namespace rsc::logging;
@@ -63,9 +64,11 @@ int main(void) {
 
 	LoggerPtr l = Logger::getLogger("receiver");
 
+	RSBFactory factory;
+
 	boost::timer t;
 
-	SubscriberPtr s(new Subscriber("blub"));
+	SubscriberPtr s = factory.createSubscriber("rsb://example/informer");
 	SubscriptionPtr sub(new Subscription());
 	AbstractFilterPtr f(new ScopeFilter("rsb://example/informer"));
 	sub->appendFilter(f);
