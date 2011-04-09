@@ -41,7 +41,7 @@ int main(void) {
 	RSBFactory factory;
 
 	Publisher<string>::Ptr informer = factory.createPublisher<string> (
-			"rsb://example/informer", "string");
+			"rsb://example/informer");
 	Publisher<string>::DataPtr s(new string("blub"));
 
 	boost::timer t;
@@ -56,4 +56,3 @@ int main(void) {
 	return EXIT_SUCCESS;
 
 }
-
