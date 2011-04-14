@@ -28,11 +28,11 @@
 
 #include <rsc/logging/Logger.h>
 
-#include <rsb/Subscriber.h>
+#include <rsb/Listener.h>
 #include <rsb/Subscription.h>
 #include <rsb/Handler.h>
 #include <rsb/filter/ScopeFilter.h>
-#include <rsb/RSBFactory.h>
+#include <rsb/Factory.h>
 
 using namespace std;
 using namespace rsc::logging;
@@ -64,13 +64,13 @@ int main(void) {
 
 	LoggerPtr l = Logger::getLogger("receiver");
 
-	RSBFactory &factory = RSBFactory::getInstance();
+	Factory &factory = Factory::getInstance();
 
 	boost::timer t;
 
-	SubscriberPtr s = factory.createSubscriber("rsb://example/informer");
+	ListenerPtr s = factory.createListener("rsb://example/informer");
 	SubscriptionPtr sub(new Subscription());
-	AbstractFilterPtr f(new ScopeFilter("rsb://example/informer"));
+	FilterPtr f(new ScopeFilter("rsb://example/informer"));
 	sub->appendFilter(f);
 
 	boost::shared_ptr<MyDataHandler> dh(new MyDataHandler());
