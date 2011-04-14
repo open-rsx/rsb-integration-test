@@ -64,7 +64,7 @@ int main(void) {
 
 	LoggerPtr l = Logger::getLogger("receiver");
 
-	RSBFactory factory;
+	RSBFactory &factory = RSBFactory::getInstance();
 
 	boost::timer t;
 

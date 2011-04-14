@@ -38,7 +38,7 @@ int main(void) {
 
 	LoggerPtr l = Logger::getLogger("informer");
 
-	RSBFactory factory;
+	RSBFactory &factory = RSBFactory::getInstance();
 
 	Publisher<string>::Ptr informer = factory.createPublisher<string> (
 			"rsb://example/informer");
