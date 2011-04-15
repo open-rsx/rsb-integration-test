@@ -40,13 +40,14 @@ using namespace rsc::misc;
 using namespace rsb;
 using namespace rsb::filter;
 
-class MyDataHandler: public DataHandler<string> {
+class MyDataHandler: public DataFunctionHandler<string> {
 public:
 	MyDataHandler() :
-		count(0) {
+                DataFunctionHandler<string>(boost::bind(&MyDataHanlder::handle)),
+                count(0) {
 	}
 
-	void notify(boost::shared_ptr<string> e) {
+	void handle(boost::shared_ptr<string> e) {
 		cout << "Data received: " << *e << endl;
 		count++;
 		if (count == 1200) {
@@ -69,16 +70,8 @@ int main(void) {
 	boost::timer t;
 
 	ListenerPtr s = factory.createListener("rsb://example/informer");
-	SubscriptionPtr sub(new Subscription());
-	FilterPtr f(new ScopeFilter("rsb://example/informer"));
-	sub->appendFilter(f);
-
 	boost::shared_ptr<MyDataHandler> dh(new MyDataHandler());
-
-	// register event handler
-	sub->appendHandler(dh);
-
-	s->addSubscription(sub);
+        s->appendHandler(dh);
 
 	cout << "Subscriber setup finished. Waiting for messages..." << endl;
 
