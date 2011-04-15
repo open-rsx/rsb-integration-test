@@ -43,7 +43,7 @@ using namespace rsb::filter;
 class MyDataHandler: public DataFunctionHandler<string> {
 public:
 	MyDataHandler() :
-                DataFunctionHandler<string>(boost::bind(&MyDataHandler::handle)),
+                DataFunctionHandler<string>(boost::bind(&MyDataHandler::handle, this, _1)),
                 count(0) {
 	}
 
