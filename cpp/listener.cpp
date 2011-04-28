@@ -22,6 +22,7 @@
 #include <stdlib.h>
 #include <math.h>
 
+#include <boost/bind.hpp>
 #include <boost/thread/recursive_mutex.hpp>
 #include <boost/thread/condition.hpp>
 #include <boost/timer.hpp>
