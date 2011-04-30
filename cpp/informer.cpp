@@ -40,8 +40,7 @@ int main(void) {
 
 	Factory &factory = Factory::getInstance();
 
-	Informer<string>::Ptr informer = factory.createInformer<string> (
-			"rsb://example/informer");
+	Informer<string>::Ptr informer = factory.createInformer<string> (Scope("/example/informer"));
 	Informer<string>::DataPtr s(new string("blub"));
 
 	boost::timer t;

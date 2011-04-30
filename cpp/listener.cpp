@@ -70,9 +70,9 @@ int main(void) {
 
 	boost::timer t;
 
-	ListenerPtr s = factory.createListener("rsb://example/informer");
+	ListenerPtr s = factory.createListener(Scope("/example/informer"));
 	boost::shared_ptr<MyDataHandler> dh(new MyDataHandler());
-        s->appendHandler(dh);
+        s->addHandler(dh);
 
 	cout << "Subscriber setup finished. Waiting for messages..." << endl;
 
