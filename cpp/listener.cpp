@@ -30,7 +30,6 @@
 #include <rsc/logging/Logger.h>
 
 #include <rsb/Listener.h>
-#include <rsb/Subscription.h>
 #include <rsb/Handler.h>
 #include <rsb/filter/ScopeFilter.h>
 #include <rsb/Factory.h>
@@ -44,8 +43,9 @@ using namespace rsb::filter;
 class MyDataHandler: public DataFunctionHandler<string> {
 public:
 	MyDataHandler() :
-                DataFunctionHandler<string>(boost::bind(&MyDataHandler::handle, this, _1)),
-                count(0) {
+				DataFunctionHandler<string> (
+						boost::bind(&MyDataHandler::handle, this, _1)),
+				count(0) {
 	}
 
 	void handle(boost::shared_ptr<string> e) {
@@ -72,7 +72,7 @@ int main(void) {
 
 	ListenerPtr s = factory.createListener(Scope("/example/informer"));
 	boost::shared_ptr<MyDataHandler> dh(new MyDataHandler());
-        s->addHandler(dh);
+	s->addHandler(dh);
 
 	cout << "Subscriber setup finished. Waiting for messages..." << endl;
 
