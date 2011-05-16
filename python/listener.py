@@ -23,38 +23,45 @@ import logging
 from threading import Condition
 
 if __name__ == '__main__':
-    
+
     #logging.basicConfig()
     #logging.getLogger().setLevel(logging.DEBUG)
-    
-    router = transport.Router(inPort=SpreadPort())
-    subscriber = rsb.Subscriber("rsb://example/informer", router) 
-    subscription = rsb.Subscription()
-    scopeFilter = rsb.filter.ScopeFilter("rsb://example/informer")
-    subscription.appendFilter(scopeFilter)
-    
+
     class Receiver(object):
-        
+
         def __init__(self):
             self.counter = 0
             self.condition = Condition()
-            
+
         def __call__(self, event):
             with self.condition:
                 self.counter += 1
                 self.condition.notifyAll()
             print("Received: %s, counter is now %s" % (event, self.counter))
-        
-    receiver = Receiver()
-    subscription.appendAction(receiver)
-    
-    subscriber.addSubscription(subscription)
-    
-    with receiver.condition:
-        while receiver.counter < 1200:
-            receiver.condition.wait()
-        
+
+    testScope = '/example/informer' # TODO scope object
+    scopes = [ '/', '/example', '/example/informer' ] # TODO superScopes
+    listeners = []
+    receivers = []
+    for scope in scopes:
+        router = transport.Router(inPort=SpreadPort())
+        listener = rsb.Subscriber(testScope, router)
+        listeners.append(listener)
+        subscription = rsb.Subscription()
+        scopeFilter = rsb.filter.ScopeFilter(testScope)
+        subscription.appendFilter(scopeFilter)
+
+        receiver = Receiver()
+        receivers.append(receiver)
+        subscription.appendAction(receiver)
+
+        subscriber.addSubscription(subscription)
+
+    for receiver in receivers:
+        with receiver.condition:
+            while receiver.counter < 1200:
+                receiver.condition.wait()
+
     print("done!")
-    
+
     subscriber.deactivate()
-    
