@@ -29,39 +29,53 @@ if __name__ == '__main__':
 
     class Receiver(object):
 
-        def __init__(self):
+        def __init__(self, scope, size, expected):
+            self.scope = scope
+            self.size = size
+            self.expected = expected
             self.counter = 0
             self.condition = Condition()
 
         def __call__(self, event):
+            assert(len(event.getData()) == self.size)
+
             with self.condition:
                 self.counter += 1
-                self.condition.notifyAll()
-            print("Received: %s, counter is now %s" % (event, self.counter))
+                if (self.counter % 300 == 0):
+                    print("[Python Listener] Scope %s: Received event %d/%d: %s"
+                          % (self.scope, self.counter, self.expected, event))
+                if self.isDone():
+                    self.condition.notifyAll()
 
-    testScope = '/example/informer' # TODO scope object
-    scopes = [ '/', '/example', '/example/informer' ] # TODO superScopes
+        def isDone(self):
+            return self.counter == self.expected
+
     listeners = []
     receivers = []
-    for scope in scopes:
-        router = transport.Router(inPort=SpreadPort())
-        listener = rsb.Subscriber(testScope, router)
-        listeners.append(listener)
-        subscription = rsb.Subscription()
-        scopeFilter = rsb.filter.ScopeFilter(testScope)
-        subscription.appendFilter(scopeFilter)
+    for size in [ 4, 256, 400000 ]:
+        scope = "/size%d/sub1/sub2" % size
+        scopes = [ "/size%d" % size,
+                   "/size%d/sub1" % size,
+                   "/size%d/sub1/sub2" % size] # TODO superScopes
+        for scope in scopes:
+            router = transport.Router(inPort=SpreadPort())
+            listener = rsb.Subscriber(scope, router)
+            listeners.append(listener)
+            subscription = rsb.Subscription()
+            scopeFilter = rsb.filter.ScopeFilter(scope)
+            subscription.appendFilter(scopeFilter)
 
-        receiver = Receiver()
-        receivers.append(receiver)
-        subscription.appendAction(receiver)
+            receiver = Receiver(scope, size, 1200)
+            receivers.append(receiver)
+            subscription.appendAction(receiver)
 
-        subscriber.addSubscription(subscription)
+            listener.addSubscription(subscription)
 
     for receiver in receivers:
         with receiver.condition:
-            while receiver.counter < 1200:
+            while not receiver.isDone():
                 receiver.condition.wait()
 
-    print("done!")
+    print("[Python Listener] done!")
 
     subscriber.deactivate()

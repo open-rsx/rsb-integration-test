@@ -17,11 +17,13 @@
  *
  * ============================================================ */
 
+#include <vector>
 #include <iostream>
 
 #include <stdlib.h>
 #include <math.h>
 
+#include <boost/format.hpp>
 #include <boost/timer.hpp>
 
 #include <rsc/logging/Logger.h>
@@ -30,28 +32,35 @@
 #include <rsb/Factory.h>
 
 using namespace std;
+using namespace boost;
 using namespace rsc::logging;
 using namespace rsc::misc;
 using namespace rsb;
 
 int main(void) {
 
-	LoggerPtr l = Logger::getLogger("informer");
+    LoggerPtr l = Logger::getLogger("informer");
 
-	Factory &factory = Factory::getInstance();
+    Factory &factory = Factory::getInstance();
 
-	Informer<string>::Ptr informer = factory.createInformer<string> (Scope("/example/informer"));
-	Informer<string>::DataPtr s(new string("blub"));
+    boost::timer t;
 
-	boost::timer t;
-
+    vector<int> sizes;
+    sizes.push_back(4);
+    sizes.push_back(256);
+    sizes.push_back(400000);
+    for (vector<int>::const_iterator it = sizes.begin(); it != sizes.end(); ++it) {
+	Scope scope(str(format("/size%1%/sub1/sub2") % *it));
+	cout << "[C++    Informer] processing scope " << scope << endl;
+	Informer<string>::Ptr informer = factory.createInformer<string> (scope);
+	Informer<string>::DataPtr s(new string(*it, 'c'));
 	for (int j = 0; j < 1200; j++) {
-		informer->publish(s);
+	    informer->publish(s);
 	}
+    }
+    cout << "[C++    Informer] Elapsed time sending messages: " << t.elapsed()
+	 << " s" << endl;
 
-	cout << "[C++    Informer] Elapsed time for " << 1200 << " messages sent: " << t.elapsed()
-			<< " s" << endl;
-
-	return EXIT_SUCCESS;
+    return EXIT_SUCCESS;
 
 }

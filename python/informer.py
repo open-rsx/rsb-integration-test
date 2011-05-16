@@ -22,17 +22,19 @@ from rsb.rsbspread import SpreadPort
 import logging
 
 if __name__ == '__main__':
-    
+
     #logging.basicConfig()
     #logging.getLogger().setLevel(logging.DEBUG)
-    
-    router = transport.Router(outPort=SpreadPort())
-    publisher = rsb.Publisher("rsb://example/informer", router, "string") 
-    
-    for i in range(1200):
-        publisher.publishData("blub");
-        
-    print("done!")
-    
+
+    for size in [ 4, 256, 400000 ]:
+        scope = "/size%d/sub1/sub2" % size
+        print("[Python Informer] Processing scope %s" % scope)
+        router = transport.Router(outPort=SpreadPort())
+        publisher = rsb.Publisher(scope, router, "string")
+
+        for i in range(1200):
+            publisher.publishData('c'*size);
+
+    print("[Python Informer] done!")
+
     publisher.deactivate()
-    
