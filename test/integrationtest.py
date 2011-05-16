@@ -27,11 +27,18 @@ from optparse import OptionParser
 
 LANG_PYTHON = "python"
 LANG_CPP = "cpp"
+LANG_JAVA = "java"
+
+binaryExecutorList = {LANG_CPP: [],
+                      LANG_JAVA: ["bash"],
+                      LANG_PYTHON: []}
 
 binaryPaths = {LANG_CPP: "build/cpp",
+               LANG_JAVA: "build/java",
                LANG_PYTHON: "python"}
 
 binaryExtensions = {LANG_CPP: "",
+                    LANG_JAVA: ".sh",
                     LANG_PYTHON: ".py"}
 
 class CommandStarter(object):
@@ -72,7 +79,7 @@ class IntegrationTest(unittest.TestCase):
             for listenerLang in languages:
 
                 listenerBinary = os.path.join(binaryPaths[listenerLang], "listener" + binaryExtensions[listenerLang])
-                listenerCommandLine = [listenerBinary]
+                listenerCommandLine = binaryExecutorList[listenerLang] + [listenerBinary]
                 
                 self.__logger.info("starting listener with command line: %s" % listenerCommandLine)
 
@@ -81,7 +88,7 @@ class IntegrationTest(unittest.TestCase):
                 time.sleep(2)
                 
                 informerBinary = os.path.join(binaryPaths[informerLang], "informer" + binaryExtensions[informerLang])
-                informerCommandLine = [informerBinary]
+                informerCommandLine = binaryExecutorList[informerLang] + [informerBinary]
                 
                 self.__logger.info("starting informer with command line: %s" % informerCommandLine)
                 
@@ -91,21 +98,28 @@ class IntegrationTest(unittest.TestCase):
                 waitStart = time.time()
                 informerStatus = None
                 listenerStatus = None
+                
                 while time.time() < waitStart + 10 and (informerStatus == None or listenerStatus == None):
                     
                     informerStatus = informerProc.poll()
-                    listenerStatus = informerProc.poll()
+                    listenerStatus = listenerProc.poll()
                     
                     time.sleep(0.2)
                     
-                self.__logger.info("waiting finished, listenerStauts = %s, informerStatus = %s" % (listenerStatus, informerStatus))
+                self.__logger.info("waiting finished for listener = %s and informer = %s, listenerStauts = %s, informerStatus = %s" % (listenerLang, informerLang, listenerStatus, informerStatus))
                         
                 if listenerStatus == None or informerStatus == None:
                     # one of the processes timed out
                     self.__logger.info("Timeout")
-                    listenerProc.kill()
-                    informerProc.kill()
-                    self.fail("Timeout, listenerStauts = %s, informerStatus = %s" % (listenerStatus, informerStatus))
+                    try:
+                        listenerProc.kill()
+                    except:
+                        pass
+                    try:
+                        informerProc.kill()
+                    except:
+                        pass
+                    self.fail("Timeout, no messages received, listenerStauts = %s, informerStatus = %s" % (listenerStatus, informerStatus))
                 else:
                     
                     self.assertEqual(0, listenerStatus, "Error of listener, informer language: %s, listener language: %s" % (informerLang, listenerLang))
