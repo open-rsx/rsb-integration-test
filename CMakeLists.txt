@@ -30,3 +30,4 @@ LINK_DIRECTORIES(${Boost_LIBRARY_DIRS})
 # --- source code ---
 
 ADD_SUBDIRECTORY(cpp)
+ADD_SUBDIRECTORY(java)
