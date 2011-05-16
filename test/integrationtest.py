@@ -72,7 +72,7 @@ class IntegrationTest(unittest.TestCase):
 
     def testPublishSubscribe(self):
 
-        languages = [LANG_PYTHON, LANG_CPP]
+        languages = [LANG_JAVA, LANG_CPP]
 
         # evaluate all language combinations
         for informerLang in languages:
@@ -119,7 +119,7 @@ class IntegrationTest(unittest.TestCase):
                         informerProc.kill()
                     except:
                         pass
-                    self.fail("Timeout, no messages received, listenerStauts = %s, informerStatus = %s" % (listenerStatus, informerStatus))
+                    self.fail("Timeout receiving messages with a %s listener and a %s informer" % (listenerLang, informerLang))
                 else:
                     
                     self.assertEqual(0, listenerStatus, "Error of listener, informer language: %s, listener language: %s" % (informerLang, listenerLang))
