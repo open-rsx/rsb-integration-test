@@ -49,7 +49,7 @@ int main(void) {
 		informer->publish(s);
 	}
 
-	cout << "Elapsed time for " << 1200 << " messages sent: " << t.elapsed()
+	cout << "[C++    Informer] Elapsed time for " << 1200 << " messages sent: " << t.elapsed()
 			<< " s" << endl;
 
 	return EXIT_SUCCESS;

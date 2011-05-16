@@ -22,6 +22,7 @@
 #include <stdlib.h>
 #include <math.h>
 
+#include <boost/format.hpp>
 #include <boost/bind.hpp>
 #include <boost/thread/recursive_mutex.hpp>
 #include <boost/thread/condition.hpp>
@@ -35,6 +36,7 @@
 #include <rsb/Factory.h>
 
 using namespace std;
+using namespace boost;
 using namespace rsc::logging;
 using namespace rsc::misc;
 using namespace rsb;
@@ -42,53 +44,63 @@ using namespace rsb::filter;
 
 class MyDataHandler: public DataFunctionHandler<string> {
 public:
-	MyDataHandler() :
-				DataFunctionHandler<string> (
-						boost::bind(&MyDataHandler::handle, this, _1)),
-				count(0) {
-	}
+    MyDataHandler() :
+	DataFunctionHandler<string> (
+	    boost::bind(&MyDataHandler::handle, this, _1)),
+	count(0) {
+    }
 
-	void handle(boost::shared_ptr<string> e) {
-		cout << "Data received: " << *e << endl;
-		count++;
-		if (count == 1200) {
-			boost::recursive_mutex::scoped_lock lock(m);
-			cond.notify_all();
-		}
-	}
+    void handle(boost::shared_ptr<string> e) {
+	if ((count++ % 300) == 0)
+	    cout << (format("[C++    Listener] Data %1%/%2% received: %3%")
+		     % count % 1200 % e) << endl;
 
-	long count;
-	boost::recursive_mutex m;
-	boost::condition cond;
+	if (count == 1200) {
+	    boost::recursive_mutex::scoped_lock lock(m);
+	    cond.notify_all();
+	}
+    }
+
+    long count;
+    boost::recursive_mutex m;
+    boost::condition cond;
 };
+
+typedef boost::shared_ptr<MyDataHandler> MyDataHandlerPtr;
 
 int main(void) {
 
-	LoggerPtr l = Logger::getLogger("receiver");
+    LoggerPtr l = Logger::getLogger("receiver");
 
-	Factory &factory = Factory::getInstance();
+    Factory &factory = Factory::getInstance();
 
-	boost::timer t;
+    boost::timer t;
 
-	ListenerPtr s = factory.createListener(Scope("/example/informer"));
-	boost::shared_ptr<MyDataHandler> dh(new MyDataHandler());
-	s->addHandler(dh);
+    Scope testScope("/example/informer");
+    vector<Scope> scopes = testScope.superScopes();
+    vector<ListenerPtr> listeners;
+    vector<MyDataHandlerPtr> handlers;
+    for (vector<Scope>::const_iterator it = scopes.begin(); it != scopes.end(); ++it) {
+	listeners.push_back(factory.createListener(*it));
+	handlers.push_back(MyDataHandlerPtr(new MyDataHandler()));
+	listeners.back()->addHandler(handlers.back());
+    }
 
-	cout << "Subscriber setup finished. Waiting for messages..." << endl;
+    cout << "[C++    Listener] Listener setup finished. Waiting for messages..." << endl;
 
-	// wait *here* for shutdown as this is not known to the Subscriber
-	{
-		boost::recursive_mutex::scoped_lock lock(dh->m);
-		while (dh->count != 1200) {
-			dh->cond.wait(lock);
-		}
+    // wait *here* for shutdown as this is not known to the Subscriber
+    for (vector<MyDataHandlerPtr>::const_iterator it = handlers.begin(); it != handlers.end(); ++it) {
+	MyDataHandlerPtr handler = *it;
+	boost::recursive_mutex::scoped_lock lock(handler->m);
+	while (handler->count != 1200) {
+	    handler->cond.wait(lock);
 	}
 
-	cout << "Last message was sent to the following groups: " << endl;
+	cout << "[C++    Listener] Last message was sent to the following groups: " << endl;
+	cout << "[C++    Listener] Elapsed time per message (" << handler->count
+	     << " messages received): " << t.elapsed() / handler->count << " s"
+	     << endl;
+    }
 
-	cout << "Elapsed time per message (" << dh->count
-			<< " messages received): " << t.elapsed() / dh->count << " s"
-			<< endl;
-
-	return EXIT_SUCCESS;
+    return EXIT_SUCCESS;
 }
