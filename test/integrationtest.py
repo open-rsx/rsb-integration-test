@@ -21,6 +21,7 @@ import xmlrunner
 import subprocess
 import os
 import time
+import itertools
 
 from distutils.spawn import find_executable
 from optparse import OptionParser
@@ -44,14 +45,14 @@ binaryExtensions = {LANG_CPP: "",
 class CommandStarter(object):
     """
     Starts a command and terminates it on destruction.
-    
+
     @author: jwienke
     """
-    
+
     def __init__(self, command):
         self.__open = subprocess.Popen(command)
         time.sleep(2)
-        
+
     def __del__(self):
         print("Stopping command %s" % self.__open)
         self.__open.terminate()
@@ -60,7 +61,7 @@ class CommandStarter(object):
 class IntegrationTest(unittest.TestCase):
     """
     Python test runner to execute the unit tests.
-    
+
     @author: jwienke
     """
 
@@ -70,80 +71,82 @@ class IntegrationTest(unittest.TestCase):
     def tearDown(self):
         pass
 
-    def testPublishSubscribe(self):
+    @classmethod
+    def addPair(clazz, listenerLang, informerLang):
+        def testFunc(self):
+            listenerBinary = os.path.join(binaryPaths[listenerLang], "listener" + binaryExtensions[listenerLang])
+            listenerCommandLine = binaryExecutorList[listenerLang] + [listenerBinary]
 
-        languages = [LANG_JAVA, LANG_CPP]
+            self.__logger.info("starting listener with command line: %s" % listenerCommandLine)
 
-        # evaluate all language combinations
-        for informerLang in languages:
-            for listenerLang in languages:
+            listenerProc = subprocess.Popen(listenerCommandLine)
 
-                listenerBinary = os.path.join(binaryPaths[listenerLang], "listener" + binaryExtensions[listenerLang])
-                listenerCommandLine = binaryExecutorList[listenerLang] + [listenerBinary]
-                
-                self.__logger.info("starting listener with command line: %s" % listenerCommandLine)
+            time.sleep(2)
 
-                listenerProc = subprocess.Popen(listenerCommandLine)
-                
-                time.sleep(2)
-                
-                informerBinary = os.path.join(binaryPaths[informerLang], "informer" + binaryExtensions[informerLang])
-                informerCommandLine = binaryExecutorList[informerLang] + [informerBinary]
-                
-                self.__logger.info("starting informer with command line: %s" % informerCommandLine)
-                
-                informerProc = subprocess.Popen(informerCommandLine)
-                
-                # wait for both processes to finish.
-                waitStart = time.time()
-                informerStatus = None
-                listenerStatus = None
-                
-                while time.time() < waitStart + 10 and (informerStatus == None or listenerStatus == None):
-                    
-                    informerStatus = informerProc.poll()
-                    listenerStatus = listenerProc.poll()
-                    
-                    time.sleep(0.2)
-                    
-                self.__logger.info("waiting finished for listener = %s and informer = %s, listenerStauts = %s, informerStatus = %s" % (listenerLang, informerLang, listenerStatus, informerStatus))
-                        
-                if listenerStatus == None or informerStatus == None:
-                    # one of the processes timed out
-                    self.__logger.info("Timeout")
-                    try:
-                        listenerProc.kill()
-                    except:
-                        pass
-                    try:
-                        informerProc.kill()
-                    except:
-                        pass
-                    self.fail("Timeout receiving messages with a %s listener and a %s informer" % (listenerLang, informerLang))
-                else:
-                    
-                    self.assertEqual(0, listenerStatus, "Error of listener, informer language: %s, listener language: %s" % (informerLang, listenerLang))
-                    self.assertEqual(0, informerStatus, "Error of informer, informer language: %s, listener language: %s" % (informerLang, listenerLang))
-                    
-                    # TODO check message contents parsed from stdout of the listeners
+            informerBinary = os.path.join(binaryPaths[informerLang], "informer" + binaryExtensions[informerLang])
+            informerCommandLine = binaryExecutorList[informerLang] + [informerBinary]
+
+            self.__logger.info("starting informer with command line: %s" % informerCommandLine)
+
+            informerProc = subprocess.Popen(informerCommandLine)
+
+            # wait for both processes to finish.
+            waitStart = time.time()
+            informerStatus = None
+            listenerStatus = None
+
+            while time.time() < waitStart + 10 and (informerStatus == None or listenerStatus == None):
+
+                informerStatus = informerProc.poll()
+                listenerStatus = listenerProc.poll()
+
+                time.sleep(0.2)
+
+            self.__logger.info("waiting finished for listener = %s and informer = %s, listenerStauts = %s, informerStatus = %s" % (listenerLang, informerLang, listenerStatus, informerStatus))
+
+            if listenerStatus == None or informerStatus == None:
+                # one of the processes timed out
+                self.__logger.info("Timeout")
+                try:
+                    listenerProc.kill()
+                except:
                     pass
+                try:
+                    informerProc.kill()
+                except:
+                    pass
+                self.fail("Timeout receiving messages with a %s listener and a %s informer" % (listenerLang, informerLang))
+            else:
+
+                self.assertEqual(0, listenerStatus, "Error of listener, informer language: %s, listener language: %s" % (informerLang, listenerLang))
+                self.assertEqual(0, informerStatus, "Error of informer, informer language: %s, listener language: %s" % (informerLang, listenerLang))
+
+                # TODO check message contents parsed from stdout of the listeners
+                pass
+        setattr(clazz,
+                'test' + listenerLang.capitalize() + informerLang.capitalize(),
+                testFunc)
 
 def run():
 
     logging.basicConfig()
     logging.getLogger().setLevel(logging.DEBUG)
-    
+
     parser = OptionParser()
     parser.add_option("-s", "--spread", dest="spread", help="spread executable", metavar="executable")
-    (options, args) = parser.parse_args()    
-    
+    (options, args) = parser.parse_args()
+
     spreadExecutable = find_executable("spread")
     if options.spread:
         spreadExecutable = options.spread
     spread = None
     if spreadExecutable:
         spread = CommandStarter([spreadExecutable, "-n", "localhost", "-c", "test/spread.conf"])
-    
+
+    # Add a test method for each pair of languages.
+    languages = [LANG_JAVA, LANG_CPP, LANG_PYTHON]
+    map(lambda x: IntegrationTest.addPair(*x), itertools.product(languages, languages))
+
     xmlrunner.XMLTestRunner(output='test-reports').run(unittest.TestLoader().loadTestsFromTestCase(IntegrationTest))
 
 if __name__ == "__main__":
