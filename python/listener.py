@@ -53,10 +53,8 @@ if __name__ == '__main__':
     listeners = []
     receivers = []
     for size in [ 4, 256, 400000 ]:
-        scope = "/size%d/sub1/sub2" % size
-        scopes = [ "/size%d" % size,
-                   "/size%d/sub1" % size,
-                   "/size%d/sub1/sub2" % size] # TODO superScopes
+        scope = rsb.Scope("/size%d/sub1/sub2" % size)
+        scopes = scope.superScopes(True)
         for scope in scopes:
             router = transport.Router(inPort=SpreadPort())
             listener = rsb.Subscriber(scope, router)
