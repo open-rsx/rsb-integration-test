@@ -30,8 +30,7 @@ if __name__ == '__main__':
     for size in [ 4, 256, 400000 ]:
         scope = "/size%d/sub1/sub2" % size
         print("[Python Informer] Processing scope %s" % scope)
-        router = transport.Router(outPort=SpreadPort())
-        publisher = rsb.Publisher(rsb.Scope(scope), router, "string")
+        publisher = rsb.Publisher(rsb.Scope(scope), "string")
 
         for i in range(120):
             publisher.publishData('c' * size)

@@ -56,8 +56,7 @@ if __name__ == '__main__':
         scope = rsb.Scope("/size%d/sub1/sub2" % size)
         scopes = scope.superScopes(True)
         for scope in scopes[1:]:
-            router = transport.Router(inPort=SpreadPort())
-            listener = rsb.Subscriber(scope, router)
+            listener = rsb.Subscriber(scope)
             listeners.append(listener)
             subscription = rsb.Subscription()
             scopeFilter = rsb.filter.ScopeFilter(scope)
