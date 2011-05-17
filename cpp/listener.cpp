@@ -44,76 +44,81 @@ using namespace rsb::filter;
 
 class MyDataHandler: public DataFunctionHandler<string> {
 public:
-    MyDataHandler(const Scope &scope, unsigned int size, long expected) :
-    DataFunctionHandler<string> (
-	    boost::bind(&MyDataHandler::handle, this, _1)),
-    scope(scope), size(size), count(0), expected(expected) {
-    }
-
-    void handle(boost::shared_ptr<string> e) {
-	assert(e->size() == this->size);
-
-	if ((count++ % 300) == 0)
-	    cout << (format("[C++    Listener] %1%: Event %2%/%3% received: %4%")
-		     % this->scope % this->count % this->expected % e) << endl;
-
-	if (isDone()) {
-	    boost::recursive_mutex::scoped_lock lock(m);
-	    cond.notify_all();
+	MyDataHandler(const Scope &scope, unsigned int size, long expected) :
+		DataFunctionHandler<string> (boost::bind(&MyDataHandler::handle, this,
+				_1)), scope(scope), size(size), count(0), expected(expected) {
 	}
-    }
 
-    bool isDone() {
-	return this->count == this->expected;
-    }
+	void handle(boost::shared_ptr<string> e) {
+		assert(e->size() == this->size);
 
-    Scope scope;
-    unsigned int size;
-    long count;
-    long expected;
-    boost::recursive_mutex m;
-    boost::condition cond;
+		if ((count++ % 30) == 0)
+			cout << (format(
+					"[C++    Listener] %1%: Event %2%/%3% received: %4%")
+					% this->scope % this->count % this->expected % e) << endl;
+
+		if (isDone()) {
+			boost::recursive_mutex::scoped_lock lock(m);
+			cond.notify_all();
+		}
+	}
+
+	bool isDone() {
+		return this->count == this->expected;
+	}
+
+	Scope scope;
+	unsigned int size;
+	long count;
+	long expected;
+	boost::recursive_mutex m;
+	boost::condition cond;
 };
 
 typedef boost::shared_ptr<MyDataHandler> MyDataHandlerPtr;
 
 int main(void) {
 
-    LoggerPtr l = Logger::getLogger("receiver");
+	LoggerPtr l = Logger::getLogger("receiver");
 
-    Factory &factory = Factory::getInstance();
+	Factory &factory = Factory::getInstance();
 
-    boost::timer t;
+	boost::timer t;
 
-    vector<ListenerPtr> listeners;
-    vector<MyDataHandlerPtr> handlers;
+	vector < ListenerPtr > listeners;
+	vector<MyDataHandlerPtr> handlers;
 
-    vector<int> sizes;
-    sizes.push_back(4);
-    sizes.push_back(256);
-    sizes.push_back(400000);
-    for (vector<int>::const_iterator it = sizes.begin(); it != sizes.end(); ++it) {
-	Scope scope(str(format("/size%1%/sub1/sub2") % *it));
-	vector<Scope> scopes = scope.superScopes(true);
-	for (vector<Scope>::const_iterator it_ = scopes.begin() + 1; it_ != scopes.end(); ++it_) {
-	    listeners.push_back(factory.createListener(*it_));
-	    handlers.push_back(MyDataHandlerPtr(new MyDataHandler(*it_, *it, 1200)));
-	    listeners.back()->addHandler(handlers.back());
+	vector<int> sizes;
+	sizes.push_back(4);
+	sizes.push_back(256);
+	sizes.push_back(400000);
+	for (vector<int>::const_iterator it = sizes.begin(); it != sizes.end(); ++it) {
+		Scope scope(str(format("/size%1%/sub1/sub2") % *it));
+		vector < Scope > scopes = scope.superScopes(true);
+		for (vector<Scope>::const_iterator it_ = scopes.begin() + 1; it_
+				!= scopes.end(); ++it_) {
+			listeners.push_back(factory.createListener(*it_));
+			handlers.push_back(MyDataHandlerPtr(new MyDataHandler(*it_, *it,
+					120)));
+			listeners.back()->addHandler(handlers.back());
+		}
 	}
-    }
 
-    cout << "[C++    Listener] Listener setup finished. Waiting for messages..." << endl;
+	cout
+			<< "[C++    Listener] Listener setup finished. Waiting for messages..."
+			<< endl;
 
-    // wait *here* for shutdown as this is not known to the Subscriber
-    for (vector<MyDataHandlerPtr>::const_iterator it = handlers.begin(); it != handlers.end(); ++it) {
-	MyDataHandlerPtr handler = *it;
-	boost::recursive_mutex::scoped_lock lock(handler->m);
-	while (!handler->isDone()) {
-	    handler->cond.wait(lock);
+	// wait *here* for shutdown as this is not known to the Subscriber
+	for (vector<MyDataHandlerPtr>::const_iterator it = handlers.begin(); it
+			!= handlers.end(); ++it) {
+		MyDataHandlerPtr handler = *it;
+		boost::recursive_mutex::scoped_lock lock(handler->m);
+		while (!handler->isDone()) {
+			handler->cond.wait(lock);
+		}
 	}
-    }
 
-    cout << "[C++    Listener] Elapsed time " << t.elapsed() << " s" << endl;
+	cout << "[C++    Listener] Elapsed time " << t.elapsed() << " s" << endl;
 
-    return EXIT_SUCCESS;
+	return EXIT_SUCCESS;
 }

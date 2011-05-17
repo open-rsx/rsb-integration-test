@@ -54,7 +54,7 @@ int main(void) {
 	cout << "[C++    Informer] processing scope " << scope << endl;
 	Informer<string>::Ptr informer = factory.createInformer<string> (scope);
 	Informer<string>::DataPtr s(new string(*it, 'c'));
-	for (int j = 0; j < 1200; j++) {
+	for (int j = 0; j < 120; j++) {
 	    informer->publish(s);
 	}
     }

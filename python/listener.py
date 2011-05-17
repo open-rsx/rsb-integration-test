@@ -24,8 +24,8 @@ from threading import Condition
 
 if __name__ == '__main__':
 
-    #logging.basicConfig()
-    #logging.getLogger().setLevel(logging.DEBUG)
+#    logging.basicConfig()
+#    logging.getLogger().setLevel(logging.DEBUG)
 
     class Receiver(object):
 
@@ -37,12 +37,11 @@ if __name__ == '__main__':
             self.condition = Condition()
 
         def __call__(self, event):
-            print("Got size %s, expected size %s" % (len(event.getData()), self.size))
             assert(len(event.getData()) == self.size)
 
             with self.condition:
                 self.counter += 1
-                if (self.counter % 300 == 0):
+                if (self.counter % 30 == 0):
                     print("[Python Listener] Scope %s: Received event %d/%d: %s"
                           % (self.scope, self.counter, self.expected, event))
                 if self.isDone():
@@ -56,7 +55,7 @@ if __name__ == '__main__':
     for size in [ 4, 256, 400000 ]:
         scope = rsb.Scope("/size%d/sub1/sub2" % size)
         scopes = scope.superScopes(True)
-        for scope in scopes:
+        for scope in scopes[1:]:
             router = transport.Router(inPort=SpreadPort())
             listener = rsb.Subscriber(scope, router)
             listeners.append(listener)
@@ -64,7 +63,7 @@ if __name__ == '__main__':
             scopeFilter = rsb.filter.ScopeFilter(scope)
             subscription.appendFilter(scopeFilter)
 
-            receiver = Receiver(scope, size, 1200)
+            receiver = Receiver(scope, size, 120)
             receivers.append(receiver)
             subscription.appendAction(receiver)
 
@@ -73,6 +72,8 @@ if __name__ == '__main__':
     for receiver in receivers:
         with receiver.condition:
             while not receiver.isDone():
-                receiver.condition.wait()
+                print("[Python Listener] waiting for receiver %s" % receiver.scope)
+                receiver.condition.wait(60)
+                assert(receiver.isDone())
 
     print("[Python Listener] done!")

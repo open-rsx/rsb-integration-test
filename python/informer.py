@@ -20,6 +20,7 @@ import rsb
 from rsb import transport
 from rsb.rsbspread import SpreadPort
 import logging
+import time
 
 if __name__ == '__main__':
 
@@ -32,8 +33,8 @@ if __name__ == '__main__':
         router = transport.Router(outPort=SpreadPort())
         publisher = rsb.Publisher(rsb.Scope(scope), router, "string")
 
-        for i in range(1200):
-            publisher.publishData('c'*size);
+        for i in range(120):
+            publisher.publishData('c' * size)
 
     print("[Python Informer] done!")
 
