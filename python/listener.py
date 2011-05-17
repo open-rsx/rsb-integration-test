@@ -17,8 +17,6 @@
 # ============================================================
 
 import rsb
-from rsb import transport
-from rsb.rsbspread import SpreadPort
 import logging
 from threading import Condition
 

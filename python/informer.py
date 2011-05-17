@@ -17,10 +17,7 @@
 # ============================================================
 
 import rsb
-from rsb import transport
-from rsb.rsbspread import SpreadPort
 import logging
-import time
 
 if __name__ == '__main__':
 
