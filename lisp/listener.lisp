@@ -1,5 +1,6 @@
 (load "lisp/sbclrc")
 (%load-silently :bordeaux-threads)
+(%load-silently :cl-protobuf)
 (%load-silently :cl-spread)
 (%load-silently :cl-rsb)
 
