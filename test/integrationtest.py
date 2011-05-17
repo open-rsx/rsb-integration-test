@@ -29,18 +29,24 @@ from optparse import OptionParser
 LANG_PYTHON = "python"
 LANG_CPP = "cpp"
 LANG_JAVA = "java"
+LANG_LISP = "lisp"
+
+languages = [ LANG_PYTHON, LANG_CPP, LANG_JAVA, LANG_LISP ]
 
 binaryExecutorList = {LANG_CPP: [],
                       LANG_JAVA: ["bash"],
-                      LANG_PYTHON: []}
+                      LANG_PYTHON: [],
+                      LANG_LISP: ["lisp/sbcl-script.sh"]}
 
 binaryPaths = {LANG_CPP: "build/cpp",
                LANG_JAVA: "build/java",
-               LANG_PYTHON: "python"}
+               LANG_PYTHON: "python",
+               LANG_LISP: "lisp"}
 
 binaryExtensions = {LANG_CPP: "",
                     LANG_JAVA: ".sh",
-                    LANG_PYTHON: ".py"}
+                    LANG_PYTHON: ".py",
+                    LANG_LISP: ".lisp"}
 
 class CommandStarter(object):
     """
@@ -153,7 +159,6 @@ def run():
     os.environ['RSB_TRANSPORT_SPREAD_PORT'] = str(options.port)
 
     # Add a test method for each pair of languages.
-    languages = [LANG_JAVA, LANG_CPP, LANG_PYTHON]
     map(lambda x: IntegrationTest.addPair(*x), itertools.product(languages, languages))
 
     xmlrunner.XMLTestRunner(output='test-reports').run(unittest.TestLoader().loadTestsFromTestCase(IntegrationTest))
