@@ -71,35 +71,29 @@ class IntegrationTest(unittest.TestCase):
     def tearDown(self):
         pass
 
+    def startProcess(self, lang, kind):
+        binary = os.path.join(binaryPaths[lang], kind + binaryExtensions[lang])
+        commandline = binaryExecutorList[lang] + [binary]
+
+        self.__logger.info("starting %s with command line: %s" % (kind, commandline))
+
+        return subprocess.Popen(commandline)
+
     @classmethod
     def addPair(clazz, listenerLang, informerLang):
         def testFunc(self):
-            listenerBinary = os.path.join(binaryPaths[listenerLang], "listener" + binaryExtensions[listenerLang])
-            listenerCommandLine = binaryExecutorList[listenerLang] + [listenerBinary]
-
-            self.__logger.info("starting listener with command line: %s" % listenerCommandLine)
-
-            listenerProc = subprocess.Popen(listenerCommandLine)
-
+            # Start listener and informer processes
+            listenerProc = self.startProcess(listenerLang, "listener")
             time.sleep(2)
+            informerProc = self.startProcess(informerLang, "informer")
 
-            informerBinary = os.path.join(binaryPaths[informerLang], "informer" + binaryExtensions[informerLang])
-            informerCommandLine = binaryExecutorList[informerLang] + [informerBinary]
-
-            self.__logger.info("starting informer with command line: %s" % informerCommandLine)
-
-            informerProc = subprocess.Popen(informerCommandLine)
-
-            # wait for both processes to finish.
+            # Wait for both processes to finish.
             waitStart = time.time()
             informerStatus = None
             listenerStatus = None
-
-            while time.time() < waitStart + 10 and (informerStatus == None or listenerStatus == None):
-
+            while time.time() < waitStart + 20 and (informerStatus == None or listenerStatus == None):
                 informerStatus = informerProc.poll()
                 listenerStatus = listenerProc.poll()
-
                 time.sleep(0.2)
 
             self.__logger.info("waiting finished for listener = %s and informer = %s, listenerStauts = %s, informerStatus = %s" % (listenerLang, informerLang, listenerStatus, informerStatus))
