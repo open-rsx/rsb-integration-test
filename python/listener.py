@@ -37,6 +37,7 @@ if __name__ == '__main__':
             self.condition = Condition()
 
         def __call__(self, event):
+            print("Got size %s, expected size %s" % (len(event.getData()), self.size))
             assert(len(event.getData()) == self.size)
 
             with self.condition:
@@ -75,5 +76,3 @@ if __name__ == '__main__':
                 receiver.condition.wait()
 
     print("[Python Listener] done!")
-
-    subscriber.deactivate()
