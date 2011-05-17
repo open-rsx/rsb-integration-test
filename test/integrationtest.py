@@ -128,13 +128,25 @@ class IntegrationTest(unittest.TestCase):
                 testFunc)
 
 def run():
-
+    # Setup logging
     logging.basicConfig()
     logging.getLogger().setLevel(logging.DEBUG)
 
+    # Commandline options
     parser = OptionParser()
     parser.add_option("-s", "--spread", dest="spread", help="spread executable", metavar="executable")
+    parser.add_option("-p", "--spread-port",
+                      dest    = "port",
+                      type    = int,
+                      default = 4545,
+                      help    = "Number of the port that the Spread daemon should use.")
     (options, args) = parser.parse_args()
+
+    # Prepare config file and launch spread
+    with open("test/spread.conf.in") as template:
+        content = template.read().replace('@PORT@', str(options.port))
+    with open("test/spread.conf", "w") as config:
+        config.write(content)
 
     spreadExecutable = find_executable("spread")
     if options.spread:
@@ -142,6 +154,9 @@ def run():
     spread = None
     if spreadExecutable:
         spread = CommandStarter([spreadExecutable, "-n", "localhost", "-c", "test/spread.conf"])
+
+    # Export configured spread port into configuration variable
+    os.environ['RSB_TRANSPORT_SPREAD_PORT'] = str(options.port)
 
     # Add a test method for each pair of languages.
     languages = [LANG_JAVA, LANG_CPP, LANG_PYTHON]
