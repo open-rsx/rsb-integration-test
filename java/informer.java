@@ -14,7 +14,7 @@ public class informer {
         sizes.add(256);
         sizes.add(400000);
         for (int size : sizes) {
-            String scope = "/size" + size + "/sub1/sub2";
+            Scope scope = new Scope("/size" + size + "/sub1/sub2");
 
             System.out.println("[Java   Informer] Processing scope " + scope);
             try {

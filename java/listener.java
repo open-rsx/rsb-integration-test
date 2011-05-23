@@ -45,9 +45,10 @@ public class listener {
         components.add("sub1");
         components.add("/sub2");
         for (int size : sizes) {
-            String scope = "/size" + size;
+            String scopeString = "/size" + size;
             for (String component : components) {
-                scope += component;
+                scopeString += component;
+                Scope scope = new Scope(scopeString);
                 try {
                     Subscriber subscriber = new Subscriber(scope, scope,
                             TransportFactory.getInstance());
