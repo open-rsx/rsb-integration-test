@@ -24,9 +24,10 @@ ENDIF()
 CONFIGURE_FILE("${CMAKE_CURRENT_SOURCE_DIR}/build.xml.in" "${CMAKE_CURRENT_BINARY_DIR}/build.xml" @ONLY)
 CONFIGURE_FILE("${CMAKE_CURRENT_SOURCE_DIR}/listener.sh.in" "${CMAKE_CURRENT_BINARY_DIR}/listener.sh" @ONLY)
 CONFIGURE_FILE("${CMAKE_CURRENT_SOURCE_DIR}/informer.sh.in" "${CMAKE_CURRENT_BINARY_DIR}/informer.sh" @ONLY)
+CONFIGURE_FILE("${CMAKE_CURRENT_SOURCE_DIR}/config.sh.in" "${CMAKE_CURRENT_BINARY_DIR}/config.sh" @ONLY)
 
 ADD_CUSTOM_COMMAND(OUTPUT ${JAR_FILE}
                    COMMAND ${ANT_EXECUTABLE} dist
-                   DEPENDS informer.java listener.java "${CMAKE_CURRENT_BINARY_DIR}/build.xml"
+                   DEPENDS informer.java listener.java config.java "${CMAKE_CURRENT_BINARY_DIR}/build.xml"
                    COMMENT "Creating java jar file")
 ADD_CUSTOM_TARGET(java ALL DEPENDS ${JAR_FILE})
