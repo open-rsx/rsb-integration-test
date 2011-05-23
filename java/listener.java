@@ -11,7 +11,7 @@ import rsb.Scope;
 public class listener {
 
     private static class DataHandler<T> extends RSBDataListener<T> {
-        public DataHandler(String scope, int size, int expected) {
+        public DataHandler(Scope scope, int size, int expected) {
             this.scope = scope;
             this.size = size;
             this.expected = expected;
@@ -29,7 +29,7 @@ public class listener {
             return this.count == this.expected;
         }
 
-        private String scope;
+        private Scope scope;
         private int size;
         private int count;
         private int expected;
