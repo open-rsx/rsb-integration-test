@@ -6,6 +6,7 @@ import rsb.Subscriber;
 import rsb.event.RSBDataListener;
 import rsb.event.Subscription;
 import rsb.transport.TransportFactory;
+import rsb.Scope;
 
 public class listener {
 

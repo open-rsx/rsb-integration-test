@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 import rsb.Publisher;
 import rsb.InitializeException;
+import rsb.Scope;
 
 public class informer {
 
