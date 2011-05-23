@@ -110,7 +110,7 @@ class IntegrationTest(unittest.TestCase):
             waitStart = time.time()
             informerStatus = None
             listenerStatus = None
-            while time.time() < waitStart + 20 and (informerStatus == None or listenerStatus == None):
+            while time.time() < waitStart + 40 and (informerStatus == None or listenerStatus == None):
                 informerStatus = informerProc.poll()
                 listenerStatus = listenerProc.poll()
                 time.sleep(0.2)
