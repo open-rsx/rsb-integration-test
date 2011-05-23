@@ -110,6 +110,8 @@ class IntegrationTest(unittest.TestCase):
                     self.fail("Timeout while waiting for %s listener to start" % listenerLang)
                 time.sleep(0.2)
             os.remove(waitFile)
+            self.__logger.info("%s listener startup took %s seconds"
+                               % (listenerLang, time.time() - waitStart))
             informerProc = self.startProcess(informerLang, "informer")
 
             # Wait for both processes to finish.
