@@ -48,6 +48,19 @@ binaryExtensions = {LANG_CPP: "",
                     LANG_PYTHON: ".py",
                     LANG_LISP: ".lisp"}
 
+values= {LANG_CPP:    {'true':       '1',
+                       'false':      '0',
+                       'stringtype': 'std::string'},
+         LANG_JAVA:   {'true':       '1',
+                       'false':      '0',
+                       'stringtype': 'String'},
+         LANG_PYTHON: {'true':       'True',
+                       'false':      'False',
+                       'stringtype': 'str'},
+         LANG_LISP:   {'true':       '1',
+                       'false':      '0',
+                       'stringtype': 'string'} }
+
 class CommandStarter(object):
     """
     Starts a command and terminates it on destruction.
@@ -77,9 +90,9 @@ class IntegrationTest(unittest.TestCase):
     def tearDown(self):
         pass
 
-    def startProcess(self, lang, kind):
+    def startProcess(self, lang, kind, *args):
         binary = os.path.join(binaryPaths[lang], kind + binaryExtensions[lang])
-        commandline = binaryExecutorList[lang] + [binary]
+        commandline = binaryExecutorList[lang] + [binary] + list(args)
 
         self.__logger.info("starting %s with command line: %s" % (kind, commandline))
 
@@ -124,7 +137,32 @@ class IntegrationTest(unittest.TestCase):
                 # TODO check message contents parsed from stdout of the listeners
                 pass
         setattr(clazz,
-                'test' + listenerLang.capitalize() + informerLang.capitalize(),
+                'testCommunication' + listenerLang.capitalize() + informerLang.capitalize(),
+                testFunc)
+
+    @classmethod
+    def addParserTest(clazz, lang):
+        def testFunc(self):
+            input    = 'test/config-smoke.conf'
+            output   = 'test/config-smoke-%s.output' % lang
+            expected = 'test/config-smoke.expected'
+
+            configProc = self.startProcess(lang, 'config', input, output)
+            configProc.wait()
+
+            actual = open(output).read()
+            expected = open(expected).read()
+            for key in ['lang'] + values[lang].keys():
+                if key == 'lang':
+                    value = lang
+                else:
+                    value = values[lang][key]
+                expected = expected.replace('@%s@' % key.upper(), value)
+            print expected
+
+            self.assertEqual(actual, expected)
+        setattr(clazz,
+                'testConfiguration' + lang.capitalize(),
                 testFunc)
 
 def run():
@@ -158,9 +196,14 @@ def run():
     # Export configured spread port into configuration variable
     os.environ['RSB_TRANSPORT_SPREAD_PORT'] = str(options.port)
 
-    # Add a test method for each pair of languages.
-    map(lambda x: IntegrationTest.addPair(*x), itertools.product(languages, languages))
+    # Add a test method for the communication test for each pair of
+    # languages.
+    #map(lambda x: IntegrationTest.addPair(*x), itertools.product(languages, languages))
 
+    # Add a test method for the configuration test for each language.
+    map(IntegrationTest.addParserTest, languages)
+
+    # Execute the generated test suite.
     xmlrunner.XMLTestRunner(output='test-reports').run(unittest.TestLoader().loadTestsFromTestCase(IntegrationTest))
 
 if __name__ == "__main__":
