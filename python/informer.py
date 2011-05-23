@@ -27,7 +27,7 @@ if __name__ == '__main__':
     for size in [ 4, 256, 400000 ]:
         scope = "/size%d/sub1/sub2" % size
         print("[Python Informer] Processing scope %s" % scope)
-        publisher = rsb.Publisher(rsb.Scope(scope), "string")
+        publisher = rsb.Publisher(rsb.Scope(scope), str)
 
         for i in range(120):
             publisher.publishData('c' * size)
