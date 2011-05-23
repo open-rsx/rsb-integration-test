@@ -15,8 +15,10 @@
 ;;; Loading
 ;;
 
+(defvar *lisp-share-path* "/vol/cl/share/common-lisp")
+
 #-quicklisp
-(let ((quicklisp-init "/vol/cl/share/common-lisp/quicklisp/setup.lisp"))
+(let ((quicklisp-init (format nil "~A/quicklisp/setup.lisp" *lisp-share-path*)))
   (when (probe-file quicklisp-init)
     (load quicklisp-init)))
 
@@ -30,6 +32,13 @@
        (handler-bind
 	   ((warning                #'muffle-warning)
 	    (sb-ext:compiler-note   #'muffle-warning)
+	    (asdf:missing-component
+	     #'(lambda (condition)
+		 ;; defined below
+		 (funcall
+		  (intern "%LOAD-SYSTEM-FROM-ARTIFACT")
+		  (asdf::missing-requires condition))
+		 (go retry)))
 	    (quicklisp-client::system-not-found
 	     #'(lambda (condition)
 		 ;; defined below
@@ -73,9 +82,8 @@
 			:key  #'namestring)))))
     (map nil #'add-system-directory
 	 (append
-	  (directory "/vol/cl/share/common-lisp/site-systems/**/*.asd")
-	  (directory "/vol/cl/share/common-lisp/quicklisp/dists/quicklisp/software/**/*.asd")))))
-
+	  (directory (format nil "~A/site-systems/**/*.asd" *lisp-share-path*))
+	  (directory (format nil "~A/quicklisp/dists/quicklisp/software/**/*.asd" *lisp-share-path*))))))
 
 
 ;;; Downloading Artifacts
