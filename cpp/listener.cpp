@@ -22,6 +22,8 @@
 #include <stdlib.h>
 #include <math.h>
 
+#include <fstream>
+
 #include <boost/format.hpp>
 #include <boost/bind.hpp>
 #include <boost/thread/recursive_mutex.hpp>
@@ -107,6 +109,9 @@ int main(void) {
 	cout
 			<< "[C++    Listener] Listener setup finished. Waiting for messages..."
 			<< endl;
+	{
+	    ofstream stream("test/cpp-listener-ready");
+	}
 
 	// wait *here* for shutdown as this is not known to the Subscriber
 	for (vector<MyDataHandlerPtr>::const_iterator it = handlers.begin(); it

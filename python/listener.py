@@ -66,6 +66,8 @@ if __name__ == '__main__':
 
             listener.addSubscription(subscription)
 
+    open('test/python-listener-ready', 'w').close()
+
     for receiver in receivers:
         with receiver.condition:
             while not receiver.isDone():

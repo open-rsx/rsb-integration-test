@@ -103,14 +103,20 @@ class IntegrationTest(unittest.TestCase):
         def testFunc(self):
             # Start listener and informer processes
             listenerProc = self.startProcess(listenerLang, "listener")
-            time.sleep(2)
+            waitFile = 'test/%s-listener-ready' % listenerLang
+            waitStart = time.time()
+            while not os.path.exists(waitFile):
+                if time.time() > waitStart + 20:
+                    self.fail("Timeout while waiting for %s listener to start" % listenerLang)
+                time.sleep(0.2)
+            os.remove(waitFile)
             informerProc = self.startProcess(informerLang, "informer")
 
             # Wait for both processes to finish.
             waitStart = time.time()
             informerStatus = None
             listenerStatus = None
-            while time.time() < waitStart + 40 and (informerStatus == None or listenerStatus == None):
+            while time.time() < waitStart + 20 and (informerStatus == None or listenerStatus == None):
                 informerStatus = informerProc.poll()
                 listenerStatus = listenerProc.poll()
                 time.sleep(0.2)
