@@ -25,7 +25,8 @@
 		  (rsb:super-scopes (rsb:make-scope "/sub1/sub2")
 				    :include-self? t))))
   (sleep .2)
-  (with-open-file (stream "test/lisp-listener-ready")
+  (with-open-file (stream "test/lisp-listener-ready"
+			  :if-does-not-exist :create)
     (declare (ignore stream)))
   (map 'nil #'bt:join-thread listeners))
 
