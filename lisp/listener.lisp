@@ -24,7 +24,7 @@
 		  '(4 256 400000)
 		  (rsb:super-scopes (rsb:make-scope "/sub1/sub2")
 				    :include-self? t))))
-  (sleep .2)
+  (sleep 1)
   (with-open-file (stream "test/lisp-listener-ready"
 			  :if-does-not-exist :create)
     (declare (ignore stream)))
