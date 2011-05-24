@@ -102,8 +102,9 @@ class IntegrationTest(unittest.TestCase):
     def addPair(clazz, listenerLang, informerLang):
         def testFunc(self):
             # Start listener and informer processes
-            listenerProc = self.startProcess(listenerLang, "listener")
             waitFile = 'test/%s-listener-ready' % listenerLang
+            os.remove(waitFile)
+            listenerProc = self.startProcess(listenerLang, "listener")
             waitStart = time.time()
             while not os.path.exists(waitFile):
                 if time.time() > waitStart + 20:
