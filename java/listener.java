@@ -79,7 +79,7 @@ public class listener {
                 Scope scope = new Scope(scopeString);
                 try {
 		    Thread thread = new Thread(new DataHandler<String>(scope, size, 120));
-		    thread.run();
+		    thread.start();
 		    listeners.add(thread);
                 } catch (java.lang.Throwable e) {
                     System.err.println("[Java Listener] Failure for size "
@@ -92,6 +92,7 @@ public class listener {
 	try {
 	    File file = new File("test/java-listener-ready");
 	    file.createNewFile();
+	    System.err.println("[Java Listener] Created marker file.");
 	} catch (IOException e) {
 	    System.err.println("[Java Listener] Could not create marker file.");
 	    System.exit(1);
