@@ -103,7 +103,7 @@ class IntegrationTest(unittest.TestCase):
         def testFunc(self):
             # Start listener and informer processes
             waitFile = 'test/%s-listener-ready' % listenerLang
-            if os.exists(waitFile):
+            if os.path.exists(waitFile):
                 self.__logger.warn("Deleting old waitFile %s" % waitFile)
                 os.remove(waitFile)
             listenerProc = self.startProcess(listenerLang, "listener")
