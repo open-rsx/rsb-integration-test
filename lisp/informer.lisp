@@ -13,4 +13,4 @@
 	(format t "[Lisp   Informer] ~@<Processing scope ~A~@:>~%" scope)
 	(rsb:with-informer (informer scope 'string)
 	  (iter (for i :from 0 :below 120)
-		(rsb::send informer data)))))
+		(rsb:send informer data)))))
