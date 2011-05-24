@@ -209,7 +209,7 @@ def run():
 
     # Add a test method for the communication test for each pair of
     # languages.
-    #map(lambda x: IntegrationTest.addPair(*x), itertools.product(languages, languages))
+    map(lambda x: IntegrationTest.addPair(*x), itertools.product(languages, languages))
 
     # Add a test method for the configuration test for each language.
     map(IntegrationTest.addParserTest, languages)
