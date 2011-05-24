@@ -31,10 +31,11 @@ public class listener {
 
         @Override
         public void handleEvent(T data) {
-            this.count++;
-            System.out.println("[Java  Listener] Scope " + scope
-                    + ": received " + this.count + "/" + this.expected + ": "
-                    + data);
+            if (this.count++ % 30 == 0) {
+		System.out.println("[Java  Listener] Scope " + scope
+				   + ": received " + this.count + "/" + this.expected + ": "
+				   + data);
+	    }
         }
 
         public boolean isDone() {
