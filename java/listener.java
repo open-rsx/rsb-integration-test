@@ -1,4 +1,11 @@
 import java.lang.Integer;
+import java.lang.Runnable;
+import java.lang.Throwable;
+import java.lang.Thread;
+import java.lang.InterruptedException;
+
+import java.io.File;
+import java.io.IOException;
 
 import java.util.ArrayList;
 
@@ -10,11 +17,16 @@ import rsb.Scope;
 
 public class listener {
 
-    private static class DataHandler<T> extends RSBDataListener<T> {
-        public DataHandler(Scope scope, int size, int expected) {
+    private static class DataHandler<T> extends RSBDataListener<T>
+	                                implements Runnable {
+        public DataHandler(Scope scope, int size, int expected) throws Throwable {
             this.scope = scope;
             this.size = size;
             this.expected = expected;
+
+	    this.subscriber = new Subscriber(scope, scope, TransportFactory.getInstance());
+	    this.subscriber.activate();
+	    this.subscription = subscriber.addListener(this);
         }
 
         @Override
@@ -29,10 +41,24 @@ public class listener {
             return this.count == this.expected;
         }
 
+	public void run() {
+	    while (!isDone()) {
+		try {
+		    Thread.sleep(1);
+		} catch (InterruptedException e) {
+		    e.printStackTrace();
+		}
+	    }
+	    this.subscriber.deactivate();
+	}
+
         private Scope scope;
         private int size;
         private int count;
         private int expected;
+
+	private Subscriber subscriber;
+	private Subscription subscription;
     }
 
     public static void main(String[] args) {
@@ -45,30 +71,40 @@ public class listener {
         components.add("/");
         components.add("sub1");
         components.add("/sub2");
+	ArrayList<Thread> listeners = new ArrayList<Thread>();
         for (int size : sizes) {
             String scopeString = "/size" + size;
             for (String component : components) {
                 scopeString += component;
                 Scope scope = new Scope(scopeString);
                 try {
-                    Subscriber subscriber = new Subscriber(scope, scope,
-                            TransportFactory.getInstance());
-                    subscriber.activate();
-                    DataHandler<String> handler = new DataHandler<String>(
-                            scope, size, 120);
-                    Subscription subscription = subscriber.addListener(handler);
-
-                    while (!handler.isDone()) {
-                        Thread.sleep(10);
-                    }
-
-                    subscriber.deactivate();
+		    Thread thread = new Thread(new DataHandler<String>(scope, size, 120));
+		    thread.run();
+		    listeners.add(thread);
                 } catch (java.lang.Throwable e) {
                     System.err.println("[Java Listener] Failure for size "
                             + size + ": " + e);
+		    System.exit(1);
                 }
             }
         }
+
+	try {
+	    File file = new File("test/java-listener-ready");
+	    file.createNewFile();
+	} catch (IOException e) {
+	    System.err.println("[Java Listener] Could not create marker file.");
+	    System.exit(1);
+	}
+
+	for (Thread listener : listeners) {
+	    try {
+		listener.join();
+	    } catch (InterruptedException e) {
+		System.err.println("[Java Listener] Interrupted while waiting for thread.");
+		System.exit(1);
+	    }
+	}
     }
 
 }
