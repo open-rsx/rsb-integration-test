@@ -34,7 +34,7 @@ public class listener {
             if (this.count++ % 30 == 0) {
 		System.out.println("[Java  Listener] Scope " + scope
 				   + ": received " + this.count + "/" + this.expected + ": "
-				   + data);
+				   + ((String) data).length() + " bytes");
 	    }
         }
 
@@ -82,6 +82,7 @@ public class listener {
 		    Thread thread = new Thread(new DataHandler<String>(scope, size, 120));
 		    thread.start();
 		    listeners.add(thread);
+		    Thread.sleep(1);
                 } catch (java.lang.Throwable e) {
                     System.err.println("[Java Listener] Failure for size "
                             + size + ": " + e);
@@ -107,6 +108,7 @@ public class listener {
 		System.exit(1);
 	    }
 	}
+	System.err.println("[Java Listener] done!");
     }
 
 }
