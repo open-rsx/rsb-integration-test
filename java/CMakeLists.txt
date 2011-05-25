@@ -12,7 +12,7 @@ ENDIF()
 
 # find rsb java file
 FIND_FILE(RSB_JAVA_LIBRARY
-          NAMES RSBJava.jar
+          NAMES RSBJava.jar ${JAVA_NAME}
           HINTS ${JAVA_ROOT}
                 "${CMAKE_INSTALL_PREFIX}/lib/java"
                 "${CMAKE_INSTALL_PREFIX}/share/java"
