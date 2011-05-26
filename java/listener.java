@@ -10,14 +10,13 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 import rsb.Listener;
-import rsb.event.RSBDataListener;
 import rsb.event.Subscription;
 import rsb.transport.TransportFactory;
 import rsb.Scope;
 
 public class listener {
 
-    private static class DataHandler<T> extends RSBDataListener<T>
+    private static class DataHandler<T> extends rsb.event.DataHandler<T>
 	                                implements Runnable {
         public DataHandler(Scope scope, int size, int expected) throws Throwable {
             this.scope = scope;
@@ -26,7 +25,7 @@ public class listener {
 
 	    this.listener = new Listener(scope, TransportFactory.getInstance());
 	    this.listener.activate();
-	    this.subscription = listener.addListener(this);
+	    this.subscription = listener.addHandler(this);
         }
 
         @Override
