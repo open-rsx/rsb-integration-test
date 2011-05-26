@@ -17,7 +17,7 @@
 	     (assert (= (length (rsb:event-data event)) size))
 	     (when (zerop (mod i 30))
 	       (format t "[Lisp   Listener] ~@<Scope ~A: ~_received event ~D/~D: ~_~S~@:>~%"
-		       (rsb:participant-scope reader) 120 event)))))))
+		       (rsb:participant-scope reader) i 120 event)))))))
 
 (let ((listeners (map-product
 		  #'listener-for-scope
