@@ -10,7 +10,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 import rsb.Listener;
-import rsb.event.Subscription;
 import rsb.transport.TransportFactory;
 import rsb.Scope;
 
@@ -25,7 +24,7 @@ public class listener {
 
 	    this.listener = new Listener(scope, TransportFactory.getInstance());
 	    this.listener.activate();
-	    this.subscription = listener.addHandler(this);
+	    listener.addHandler(this, true);
         }
 
         @Override
@@ -58,7 +57,6 @@ public class listener {
         private int expected;
 
 	private Listener listener;
-	private Subscription subscription;
     }
 
     public static void main(String[] args) {
