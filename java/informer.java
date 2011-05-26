@@ -2,7 +2,7 @@ import java.lang.StringBuilder;
 
 import java.util.ArrayList;
 
-import rsb.Publisher;
+import rsb.Informer;
 import rsb.InitializeException;
 import rsb.Scope;
 
@@ -19,7 +19,7 @@ public class informer {
 
             System.out.println("[Java   Informer] Processing scope " + scope);
             try {
-                Publisher<String> p = new Publisher<String>(scope);
+                Informer<String> p = new Informer<String>(scope);
                 p.activate();
 
                 StringBuilder builder = new StringBuilder();

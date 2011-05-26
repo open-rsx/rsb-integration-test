@@ -9,7 +9,7 @@ import java.io.IOException;
 
 import java.util.ArrayList;
 
-import rsb.Subscriber;
+import rsb.Listener;
 import rsb.event.RSBDataListener;
 import rsb.event.Subscription;
 import rsb.transport.TransportFactory;
@@ -24,9 +24,9 @@ public class listener {
             this.size = size;
             this.expected = expected;
 
-	    this.subscriber = new Subscriber(scope, scope, TransportFactory.getInstance());
-	    this.subscriber.activate();
-	    this.subscription = subscriber.addListener(this);
+	    this.listener = new Listener(scope, TransportFactory.getInstance());
+	    this.listener.activate();
+	    this.subscription = listener.addListener(this);
         }
 
         @Override
@@ -50,7 +50,7 @@ public class listener {
 		    e.printStackTrace();
 		}
 	    }
-	    this.subscriber.deactivate();
+	    this.listener.deactivate();
 	}
 
         private Scope scope;
@@ -58,7 +58,7 @@ public class listener {
         private int count;
         private int expected;
 
-	private Subscriber subscriber;
+	private Listener listener;
 	private Subscription subscription;
     }
 
