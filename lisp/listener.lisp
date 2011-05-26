@@ -10,14 +10,14 @@
 (defun listener-for-scope (size scope)
   (bt:make-thread
    (lambda ()
-     (rsb:with-receiver (receiver (format nil "spread:/size~D~A"
+     (rsb:with-reader (reader (format nil "spread:/size~D~A"
 					  size (rsb:scope-string scope)))
        (iter (for i :from 0 :below 120)
-	     (for event next (rsb:receive receiver))
+	     (for event next (rsb:receive reader))
 	     (assert (= (length (rsb:event-data event)) size))
 	     (when (zerop (mod i 30))
 	       (format t "[Lisp   Listener] ~@<Scope ~A: ~_received event ~D/~D: ~_~S~@:>~%"
-		       scope i 120 event)))))))
+		       (rsb:participant-scope reader) 120 event)))))))
 
 (let ((listeners (map-product
 		  #'listener-for-scope
