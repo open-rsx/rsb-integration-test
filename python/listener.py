@@ -54,17 +54,12 @@ if __name__ == '__main__':
         scope = rsb.Scope("/size%d/sub1/sub2" % size)
         scopes = scope.superScopes(True)
         for scope in scopes[1:]:
-            listener = rsb.Subscriber(scope)
+            listener = rsb.Listener(scope)
             listeners.append(listener)
-            subscription = rsb.Subscription()
-            scopeFilter = rsb.filter.ScopeFilter(scope)
-            subscription.appendFilter(scopeFilter)
 
             receiver = Receiver(scope, size, 120)
             receivers.append(receiver)
-            subscription.appendAction(receiver)
-
-            listener.addSubscription(subscription)
+            listener.addAction(receiver)
 
     open('test/python-listener-ready', 'w').close()
 
