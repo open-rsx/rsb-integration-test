@@ -59,7 +59,7 @@ if __name__ == '__main__':
 
             receiver = Receiver(scope, size, 120)
             receivers.append(receiver)
-            listener.addAction(receiver)
+            listener.addHandler(receiver)
 
     open('test/python-listener-ready', 'w').close()
 
