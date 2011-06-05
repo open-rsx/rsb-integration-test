@@ -15,7 +15,7 @@ import rsb.Scope;
 
 public class listener {
 
-    private static class DataHandler<T> extends rsb.event.DataHandler<T>
+    private static class DataHandler<T> extends rsb.DataHandler<T>
 	                                implements Runnable {
         public DataHandler(Scope scope, int size, int expected) throws Throwable {
             this.scope = scope;
