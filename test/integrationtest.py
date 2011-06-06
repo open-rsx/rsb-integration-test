@@ -36,17 +36,17 @@ languages = [ LANG_PYTHON, LANG_CPP, LANG_JAVA, LANG_LISP ]
 binaryExecutorList = {LANG_CPP: [],
                       LANG_JAVA: ["bash"],
                       LANG_PYTHON: [],
-                      LANG_LISP: ["lisp/sbcl-script.sh"]}
+                      LANG_LISP: []}
 
 binaryPaths = {LANG_CPP: "build/cpp",
                LANG_JAVA: "build/java",
                LANG_PYTHON: "python",
-               LANG_LISP: "lisp"}
+               LANG_LISP: "build/lisp"}
 
 binaryExtensions = {LANG_CPP: "",
                     LANG_JAVA: ".sh",
                     LANG_PYTHON: ".py",
-                    LANG_LISP: ".lisp"}
+                    LANG_LISP: ""}
 
 values= {LANG_CPP:    {'true':       '1',
                        'false':      '0',
