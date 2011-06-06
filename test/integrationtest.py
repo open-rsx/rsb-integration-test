@@ -117,7 +117,8 @@ class IntegrationTest(unittest.TestCase):
 
             self.__logger.info("%s listener startup took %s seconds"
                                % (listenerLang, time.time() - waitStart))
-            informerProc = self.startProcess(informerLang, "informer")
+            informerProc = self.startProcess(informerLang, "informer",
+                                             "--listener-pid", str(listenerProc.pid))
             time.sleep(1)
 
             # Wait for both processes to finish.
