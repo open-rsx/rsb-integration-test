@@ -16,6 +16,10 @@
 #
 # ============================================================
 
+import math
+import sys
+import os
+import time
 import rsb
 import logging
 
@@ -24,13 +28,22 @@ if __name__ == '__main__':
     #logging.basicConfig()
     #logging.getLogger().setLevel(logging.DEBUG)
 
+    listenerPid = int(sys.argv[2])
+
     for size in [ 4, 256, 400000 ]:
         scope = "/size%d/sub1/sub2" % size
         print("[Python Informer] Processing scope %s" % scope)
         informer = rsb.Informer(rsb.Scope(scope), str)
 
         for i in range(120):
-            informer.publishData('c' * size)
+            informer.publishData('c' * size,
+                                 userInfos = {
+                    "informer-lang": "Python",
+                    "index":         str(listenerPid + i)
+                    },
+                                 userTimes = {
+                    "informer-start": math.floor(time.time() * 1000000)
+                    })
 
     print("[Python Informer] done!")
 
