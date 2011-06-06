@@ -31,13 +31,14 @@
       (exit 1))
 
     (iter (for size in '(4 256 400000))
-	  (let ((scope (format nil "spread:/size~D/sub1/sub2" size))
+	  (let ((scope (format nil "/size~D/sub1/sub2" size))
+		(uri   (format nil "spread:/size~D/sub1/sub2" size))
 		(data  (make-string size :initial-element #\c)))
 	    (format t "[Lisp   Informer] ~@<Processing scope ~A~@:>~%" scope)
-	    (rsb:with-informer (informer scope 'string)
+	    (rsb:with-informer (informer uri 'string)
 	      (iter (for i :from 0 :below 120)
 		    (let ((event (rsb:make-event/typed
-				  "/" data 'string
+				  scope data 'string
 				  :informer-lang "Lisp"
 				  :index         (format nil "~D" (+ listener-pid i)))))
 		      (setf (rsb:timestamp event :informer-start) start)
