@@ -26,6 +26,7 @@
 #include <boost/format.hpp>
 #include <boost/timer.hpp>
 
+#include <rsc/misc/langutils.h>
 #include <rsc/logging/Logger.h>
 
 #include <rsb/Informer.h>
@@ -37,11 +38,17 @@ using namespace rsc::logging;
 using namespace rsc::misc;
 using namespace rsb;
 
-int main(void) {
+int main(int argc, char *argv[]) {
+    if (argc != 3) {
+        return EXIT_FAILURE;
+    }
+    int listenerPid = lexical_cast<int>(argv[2]);
 
     LoggerPtr l = Logger::getLogger("informer");
 
     Factory &factory = Factory::getInstance();
+
+    uint64_t start  = currentTimeMicros();
 
     boost::timer t;
 
@@ -54,8 +61,12 @@ int main(void) {
 	cout << "[C++    Informer] processing scope " << scope << endl;
 	Informer<string>::Ptr informer = factory.createInformer<string> (scope);
 	Informer<string>::DataPtr s(new string(*it, 'c'));
+        EventPtr event(new Event(scope, s, "std::string"));
+	event->mutableMetaData().setUserInfo("informer-lang", "cpp");
+	event->mutableMetaData().setUserTime("informer-start", start);
 	for (int j = 0; j < 120; j++) {
-	    informer->publish(s);
+	    event->mutableMetaData().setUserInfo("index", lexical_cast<string>(listenerPid + j));
+	    informer->publish(event);
 	}
     }
     cout << "[C++    Informer] Elapsed time sending messages: " << t.elapsed()
