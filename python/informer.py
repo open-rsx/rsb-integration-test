@@ -41,7 +41,7 @@ if __name__ == '__main__':
                     "index":         str(listenerPid + i)
                     },
                                  userTimes = {
-                    "informer-start": time.time())
+                    "informer-start": time.time()
                     })
 
     print("[Python Informer] done!")
