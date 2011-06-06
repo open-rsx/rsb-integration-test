@@ -2,6 +2,7 @@ import java.lang.StringBuilder;
 
 import java.util.ArrayList;
 
+import rsb.Factory;
 import rsb.Informer;
 import rsb.InitializeException;
 import rsb.Scope;
@@ -19,7 +20,7 @@ public class informer {
 
             System.out.println("[Java   Informer] Processing scope " + scope);
             try {
-                Informer<String> p = new Informer<String>(scope);
+                Informer<String> p = Factory.getInstance().createInformer(scope);
                 p.activate();
 
                 StringBuilder builder = new StringBuilder();

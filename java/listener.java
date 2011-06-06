@@ -9,6 +9,7 @@ import java.io.IOException;
 
 import java.util.ArrayList;
 
+import rsb.Factory;
 import rsb.Listener;
 import rsb.transport.TransportFactory;
 import rsb.Scope;
@@ -23,7 +24,7 @@ public class listener {
 			this.size = size;
 			this.expected = expected;
 
-			this.listener = new Listener(scope, TransportFactory.getInstance());
+			this.listener = Factory.getInstance().createListener(scope);
 			this.listener.activate();
 			listener.addHandler(this, true);
 		}
