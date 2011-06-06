@@ -13,15 +13,23 @@
 (defun main ()
   (setf rsb:*default-configuration* (rsb:options-from-default-sources))
   (make-synopsis
-   :item (make-flag :long-name   "help"
-		    :description "Display help text.")
+   :item (make-flag    :long-name   "help"
+		       :description "Display help text.")
+   :item (make-lispobj :long-name   "listener-pid"
+		       :typespec    'positive-integer
+		       :description "PID of listener process for inclusion in event meta-data.")
    :item (rsb::make-options))
   (make-context)
   (when (getopt :long-name "help")
     (help)
     (return-from main))
 
-  (let ((start (local-time:now)))
+  (let ((listener-pid (getopt :long-name "listener-pid"))
+	(start        (local-time:now)))
+    (unless listener-pid
+      (help)
+      (exit 1))
+
     (iter (for size in '(4 256 400000))
 	  (let ((scope (format nil "spread:/size~D/sub1/sub2" size))
 		(data  (make-string size :initial-element #\c)))
@@ -31,8 +39,8 @@
 		    (let ((event (rsb:make-event/typed
 				  "/" data 'string
 				  :informer-lang "Lisp"
-				  :informer-pid  (format nil "~D" (+ (sb-posix:getpid) i)))))
-		      (setf (rsb:timestamp event :process-start) start)
+				  :index         (format nil "~D" (+ listener-pid i)))))
+		      (setf (rsb:timestamp event :informer-start) start)
 		      (rsb:send informer event))))))))
 
 (com.dvlsoft.clon:dump "informer" main)
