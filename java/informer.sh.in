@@ -1,0 +1,4 @@
+#!/bin/bash
+
+export CLASSPATH="@JAR_FILE@:@RSB_JAVA_LIBRARY@:@PROTOBUF_JAVA_LIBRARY@"
+java informer "$@"

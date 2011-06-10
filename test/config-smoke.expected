@@ -1,0 +1,8 @@
+qualityofservice.reliability: UNRELIABLE
+qualityofservice.ordering: UNORDERED
+errorhandling.onhandlererror: EXIT
+transport.inprocess.enabled: @FALSE@
+transport.spread.host: foo
+transport.spread.port: 9876
+transport.spread.enabled: @TRUE@
+transport.spread.converter.@LANG@.string: @STRINGTYPE@
