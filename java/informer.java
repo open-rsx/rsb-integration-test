@@ -9,7 +9,7 @@ import rsb.Event;
 
 public class informer {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Throwable {
 
         long startTime = System.currentTimeMillis() * 1000;
         int listenerPid = Integer.parseInt(args[1]);
