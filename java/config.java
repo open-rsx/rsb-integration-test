@@ -24,8 +24,8 @@ public class config {
 	    stream.println("transport.spread.host: " + p.getProperty("transport.spread.host"));
 	    stream.println("transport.spread.port: " + p.getPropertyAsInt("transport.spread.port"));
 	    stream.println("transport.spread.enabled: " + p.getPropertyAsBool("transport.spread.enabled"));
-	    stream.println("transport.spread.converter.java.string: "
-			   + p.getProperty("transport.spread.converter.java.string"));
+	    stream.println("transport.spread.converter.java.utf-8-string: "
+			   + p.getProperty("transport.spread.converter.java.utf-8-string"));
 	    stream.close();
 	} catch (IOException e) {
 	    System.err.println("Failed to write to output file " + args[1]);
