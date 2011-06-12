@@ -35,4 +35,4 @@ if __name__ == "__main__":
         out.write('transport.spread.port: %s\n' % spread.getOptions().get('port'))
         out.write('transport.spread.enabled: %s\n' % spread.isEnabled())
         converters = spread.getConverters()
-        out.write('transport.spread.converter.python.string: %s\n' % converters.getConverterForWireSchema('string').getDataType().__name__)
+        out.write('transport.spread.converter.python.utf-8-string: %s\n' % converters.getConverterForWireSchema('utf-8-string').getDataType().__name__)
