@@ -79,7 +79,7 @@ int main(int argc, char* argv[]) {
 
 	for (ParticipantConfig::Transport::ConverterNames::const_iterator it =
 			names.begin(); it != names.end(); ++it) {
-		if (it->first == "string") {
+		if (it->first == "utf-8-string") {
 			out << "transport.spread.converter.cpp.utf-8-string: " << it->second
 					<< endl;
 		}
