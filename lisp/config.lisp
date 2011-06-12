@@ -20,7 +20,7 @@
     (:transport :spread :port)
     (:transport :spread :enabled)
 
-    (:transport :spread :converter :lisp :string)))
+    (:transport :spread :converter :lisp :utf-8-string)))
 
 (defun main ()
   (setf rsb:*default-configuration* (rsb:options-from-default-sources))
