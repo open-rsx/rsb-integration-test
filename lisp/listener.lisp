@@ -22,7 +22,12 @@
 		       (rsb:participant-scope reader) i 120 event)))))))
 
 (defun main ()
-  (setf rsb:*default-configuration* (rsb:options-from-default-sources))
+  (setf rsb:*default-configuration*
+	(cons '((:transport :spread :converter)
+		. (:fundamental-ascii-string
+		   :fundamental-utf-8-string
+		   :fundamental-bytes))
+	      (rsb:options-from-default-sources)))
   (make-synopsis
    :item (make-flag :long-name   "help"
 		    :description "Display help text.")
@@ -33,15 +38,15 @@
     (return-from main))
 
   (let ((listeners (map-product
-		  #'listener-for-scope
-		  '(4 256 400000)
-		  (rsb:super-scopes (rsb:make-scope "/sub1/sub2")
-				    :include-self? t))))
-  (sleep 1)
-  (with-open-file (stream "test/lisp-listener-ready"
-			  :if-does-not-exist :create)
-    (declare (ignorable stream)))
-  (map 'nil #'bt:join-thread listeners))
+		    #'listener-for-scope
+		    '(4 256 400000)
+		    (rsb:super-scopes (rsb:make-scope "/sub1/sub2")
+				      :include-self? t))))
+    (sleep 1)
+    (with-open-file (stream "test/lisp-listener-ready"
+			    :if-does-not-exist :create)
+      (declare (ignorable stream)))
+    (map 'nil #'bt:join-thread listeners))
 
   (format t "[Lisp   Listener] done!~%"))
 
