@@ -23,11 +23,8 @@
 
 (defun main ()
   (setf rsb:*default-configuration*
-	(cons '((:transport :spread :converter)
-		. (:fundamental-ascii-string
-		   :fundamental-utf-8-string
-		   :fundamental-bytes))
-	      (rsb:options-from-default-sources)))
+	(append '(((:transport :spread :enabled) . "1"))
+		(rsb:options-from-default-sources)))
   (make-synopsis
    :item (make-flag :long-name   "help"
 		    :description "Display help text.")
