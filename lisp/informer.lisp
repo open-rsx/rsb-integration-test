@@ -1,9 +1,9 @@
 
-(%load-silently :sb-posix)
-(%load-silently :com.dvlsoft.clon)
-(%load-silently :cl-protobuf)
-(%load-silently :cl-spread)
-(%load-silently :cl-rsb)
+(load-system :sb-posix)
+(load-system :com.dvlsoft.clon)
+(load-system :cl-protobuf)
+(load-system :cl-spread)
+(load-system :cl-rsb)
 (map nil #'unintern '(for finally collect else with in)) ;; iterate bug
 
 (use-package :alexandria)
@@ -11,16 +11,14 @@
 (use-package :com.dvlsoft.clon)
 
 (defun main ()
-  (setf rsb:*default-configuration*
-	(append '(((:transport :spread :enabled) . "1"))
-		(rsb:options-from-default-sources)))
+  (setf rsb:*default-configuration* (rsb:options-from-default-sources))
   (make-synopsis
    :item (make-flag    :long-name   "help"
 		       :description "Display help text.")
    :item (make-lispobj :long-name   "listener-pid"
 		       :typespec    'positive-integer
 		       :description "PID of listener process for inclusion in event meta-data.")
-   :item (rsb::make-options))
+   :item (rsb:make-options))
   (make-context)
   (when (getopt :long-name "help")
     (help)
@@ -46,4 +44,4 @@
 		      (setf (rsb:timestamp event :informer-start) start)
 		      (rsb:send informer event))))))))
 
-(com.dvlsoft.clon:dump "informer" main)
+(dump "informer" main)

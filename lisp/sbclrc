@@ -1,28 +1,22 @@
-
-;;; IO Stuff
-;;
-
-(setf *terminal-io* (make-two-way-stream
-		     (make-synonym-stream '*standard-input*)
-		     (make-synonym-stream '*standard-output*)))
-
-(setf *print-right-margin* most-positive-fixnum
-      *print-miser-width*  most-positive-fixnum)
-
-
-;;; Loading
-;;
-
 (require :asdf)
 
-(defvar *lisp-share-path* "/vol/cl/share/common-lisp")
+;; We do this strange stuff to avoid loading sb-posix (for getenv)
+;; before quicklisp.
+(defvar *lisp-share-path*
+  (with-output-to-string (stream)
+    (sb-ext:run-program
+     "sh" '("-c" "env echo -n \"${SBCL_HOME}\"/../../../share/common-lisp")
+     :search t
+     :output stream)))
 
 #-quicklisp
 (let ((quicklisp-init (format nil "~A/quicklisp/setup.lisp" *lisp-share-path*)))
   (when (probe-file quicklisp-init)
     (load quicklisp-init)))
 
-(defun %load-silently (system)
+(require :sb-posix)
+
+(defun load-system (system)
   (let ((*compile-verbose* nil)
 	(*compile-print*   nil)
 	(*load-verbose*    nil)
@@ -30,9 +24,7 @@
     (tagbody
      retry
        (handler-bind
-	   ((warning                #'muffle-warning)
-	    (sb-ext:compiler-note   #'muffle-warning)
-	    (asdf:missing-component
+	   ((asdf:missing-component
 	     #'(lambda (condition)
 		 ;; defined below
 		 (funcall
@@ -48,34 +40,9 @@
 		 (go retry))))
 	 (ql:quickload system :verbose nil :explain nil :prompt nil)))))
 
-
-;;; Systems from
-;; + /vol/cl/share/common-lisp/site-systems
-;; + /vol/cl/share/common-lisp/quicklisp/dists/quicklisp/software
-
-(%load-silently :sb-posix) ;; force ASDF init
-
-(let ((asds (mapcar #'pathname-name
-		    (mapcan (lambda (d) (directory (merge-pathnames "*.asd" d)))
-			    (asdf::source-registry)))))
-  (flet ((add-system-directory (asd)
-	   (unless (member (pathname-name asd) asds
-			   :test #'string=)
-	     (let ((pathname (make-pathname :directory (pathname-directory asd))))
-	       (pushnew pathname (asdf::source-registry)
-			:test #'string=
-			:key  #'namestring)))))
-    (map nil #'add-system-directory
-	 (append
-	  (directory (format nil "~A/site-systems/**/*.asd" *lisp-share-path*))
-	  (directory (format nil "~A/quicklisp/dists/quicklisp/software/**/*.asd" *lisp-share-path*))))))
-
-
-;;; Downloading Artifacts
-;;
-
-(%load-silently :alexandria)
-(%load-silently :drakma)
+(load-system :alexandria)
+(load-system :split-sequence)
+(load-system :drakma)
 
 (defvar *jenkins-base-url*
   (let ((url (sb-posix:getenv "HUDSON_URL")))
@@ -85,28 +52,48 @@
 (defvar *job-name* (sb-posix:getenv "JOB_NAME")
   "Our job name.")
 
+(defvar *dep-suffixes* (append
+			(split-sequence:split-sequence
+			 #\: (sb-posix:getenv "DEP_SUFFIX")
+			 :remove-empty-subseqs t)
+			'(nil))
+  "A list of priority-sorted suffixes to append to systems when trying
+to download artifacts.")
+
 (defvar *job-workspace* (sb-posix:getenv "WORKSPACE")
   "Our workspace.")
 
 (defun %download-project-artifact (name destination-directory)
-  (let ((url         (format nil "~A/job/~A/lastSuccessfulBuild/artifact/~:*~A.tar.gz"
-			     *jenkins-base-url* name))
-	(destination (make-pathname
+  (let ((destination (make-pathname
 		      :name     (concatenate 'string name ".tar")
 		      :type     "gz"
 		      :defaults destination-directory)))
-    ;;
-    (ensure-directories-exist destination-directory)
-
     ;; Download the artifact archive.
-    (format t "~&~@<; ~@;fetching ~S~@:>" url)
-    (alexandria:with-output-to-file (stream destination
-					    :if-does-not-exist :create
-					    :if-exists         :supersede
-					    :element-type      '(unsigned-byte 8))
-      (let ((http-stream (drakma:http-request url :want-stream t)))
-	(alexandria:copy-stream http-stream stream
-				:element-type '(unsigned-byte 8))))
+    (ensure-directories-exist destination-directory)
+    (unless (some
+	     #'(lambda (suffix)
+		 (ignore-errors
+		   (alexandria:with-output-to-file
+		       (stream destination
+			       :if-does-not-exist :create
+			       :if-exists         :supersede
+			       :element-type      '(unsigned-byte 8))
+		     (let* ((url
+			     (format nil "~A/job/~A~@[-~A~]/lastSuccessfulBuild/artifact/~2:*~A~@[-~A~].tar.gz"
+				     *jenkins-base-url* name suffix)))
+		       (format t "~&~@<; ~@;fetching ~S~@:>" url)
+		       (multiple-value-bind (http-stream result)
+			   (drakma:http-request url :want-stream t)
+			 (unless (= result 200)
+			   (error "~@<Download failed with result code ~D.~@:>"
+				  result))
+			 (alexandria:copy-stream
+			  http-stream stream
+			  :element-type '(unsigned-byte 8)))))
+		   t))
+	     *dep-suffixes*)
+      (error "~@<Could not download artifact for system ~A.~@:>"
+	     name))
 
     ;; Extract the archive.
     (format t "~&~@<; ~@;extracting ~A~@:>" destination)
@@ -122,6 +109,11 @@
 	     destination))))
 
 (defun %load-system-from-artifact (system-name)
+  (unless (and *jenkins-base-url* *job-name* *job-workspace*)
+    (error "~@<Cannot download artifact for system ~A since at least ~
+one Jenkins environment variable is missing.~@:>"
+	   system-name))
+
   (let ((name (string-downcase (string system-name)))
 	(deps (format nil "~A/upstream/" *job-workspace*)))
     (format t "~&~@<; ~@;loading system from artifact ~A~@:>"
@@ -136,38 +128,3 @@
 				  deps)))))
       (format t "~&~@<; ~@;loading system definition from ~A~@:>" asd)
       (load asd))))
-
-
-;;; ASDF System Connections
-;;
-
-(%load-silently :asdf-system-connections)
-
-;; Disable automatic loading of our system in case it is a system
-;; connection.
-(fmakunbound 'asdf::required-systems-loaded-p)
-(defun asdf::required-systems-loaded-p (connection)
-  (unless (string-equal (asdf:component-name connection)
-			*job-name*)
-    (every #'asdf::system-loaded-p (asdf::systems-required connection))))
-
-(let ((system-connections
-       (remove-duplicates
-	(mapcan
-	 (lambda (dir)
-	   (directory (merge-pathnames "*-and-*.asd" dir)))
-	 (asdf::source-registry))
-	:test #'string= :key #'pathname-name)))
-  (dolist (path system-connections)
-    (handler-case
-	(load path)
-      (error (condition)
-	(warn "~@<Could not load system connection ~A: ~A~@:>"
-	      (pathname-name path) condition)))))
-
-
-;;; Iterate should always declare variables
-;;
-
-(%load-silently :iterate)
-(setf iterate::*always-declare-variables* t)

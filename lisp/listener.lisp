@@ -1,8 +1,8 @@
-(%load-silently :bordeaux-threads)
-(%load-silently :com.dvlsoft.clon)
-(%load-silently :cl-protobuf)
-(%load-silently :cl-spread)
-(%load-silently :cl-rsb)
+(load-system :bordeaux-threads)
+(load-system :com.dvlsoft.clon)
+(load-system :cl-protobuf)
+(load-system :cl-spread)
+(load-system :cl-rsb)
 (map nil #'unintern '(for finally collect else with in)) ;; iterate bug
 
 (use-package :alexandria)
@@ -22,13 +22,11 @@
 		       (rsb:participant-scope reader) i 120 event)))))))
 
 (defun main ()
-  (setf rsb:*default-configuration*
-	(append '(((:transport :spread :enabled) . "1"))
-		(rsb:options-from-default-sources)))
+  (setf rsb:*default-configuration* (rsb:options-from-default-sources))
   (make-synopsis
    :item (make-flag :long-name   "help"
 		    :description "Display help text.")
-   :item (rsb::make-options))
+   :item (rsb:make-options))
   (make-context)
   (when (getopt :long-name "help")
     (help)
