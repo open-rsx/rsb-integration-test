@@ -1,3 +1,4 @@
+import java.lang.Throwable;
 import java.lang.Thread;
 
 import rsb.InitializeException;
@@ -12,7 +13,7 @@ public class server {
 
 	System.out.println("[Java   Server] Providing service on " + scope);
 
-	try {
+	//try {
 	    /*Server s = Factory.getInstance().createServer(scope);
 	    s.activate();
 
@@ -22,10 +23,10 @@ public class server {
 
 	    Thread.sleep(1000);
 
-	} catch (InitializeException e) {
+	    /*} catch (InitializeException e) {
 	    e.printStackTrace();
 	    System.exit(1);
-	}
+	    }*/
 
 	System.out.println("[Java   Server] Sent messages");
     }
