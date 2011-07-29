@@ -98,8 +98,23 @@ class IntegrationTest(unittest.TestCase):
 
         return subprocess.Popen(commandline)
 
+    def waitForProcesses(self, *processes):
+        waitStart = time.time()
+        codes     = [None]*len(processes)
+        while time.time() < waitStart + 60 and None in codes:
+            codes = map(lambda x: x.poll(), processes)
+            time.sleep(0.2)
+        return codes
+
+    def killProcesses(self, *processes):
+        for process in processes:
+            try:
+                process.kill()
+            except:
+                pass
+
     @classmethod
-    def addPair(clazz, listenerLang, informerLang):
+    def addListenerInformerPair(clazz, listenerLang, informerLang):
         def testFunc(self):
             # Start listener and informer processes
             waitFile = 'test/%s-listener-ready' % listenerLang
@@ -121,38 +136,40 @@ class IntegrationTest(unittest.TestCase):
                                              "--listener-pid", str(listenerProc.pid))
             time.sleep(1)
 
-            # Wait for both processes to finish.
-            waitStart = time.time()
-            informerStatus = None
-            listenerStatus = None
-            while time.time() < waitStart + 60 and (informerStatus == None or listenerStatus == None):
-                informerStatus = informerProc.poll()
-                listenerStatus = listenerProc.poll()
-                time.sleep(0.2)
+            informerStatus, listenerStatus = self.waitForProcesses(informerProc, listenerProc)
 
             self.__logger.info("waiting finished for listener = %s and informer = %s, listenerStauts = %s, informerStatus = %s" % (listenerLang, informerLang, listenerStatus, informerStatus))
 
             if listenerStatus == None or informerStatus == None:
                 # one of the processes timed out
                 self.__logger.info("Timeout")
-                try:
-                    listenerProc.kill()
-                except:
-                    pass
-                try:
-                    informerProc.kill()
-                except:
-                    pass
+                self.killProcesses(listenerProc, informerProc)
                 self.fail("Timeout receiving messages with a %s listener and a %s informer" % (listenerLang, informerLang))
-            else:
 
-                self.assertEqual(0, listenerStatus, "Error of listener, informer language: %s, listener language: %s" % (informerLang, listenerLang))
-                self.assertEqual(0, informerStatus, "Error of informer, informer language: %s, listener language: %s" % (informerLang, listenerLang))
+            self.assertEqual(0, listenerStatus, "Error of listener, informer language: %s, listener language: %s" % (informerLang, listenerLang))
+            self.assertEqual(0, informerStatus, "Error of informer, informer language: %s, listener language: %s" % (informerLang, listenerLang))
 
-                # TODO check message contents parsed from stdout of the listeners
-                pass
+            # TODO check message contents parsed from stdout of the listeners
         setattr(clazz,
-                'testCommunication' + listenerLang.capitalize() + informerLang.capitalize(),
+                'testListenerInformer' + listenerLang.capitalize() + informerLang.capitalize(),
+                testFunc)
+
+    @classmethod
+    def addClientServerPair(clazz, clientLang, serverLang):
+        def testFunc(self):
+            serverProc = self.startProcess(serverLang, "server")
+            time.sleep(1) # TODO proper waiting
+            clientProc = self.startProcess(clientLang, "client")
+
+            codes = self.waitForProcesses(clientProc, serverProc)
+            if None in codes:
+                self.__logger.info("Timeout")
+                self.killProcesses(serverProc, clientProc)
+                self.fail("Client/Server communication timed out for %s client and %s server"
+                          % (clientLang, serverLang))
+
+        setattr(clazz,
+                'testClientServer' + clientLang.capitalize() + serverLang.capitalize(),
                 testFunc)
 
     @classmethod
@@ -211,12 +228,18 @@ def run():
     # Export configured spread port into configuration variable
     os.environ['RSB_TRANSPORT_SPREAD_PORT'] = str(options.port)
 
-    # Add a test method for the communication test for each pair of
-    # languages.
-    map(lambda x: IntegrationTest.addPair(*x), itertools.product(languages, languages))
-
     # Add a test method for the configuration test for each language.
     map(IntegrationTest.addParserTest, languages)
+
+    # Add a test method for the listener/informer communication test
+    # for each pair of languages.
+    map(lambda x: IntegrationTest.addListenerInformerPair(*x),
+        itertools.product(languages, languages))
+
+    # Add a test method for the client/server communication test for
+    # each pair of languages.
+    map(lambda x: IntegrationTest.addClientServerPair(*x),
+        itertools.product(languages, languages))
 
     # Execute the generated test suite.
     xmlrunner.XMLTestRunner(output='test-reports').run(unittest.TestLoader().loadTestsFromTestCase(IntegrationTest))
