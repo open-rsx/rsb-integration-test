@@ -1,7 +1,7 @@
-(%load-silently :com.dvlsoft.clon)
-(%load-silently :cl-protobuf)
-(%load-silently :cl-spread)
-(%load-silently :cl-rsb)
+(load-system :com.dvlsoft.clon)
+(load-system :cl-protobuf)
+(load-system :cl-spread)
+(load-system :cl-rsb)
 (map nil #'unintern '(for finally collect else with in)) ;; iterate bug
 
 (use-package :alexandria)
@@ -30,7 +30,7 @@
    :postfix "CONFIGFILE OUTPUTFILE"
    :item    (make-flag :long-name   "help"
 		       :description "Display help text.")
-   :item    (rsb::make-options))
+   :item    (rsb:make-options))
   (make-context)
   (when (getopt :long-name "help")
     (help)
@@ -48,4 +48,4 @@
 	  (for value next (rsb:option-value key))
 	  (format stream "~{~(~A~)~^.~}: ~A~%" key value))))
 
-(com.dvlsoft.clon:dump "config" main)
+(dump "config" main)
