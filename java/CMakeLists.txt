@@ -21,13 +21,21 @@ IF(NOT RSB_JAVA_LIBRARY)
     MESSAGE(SEND_ERROR "Could not find RSBJava.jar. Please define JAVA_ROOT with a folder containing the library.")
 ENDIF()
 
-CONFIGURE_FILE("${CMAKE_CURRENT_SOURCE_DIR}/build.xml.in" "${CMAKE_CURRENT_BINARY_DIR}/build.xml" @ONLY)
-CONFIGURE_FILE("${CMAKE_CURRENT_SOURCE_DIR}/listener.sh.in" "${CMAKE_CURRENT_BINARY_DIR}/listener.sh" @ONLY)
-CONFIGURE_FILE("${CMAKE_CURRENT_SOURCE_DIR}/informer.sh.in" "${CMAKE_CURRENT_BINARY_DIR}/informer.sh" @ONLY)
-CONFIGURE_FILE("${CMAKE_CURRENT_SOURCE_DIR}/config.sh.in" "${CMAKE_CURRENT_BINARY_DIR}/config.sh" @ONLY)
+SET(CONFIGURE_FILES build.xml
+                    config.sh
+                    listener.sh informer.sh
+		    client.sh   server.sh)
+FOREACH(FILE ${CONFIGURE_FILES})
+    CONFIGURE_FILE("${CMAKE_CURRENT_SOURCE_DIR}/${FILE}.in"
+                   "${CMAKE_CURRENT_BINARY_DIR}/${FILE}"
+		   @ONLY)
+ENDFOREACH()
 
-ADD_CUSTOM_COMMAND(OUTPUT ${JAR_FILE}
+SET(JAVA_FILES config.java
+               listener.java informer.java
+	       client.java   server.java)
+ADD_CUSTOM_COMMAND(OUTPUT  ${JAR_FILE}
                    COMMAND ${ANT_EXECUTABLE} dist
-                   DEPENDS informer.java listener.java config.java "${CMAKE_CURRENT_BINARY_DIR}/build.xml"
+                   DEPENDS ${JAVA_FILES} "${CMAKE_CURRENT_BINARY_DIR}/build.xml"
                    COMMENT "Creating java jar file")
 ADD_CUSTOM_TARGET(java ALL DEPENDS ${JAR_FILE})
