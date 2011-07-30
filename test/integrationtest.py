@@ -161,7 +161,7 @@ class IntegrationTest(unittest.TestCase):
             time.sleep(1) # TODO proper waiting
             clientProc = self.startProcess(clientLang, "client")
 
-            codes = self.waitForProcesses(5, clientProc, serverProc, timeout)
+            codes = self.waitForProcesses(5, clientProc, serverProc)
             if None in codes:
                 self.__logger.info("Timeout")
                 self.killProcesses(serverProc, clientProc)
