@@ -98,10 +98,10 @@ class IntegrationTest(unittest.TestCase):
 
         return subprocess.Popen(commandline)
 
-    def waitForProcesses(self, *processes):
+    def waitForProcesses(self, timeout = 60, *processes):
         waitStart = time.time()
         codes     = [None]*len(processes)
-        while time.time() < waitStart + 60 and None in codes:
+        while time.time() < waitStart + timeout and None in codes:
             codes = map(lambda x: x.poll(), processes)
             time.sleep(0.2)
         return codes
@@ -161,7 +161,7 @@ class IntegrationTest(unittest.TestCase):
             time.sleep(1) # TODO proper waiting
             clientProc = self.startProcess(clientLang, "client")
 
-            codes = self.waitForProcesses(clientProc, serverProc)
+            codes = self.waitForProcesses(clientProc, serverProc, timeout = 5)
             if None in codes:
                 self.__logger.info("Timeout")
                 self.killProcesses(serverProc, clientProc)
