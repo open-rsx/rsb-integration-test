@@ -35,7 +35,7 @@
     (help)
     (return-from main))
 
-  (format t "[Lisp    Server] Providing service on ~A~%"
+  (format t "[Lisp   Server] Providing service on ~A~%"
 	  *client/server-test-uri*)
 
   #+later
@@ -52,6 +52,6 @@
 	   (terminate-notify)))
       (terminate-wait)))
 
-  (format t "[Lisp    Server] done!~%"))
+  (format t "[Lisp   Server] done!~%"))
 
-(dump "client" main)
+(dump "server" main)

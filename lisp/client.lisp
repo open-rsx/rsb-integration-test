@@ -21,7 +21,7 @@
     (help)
     (return-from main))
 
-  (format t "[Lisp    Client] Communicating with remote server at ~A~%"
+  (format t "[Lisp   Client] Communicating with remote server at ~A~%"
 	  *client/server-test-uri*)
 
   #+later
@@ -40,6 +40,6 @@
     ;; Ask server to terminate.
     (rsb.patterns:call server "terminate"))
 
-  (format t "[Lisp    Client] Done!~%"))
+  (format t "[Lisp   Client] Done!~%"))
 
 (dump "client" main)
