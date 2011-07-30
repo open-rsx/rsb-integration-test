@@ -98,7 +98,7 @@ class IntegrationTest(unittest.TestCase):
 
         return subprocess.Popen(commandline)
 
-    def waitForProcesses(self, timeout = 60, *processes):
+    def waitForProcesses(self, timeout, *processes):
         waitStart = time.time()
         codes     = [None]*len(processes)
         while time.time() < waitStart + timeout and None in codes:
@@ -136,7 +136,7 @@ class IntegrationTest(unittest.TestCase):
                                              "--listener-pid", str(listenerProc.pid))
             time.sleep(1)
 
-            informerStatus, listenerStatus = self.waitForProcesses(informerProc, listenerProc)
+            informerStatus, listenerStatus = self.waitForProcesses(60, informerProc, listenerProc)
 
             self.__logger.info("waiting finished for listener = %s and informer = %s, listenerStauts = %s, informerStatus = %s" % (listenerLang, informerLang, listenerStatus, informerStatus))
 
@@ -161,7 +161,7 @@ class IntegrationTest(unittest.TestCase):
             time.sleep(1) # TODO proper waiting
             clientProc = self.startProcess(clientLang, "client")
 
-            codes = self.waitForProcesses(clientProc, serverProc, timeout = 5)
+            codes = self.waitForProcesses(5, clientProc, serverProc, timeout)
             if None in codes:
                 self.__logger.info("Timeout")
                 self.killProcesses(serverProc, clientProc)
