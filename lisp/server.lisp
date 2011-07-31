@@ -18,7 +18,7 @@
 (defun terminate-wait ()
   (bt:with-lock-held ((first *terminate*))
     (iter (until (third *terminate*))
-	  (bt:condition-wait (second *terminate*)))))
+	  (bt:condition-wait (second *terminate*) (first *terminate*)))))
 
 (defun terminate-notify ()
   (bt:with-lock-held ((first *terminate*))
