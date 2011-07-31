@@ -44,16 +44,18 @@ if __name__ == '__main__':
     
     def echo(x):
         print('[Python Server] "echo" method called')
+        return x
     localServer.addMethod('echo', echo, str, str)
     
-    def error():
+    def error(x):
         print('[Python Server] "error" method called')
         raise RuntimeError, "intentional error"
     localServer.addMethod('error', error, str, str)
 
-    def _terminate():
+    def _terminate(x):
         print('[Python Server] "terminate" method called')
         terminateNotify()
+        return ''
     localServer.addMethod('terminate', _terminate, str, str)
     
     terminateWait()
