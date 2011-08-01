@@ -5,30 +5,47 @@ import rsb.InitializeException;
 import rsb.Scope;
 import rsb.Factory;
 
+import rsb.patterns.RemoteServer;
+
 public class client {
 
     public static void main(String[] args) throws Throwable {
 
 	Scope scope = new Scope("/rsbtest/clientserver");
 
-	System.err.println("[Java   Client] Communication with remote server at " + scope);
+	System.out.println("[Java   Client] Communication with remote server at " + scope);
 
-	//try {
-	    /*RemoteServer s = Factory.getInstance().createRemoteServer(scope);
-	    s.activate();
+	try {
+	    RemoteServer server = Factory.getInstance().createRemoteServer(scope);
+	    server.activate();
 
-	    // TODO
+	    // Call "echo" method.
+	    System.out.println("[Java   Client] calling \"echo\" method");
+	    //assert(server.call<String, String>("echo", "bla") == "bla");
 
-	    s.deactivate();*/
+	    // Call "error" method.
+	    System.out.println("[Java   Client] calling \"error\" method");
+	    boolean error = false;
+	    try {
+		//server.call<String, String>("echo", "error");
+		error = true;
+	    } catch (Throwable t) {
+	    }
+	    assert(error);
 
-	    Thread.sleep(1000);
+	    // Call "terminate" method.
+	    System.out.println("[Java   Client] calling \"terminate\" method");
+	    //server.call<String, String>("terminate", "");
 
-	    /*} catch (InitializeException e) {
+	    server.deactivate();
+
+	    throw new InitializeException(); // TODO will be thrown for real later
+	} catch (InitializeException e) {
 	    e.printStackTrace();
 	    System.exit(1);
-	    }*/
+	}
 
-	System.err.println("[Java   Client] done!");
+	System.out.println("[Java   Client] done!");
     }
 
 }
