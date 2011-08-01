@@ -24,20 +24,23 @@ import rsb.patterns
 if __name__ == '__main__':
 
     scope = rsb.Scope('/rsbtest/clientserver')
-    print('[Python Client] Communicating to server at scope %s' % scope)
+    print '[Python Client] Communicating with server at scope %s' % scope
 
     remoteServer = rsb.patterns.RemoteServer(scope)
 
+    print '[Python Client] calling method "echo"'
     assert(remoteServer.echo('bla') == 'bla')
 
+    print '[Python Client] calling method "error"'
     try:
         remoteServer.error('does not matter')
         sys.exit(1)
     except:
         pass
 
+    print '[Python Client] calling method "terminate"'
     remoteServer.terminate('')
 
-    print('[Python Client] done!')
+    print '[Python Client] done!'
 
     remoteServer.deactivate()

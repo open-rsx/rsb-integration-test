@@ -16,6 +16,7 @@
 #
 # ============================================================
 
+import time
 import threading
 
 import rsb
@@ -26,11 +27,13 @@ lock      = threading.Lock()
 condition = threading.Condition(lock = lock)
 
 def terminateWait():
+    global terminate
     with lock:
         while not terminate:
             condition.wait()
 
 def terminateNotify():
+    global terminate
     with lock:
         terminate = True
         condition.notify()
@@ -38,28 +41,29 @@ def terminateNotify():
 if __name__ == '__main__':
 
     scope = rsb.Scope('/rsbtest/clientserver')
-    print('[Python Server] Providing service at scope %s' % scope)
+    print '[Python Server] Providing service at scope %s' % scope
 
     localServer = rsb.patterns.LocalServer(scope)
-    
+
     def echo(x):
-        print('[Python Server] "echo" method called')
+        print '[Python Server] "echo" method called'
         return x
     localServer.addMethod('echo', echo, str, str)
-    
+
     def error(x):
-        print('[Python Server] "error" method called')
+        print '[Python Server] "error" method called'
         raise RuntimeError, "intentional error"
     localServer.addMethod('error', error, str, str)
 
     def _terminate(x):
-        print('[Python Server] "terminate" method called')
+        print '[Python Server] "terminate" method called'
         terminateNotify()
         return ''
     localServer.addMethod('terminate', _terminate, str, str)
-    
+
     terminateWait()
-    
-    print('[Python Server] done!')
+    time.sleep(1) # give the terminate call time to complete
+
+    print '[Python Server] done!'
 
     localServer.deactivate()
