@@ -24,7 +24,6 @@
   (format t "[Lisp   Client] Communicating with remote server at ~A~%"
 	  *client/server-test-uri*)
 
-  #+later
   (rsb.patterns:with-remote-server (server *client/server-test-uri*)
     ;; Test echo method.
     (assert (string= (rsb.patterns:call server "echo" "bla") "bla"))

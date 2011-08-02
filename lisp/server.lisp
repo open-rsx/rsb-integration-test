@@ -38,7 +38,6 @@
   (format t "[Lisp   Server] Providing service on ~A~%"
 	  *client/server-test-uri*)
 
-  #+later
   (rsb.patterns:with-local-server (server *client/server-test-uri*)
     (rsb.patterns:with-methods (server)
 	(("echo" (request string)
