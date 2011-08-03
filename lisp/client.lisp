@@ -12,6 +12,7 @@
 (defvar *client/server-test-uri* "spread:/rsbtest/clientserver")
 
 (defun main ()
+  (setf rsb:*default-configuration* (rsb:options-from-default-sources))
   (make-synopsis
    :item (make-flag    :long-name   "help"
 		       :description "Display help text.")
@@ -37,7 +38,7 @@
 	(error "~@<Method did not signal.~@:>")))
 
     ;; Ask server to terminate.
-    (rsb.patterns:call server "terminate"))
+    (rsb.patterns:call server "terminate" "does not matter"))
 
   (format t "[Lisp   Client] Done!~%"))
 

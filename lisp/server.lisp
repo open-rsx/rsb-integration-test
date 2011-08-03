@@ -26,6 +26,7 @@
     (bt:condition-notify (second *terminate*))))
 
 (defun main ()
+  (setf rsb:*default-configuration* (rsb:options-from-default-sources))
   (make-synopsis
    :item (make-flag    :long-name   "help"
 		       :description "Display help text.")
@@ -44,9 +45,11 @@
 	   (format t "[Lisp    Server] \"echo\" method called~%")
 	   request)
 	 ("error" (request string)
+	   (declare (ignore request))
 	   (format t "[Lisp    Server] \"error\" method called~%")
 	   (error "intentional error"))
 	 ("terminate" (request string)
+	   (declare (ignore request))
 	   (format t "[Lisp    Server] \"terminate\" method called~%")
 	   (terminate-notify)))
       (terminate-wait)))
