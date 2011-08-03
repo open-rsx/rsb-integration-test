@@ -32,7 +32,7 @@ public class informer {
                 }
                 String data = builder.toString();
 
-                Event event = new Event(scope, "String", data);
+                Event event = new Event(scope, String.class, data);
                 MetaData metaData = event.getMetaData();
                 metaData.setUserInfo("informer-lang", "Java");
                 metaData.setUserTime("informer-start", startTime);
