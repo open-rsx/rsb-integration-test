@@ -53,7 +53,7 @@ public:
     TerminateCallback():
         done(false) {
     }
-    
+
     shared_ptr<string> call(const string &/*methodName*/,
                             shared_ptr<string> /*request*/) {
         cout << "[C++    Server] terminate method called" << endl;
@@ -76,7 +76,7 @@ private:
 };
 
 int main(int /*argc*/, char */*argv*/[]) {
-  
+
     Scope scope("/rsbtest/clientserver");
     cout << "[C++    Server] Providing service on " << scope << endl;
 

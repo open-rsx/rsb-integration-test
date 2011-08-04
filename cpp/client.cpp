@@ -36,11 +36,13 @@ int main(int /*argc*/, char */*argv*/[]) {
     RemoteServerPtr remoteServer = factory.createRemoteServer(scope);
 
     // Call a regular method.
+    cout << "[C++    Client] calling \"echo\" method" << endl;
     assert(*remoteServer->call<string>("echo",
                                       shared_ptr<string>(new string("ping")))
            == "ping");
 
     // Exercise exception mechanism.
+    cout << "[C++    Client] calling \"error\" method" << endl;
     try {
         remoteServer->call<string>("error",
                                    shared_ptr<string>(new string("")));
@@ -50,6 +52,7 @@ int main(int /*argc*/, char */*argv*/[]) {
     }
 
     // Ask the remote server to terminate
+    cout << "[C++    Client] calling \"terminate\" method" << endl;
     remoteServer->call<string>("terminate",
                                shared_ptr<string>(new string("")));
 
