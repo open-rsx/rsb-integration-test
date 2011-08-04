@@ -35,4 +35,4 @@
 		  origin sequence-number (rsb:event-id event) expected)
 	  (assert (rsb::uuid= (rsb:event-id event) expected)))))
 
-(dump "event-id" main)
+(dump "event_id" main)
