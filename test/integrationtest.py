@@ -124,7 +124,8 @@ class IntegrationTest(unittest.TestCase):
             listenerProc = self.startProcess(listenerLang, "listener")
             waitStart = time.time()
             while not os.path.exists(waitFile):
-                if time.time() > waitStart + 20:
+                if time.time() > waitStart + 5:
+                    self.killProcesses(listenerProc)
                     self.fail("Timeout while waiting for %s listener to start" % listenerLang)
                 time.sleep(0.2)
             os.remove(waitFile)
@@ -161,7 +162,7 @@ class IntegrationTest(unittest.TestCase):
             time.sleep(1) # TODO proper waiting
             clientProc = self.startProcess(clientLang, "client")
 
-            codes = self.waitForProcesses(5, clientProc, serverProc)
+            codes = self.waitForProcesses(10, clientProc, serverProc)
             if None in codes:
                 self.__logger.info("Timeout")
                 self.killProcesses(serverProc, clientProc)
@@ -197,6 +198,17 @@ class IntegrationTest(unittest.TestCase):
                 'testConfiguration' + lang.capitalize(),
                 testFunc)
 
+    @classmethod
+    def addEventIdTest(clazz, lang):
+        def testFunc(self):
+            configProc = self.startProcess(lang, 'event_id')
+            if configProc.wait() != 0:
+                self.fail('Event id generation test return non-zero exit code')
+        setattr(clazz,
+                'testEventIdGeneration' + lang.capitalize(),
+                testFunc)
+
+
 def run():
     # Setup logging
     logging.basicConfig()
@@ -230,6 +242,10 @@ def run():
 
     # Add a test method for the configuration test for each language.
     map(IntegrationTest.addParserTest, languages)
+
+    # Add a test method for the event id generation mechanism for each
+    # language.
+    map(IntegrationTest.addEventIdTest, languages)
 
     # Add a test method for the listener/informer communication test
     # for each pair of languages.

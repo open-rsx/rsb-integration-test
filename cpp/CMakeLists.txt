@@ -1,4 +1,4 @@
-SET(PROGRAMS config.cpp
+SET(PROGRAMS config.cpp event_id.cpp
              informer.cpp listener.cpp
 	     server.cpp   client.cpp)
 
