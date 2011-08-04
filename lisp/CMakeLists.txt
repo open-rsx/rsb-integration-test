@@ -1,5 +1,10 @@
 FILE(GLOB SCRIPTS "*.lisp")
 
+# Processor Architectur
+EXECUTE_PROCESS(OUTPUT_VARIABLE SYSTEM_MACHINE
+                COMMAND uname --machine
+		OUTPUT_STRIP_TRAILING_WHITESPACE)
+
 # Find and check SBCL installation.
 SET(SBCL_HOME $ENV{SBCL_HOME})
 IF(NOT SBCL_HOME)
@@ -15,7 +20,7 @@ STRING(REPLACE "SBCL " "" SBCL_VERSION ${SBCL_VERSION})
 
 # Configure ASDF.
 SET(CL_SOURCE_REGISTRY "${CMAKE_CURRENT_SOURCE_DIR}//:")
-SET(ASDF_OUTPUT_TRANSLATIONS "(:output-translations (t \\\"/tmp/fasl-cache-${SBCL_VERSION}-RSBIntegrationTest\\\") :ignore-inherited-configuration)")
+SET(ASDF_OUTPUT_TRANSLATIONS "(:output-translations (t \\\"/tmp/fasl-cache-${SBCL_VERSION}-${SYSTEM_MACHINE}-rsb-integrationtest\\\") :ignore-inherited-configuration)")
 
 # Create images.
 SET(IMAGES)
