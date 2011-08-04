@@ -27,17 +27,20 @@
 
   (rsb.patterns:with-remote-server (server *client/server-test-uri*)
     ;; Test echo method.
+    (format t "[Lisp   Client] calling \"echo\" method~%")
     (assert (string= (rsb.patterns:call server "echo" "bla") "bla"))
 
     ;; Test error-producing method.
-    (let (signaled?)
+    (format t "[Lisp   Client] calling \"error\" method~%")
+    (let ((signaled? t))
       (ignore-errors
 	(rsb.patterns:call server "error" "does not matter")
-	(setf signaled? t))
+	(setf signaled? nil))
       (unless signaled?
 	(error "~@<Method did not signal.~@:>")))
 
     ;; Ask server to terminate.
+    (format t "[Lisp   Client] calling \"terminate\" method~%")
     (rsb.patterns:call server "terminate" "does not matter"))
 
   (format t "[Lisp   Client] Done!~%"))
