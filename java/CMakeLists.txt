@@ -22,7 +22,7 @@ IF(NOT RSB_JAVA_LIBRARY)
 ENDIF()
 
 SET(CONFIGURE_FILES build.xml
-                    config.sh
+                    config.sh event_id.sh
                     listener.sh informer.sh
 		    client.sh   server.sh)
 FOREACH(FILE ${CONFIGURE_FILES})
@@ -31,7 +31,7 @@ FOREACH(FILE ${CONFIGURE_FILES})
 		   @ONLY)
 ENDFOREACH()
 
-SET(JAVA_FILES config.java
+SET(JAVA_FILES config.java event_id.java
                listener.java informer.java
 	       client.java   server.java)
 ADD_CUSTOM_COMMAND(OUTPUT  ${JAR_FILE}
