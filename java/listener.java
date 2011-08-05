@@ -13,10 +13,11 @@ import rsb.Factory;
 import rsb.Listener;
 import rsb.transport.TransportFactory;
 import rsb.Scope;
+import rsb.AbstractDataHandler;
 
 public class listener {
 
-	private static class DataHandler<T> extends rsb.DataHandler<T> implements
+	private static class DataHandler<T> extends AbstractDataHandler<T> implements
 			Runnable {
 		public DataHandler(Scope scope, int size, int expected)
 				throws Throwable {
@@ -32,7 +33,7 @@ public class listener {
 		@Override
 		public void handleEvent(T data) {
 			if (this.count++ % 30 == 0) {
-				System.out.println("[Java  Listener] Scope " + scope
+				System.out.println("[Java   Listener] Scope " + scope
 						+ ": received " + this.count + "/" + this.expected
 						+ ": " + ((String) data).length() + " bytes");
 			}
@@ -84,7 +85,7 @@ public class listener {
 					listeners.add(thread);
 					Thread.sleep(1);
 				} catch (java.lang.Throwable e) {
-					System.err.println("[Java Listener] Failure for size "
+					System.err.println("[Java   Listener] Failure for size "
 							+ size + ": " + e);
 					System.exit(1);
 				}
@@ -94,9 +95,9 @@ public class listener {
 		try {
 			File file = new File("test/java-listener-ready");
 			file.createNewFile();
-			System.err.println("[Java Listener] Created marker file.");
+			System.err.println("[Java   Listener] Created marker file.");
 		} catch (IOException e) {
-			System.err.println("[Java Listener] Could not create marker file.");
+			System.err.println("[Java   Listener] Could not create marker file.");
 			System.exit(1);
 		}
 
@@ -105,11 +106,11 @@ public class listener {
 				listener.join();
 			} catch (InterruptedException e) {
 				System.err
-						.println("[Java Listener] Interrupted while waiting for thread.");
+						.println("[Java   Listener] Interrupted while waiting for thread.");
 				System.exit(1);
 			}
 		}
-		System.err.println("[Java Listener] done!");
+		System.err.println("[Java   Listener] done!");
 	}
 
 }
