@@ -51,7 +51,8 @@
 	 ("terminate" (request string)
 	   (declare (ignore request))
 	   (format t "[Lisp   Server] \"terminate\" method called~%")
-	   (terminate-notify)))
+	   (terminate-notify)
+	   "")) ;; ensure valid reply
       (terminate-wait)))
 
   (format t "[Lisp   Server] done!~%"))
