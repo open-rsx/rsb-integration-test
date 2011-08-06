@@ -36,27 +36,30 @@ int main(int /*argc*/, char */*argv*/[]) {
     RemoteServerPtr remoteServer = factory.createRemoteServer(scope);
 
     // Call a regular method.
-    cout << "[C++    Client] calling \"echo\" method" << endl;
-    assert(*remoteServer->call<string>("echo",
-                                      shared_ptr<string>(new string("ping")))
-           == "ping");
+    cout << "[C++    Client] Calling \"echo\" method" << endl;
+    {
+        shared_ptr<string> request(new string("ping"));
+        assert(*remoteServer->callAndWait<string>("echo", request)
+               == "ping");
+    }
 
     // Exercise exception mechanism.
-    cout << "[C++    Client] calling \"error\" method" << endl;
+    cout << "[C++    Client] Calling \"error\" method" << endl;
     try {
-        remoteServer->call<string>("error",
-                                   shared_ptr<string>(new string("")));
-        cout << "[C++    Client] call to error method did not produce an exception" << endl;
+        shared_ptr<string> request(new string(""));
+        remoteServer->callAndWait<string>("error", request);
+        cout << "[C++    Client] Call to error method did not produce an exception" << endl;
         return -1;
     } catch (const std::exception &) {
     }
 
     // Ask the remote server to terminate
-    cout << "[C++    Client] calling \"terminate\" method" << endl;
-    remoteServer->call<string>("terminate",
-                               shared_ptr<string>(new string("")));
-
-    cout << "[C++    Client] done! " << endl;
+    cout << "[C++    Client] Calling \"terminate\" method" << endl;
+    {
+        shared_ptr<string> request(new string(""));
+        remoteServer->callAndWait<string>("terminate", request);
+    }
+    cout << "[C++    Client] Done! " << endl;
 
     return EXIT_SUCCESS;
 }
