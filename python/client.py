@@ -29,17 +29,17 @@ if __name__ == '__main__':
     remoteServer = rsb.patterns.RemoteServer(scope)
 
     print '[Python Client] calling method "echo"'
-    assert(remoteServer.echo('bla') == 'bla')
+    assert(remoteServer.echo('bla').get() == 'bla')
 
     print '[Python Client] calling method "error"'
     try:
-        remoteServer.error('does not matter')
+        remoteServer.error('does not matter').get()
         sys.exit(1)
     except:
         pass
 
     print '[Python Client] calling method "terminate"'
-    remoteServer.terminate('')
+    remoteServer.terminate('').get()
 
     print '[Python Client] done!'
 
