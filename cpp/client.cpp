@@ -39,7 +39,7 @@ int main(int /*argc*/, char */*argv*/[]) {
     cout << "[C++    Client] Calling \"echo\" method" << endl;
     {
         shared_ptr<string> request(new string("ping"));
-        assert(*remoteServer->callAndWait<string>("echo", request)
+        assert(*remoteServer->call<string>("echo", request)
                == "ping");
     }
 
@@ -47,7 +47,7 @@ int main(int /*argc*/, char */*argv*/[]) {
     cout << "[C++    Client] Calling \"error\" method" << endl;
     try {
         shared_ptr<string> request(new string(""));
-        remoteServer->callAndWait<string>("error", request);
+        remoteServer->call<string>("error", request);
         cout << "[C++    Client] Call to error method did not produce an exception" << endl;
         return -1;
     } catch (const std::exception &) {
@@ -57,7 +57,7 @@ int main(int /*argc*/, char */*argv*/[]) {
     cout << "[C++    Client] Calling \"terminate\" method" << endl;
     {
         shared_ptr<string> request(new string(""));
-        remoteServer->callAndWait<string>("terminate", request);
+        remoteServer->call<string>("terminate", request);
     }
     cout << "[C++    Client] Done! " << endl;
 
