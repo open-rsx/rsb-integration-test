@@ -1,10 +1,6 @@
-import java.lang.Throwable;
-import java.lang.Thread;
-
+import rsb.Factory;
 import rsb.InitializeException;
 import rsb.Scope;
-import rsb.Factory;
-
 import rsb.patterns.RemoteServer;
 
 public class client {
@@ -20,26 +16,29 @@ public class client {
 	    server.activate();
 
 	    // Call "echo" method.
-	    System.out.println("[Java   Client] Calling \"echo\" method");
-	    //assert(server.call<String, String>("echo", "ping from Java") == "ping from Java");
+	    System.out.println("[Java   Client] Calling \"echo\" method"); 
+	    String result = server.call("echo", "ping from Java");
+	    if (!result.equals("ping from Java")) {
+	    	System.exit(1);
+	    }
 
 	    // Call "error" method.
 	    System.out.println("[Java   Client] Calling \"error\" method");
 	    boolean error = false;
 	    try {
-		//server.call<String, String>("error", "does not matter");
+	        result = server.call("error", "no sense"); 	
 		error = false;
 	    } catch (Throwable t) {
 		error = true;
 	    }
-	    assert(error);
+	    if (!error) {
+	    	System.exit(1);
+	    }
 
 	    // Call "terminate" method.
 	    System.out.println("[Java   Client] Calling \"terminate\" method");
-	    //server.call<String, String>("terminate", "");
-
+	    result = server.call("terminate", "no sense"); 
 	    server.deactivate();
-	    throw new InitializeException(); // TODO will be thrown for real later
 	} catch (InitializeException e) {
 	    e.printStackTrace();
 	    System.exit(1);
