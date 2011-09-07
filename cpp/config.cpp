@@ -69,10 +69,10 @@ int main(int argc, char* argv[]) {
 
 	ParticipantConfig::Transport spread = config.getTransport("spread");
 	out << "transport.inprocess.enabled: " << '0' << endl;
-	out << "transport.spread.host: "
-			<< spread.getOptions().get<string> ("host") << endl;
-	out << "transport.spread.port: "
-			<< spread.getOptions().get<string> ("port") << endl;
+	out << "transport.spread.host: " << spread.getOptions().get < string
+			> ("host") << endl;
+	out << "transport.spread.port: " << spread.getOptions().get < string
+			> ("port") << endl;
 	out << "transport.spread.enabled: " << spread.isEnabled() << endl;
 
 	ParticipantConfig::Transport::ConverterNames names = spread.getConverters();

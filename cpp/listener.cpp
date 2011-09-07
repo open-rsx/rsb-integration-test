@@ -47,17 +47,20 @@ using namespace rsb::filter;
 class MyDataHandler: public DataFunctionHandler<string> {
 public:
 	MyDataHandler(const Scope &scope, unsigned int size, long expected) :
-		DataFunctionHandler<string> (boost::bind(&MyDataHandler::handle, this,
-				_1)), scope(scope), size(size), count(0), expected(expected) {
+			DataFunctionHandler<string>(
+					boost::bind(&MyDataHandler::handle, this, _1)), scope(
+					scope), size(size), count(0), expected(expected) {
 	}
 
 	void handle(boost::shared_ptr<string> e) {
 		assert(e->size() == this->size);
 
 		if ((count++ % 30) == 0)
-			cout << (format(
-					"[C++    Listener] %1%: Event %2%/%3% received: %4%")
-					% this->scope % this->count % this->expected % e) << endl;
+			cout
+					<< (format(
+							"[C++    Listener] %1%: Event %2%/%3% received: %4%")
+							% this->scope % this->count % this->expected % e)
+					<< endl;
 
 		if (isDone()) {
 			boost::recursive_mutex::scoped_lock lock(m);
@@ -94,28 +97,28 @@ int main(void) {
 	sizes.push_back(4);
 	sizes.push_back(256);
 	sizes.push_back(400000);
-	for (vector<int>::const_iterator it = sizes.begin(); it != sizes.end(); ++it) {
+	for (vector<int>::const_iterator it = sizes.begin(); it != sizes.end();
+			++it) {
 		Scope scope(str(format("/size%1%/sub1/sub2") % *it));
 		vector < Scope > scopes = scope.superScopes(true);
-		for (vector<Scope>::const_iterator it_ = scopes.begin() + 1; it_
-				!= scopes.end(); ++it_) {
+		for (vector<Scope>::const_iterator it_ = scopes.begin() + 1;
+				it_ != scopes.end(); ++it_) {
 			listeners.push_back(factory.createListener(*it_));
-			handlers.push_back(MyDataHandlerPtr(new MyDataHandler(*it_, *it,
-					120)));
+			handlers.push_back(
+					MyDataHandlerPtr(new MyDataHandler(*it_, *it, 120)));
 			listeners.back()->addHandler(handlers.back());
 		}
 	}
 
-	cout
-			<< "[C++    Listener] Listener setup finished. Waiting for messages..."
+	cout << "[C++    Listener] Listener setup finished. Waiting for messages..."
 			<< endl;
 	{
-	    ofstream stream("test/cpp-listener-ready");
+		ofstream stream("test/cpp-listener-ready");
 	}
 
 	// wait *here* for shutdown as this is not known to the Subscriber
-	for (vector<MyDataHandlerPtr>::const_iterator it = handlers.begin(); it
-			!= handlers.end(); ++it) {
+	for (vector<MyDataHandlerPtr>::const_iterator it = handlers.begin();
+			it != handlers.end(); ++it) {
 		MyDataHandlerPtr handler = *it;
 		boost::recursive_mutex::scoped_lock lock(handler->m);
 		while (!handler->isDone()) {

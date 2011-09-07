@@ -39,39 +39,42 @@ using namespace rsc::misc;
 using namespace rsb;
 
 int main(int argc, char *argv[]) {
-    if (argc != 3) {
-        return EXIT_FAILURE;
-    }
-    int listenerPid = lexical_cast<int>(argv[2]);
-
-    LoggerPtr l = Logger::getLogger("informer");
-
-    Factory &factory = Factory::getInstance();
-
-    uint64_t start  = currentTimeMicros();
-
-    boost::timer t;
-
-    vector<int> sizes;
-    sizes.push_back(4);
-    sizes.push_back(256);
-    sizes.push_back(400000);
-    for (vector<int>::const_iterator it = sizes.begin(); it != sizes.end(); ++it) {
-	Scope scope(str(format("/size%1%/sub1/sub2") % *it));
-	cout << "[C++    Informer] processing scope " << scope << endl;
-	Informer<string>::Ptr informer = factory.createInformer<string> (scope);
-	Informer<string>::DataPtr s(new string(*it, 'c'));
-        EventPtr event(new Event(scope, s, "std::string"));
-	event->mutableMetaData().setUserInfo("informer-lang", "cpp");
-	event->mutableMetaData().setUserTime("informer-start", start);
-	for (int j = 0; j < 120; j++) {
-	    event->mutableMetaData().setUserInfo("index", lexical_cast<string>(listenerPid + j));
-	    informer->publish(event);
+	if (argc != 3) {
+		return EXIT_FAILURE;
 	}
-    }
-    cout << "[C++    Informer] Elapsed time sending messages: " << t.elapsed()
-	 << " s" << endl;
+	int listenerPid = lexical_cast<int>(argv[2]);
 
-    return EXIT_SUCCESS;
+	LoggerPtr l = Logger::getLogger("informer");
+
+	Factory &factory = Factory::getInstance();
+
+	uint64_t start = currentTimeMicros();
+
+	boost::timer t;
+
+	vector<int> sizes;
+	sizes.push_back(4);
+	sizes.push_back(256);
+	sizes.push_back(400000);
+	for (vector<int>::const_iterator it = sizes.begin(); it != sizes.end();
+			++it) {
+		Scope scope(str(format("/size%1%/sub1/sub2") % *it));
+		cout << "[C++    Informer] processing scope " << scope << endl;
+		Informer<string>::Ptr informer = factory.createInformer < string
+				> (scope);
+		Informer<string>::DataPtr s(new string(*it, 'c'));
+		EventPtr event(new Event(scope, s, "std::string"));
+		event->mutableMetaData().setUserInfo("informer-lang", "cpp");
+		event->mutableMetaData().setUserTime("informer-start", start);
+		for (int j = 0; j < 120; j++) {
+			event->mutableMetaData().setUserInfo("index",
+					lexical_cast<string>(listenerPid + j));
+			informer->publish(event);
+		}
+	}
+	cout << "[C++    Informer] Elapsed time sending messages: " << t.elapsed()
+			<< " s" << endl;
+
+	return EXIT_SUCCESS;
 
 }
