@@ -28,8 +28,9 @@ using namespace std;
 using namespace rsb;
 
 int main(int argc, char* argv[]) {
-	if (argc != 3)
+	if (argc != 3) {
 		return EXIT_FAILURE;
+	}
 
 	ParticipantConfig config = ParticipantConfig::fromFile(argv[1]);
 	ofstream out(argv[2]);
