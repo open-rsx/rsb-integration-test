@@ -55,12 +55,13 @@ public:
 	void handle(boost::shared_ptr<string> e) {
 		assert(e->size() == this->size);
 
-		if ((count++ % 30) == 0)
+		if ((count++ % 30) == 0) {
 			cout
 					<< (format(
 							"[C++    Listener] %1%: Event %2%/%3% received: %4%")
 							% this->scope % this->count % this->expected % e)
 					<< endl;
+		}
 
 		if (isDone()) {
 			boost::recursive_mutex::scoped_lock lock(m);
