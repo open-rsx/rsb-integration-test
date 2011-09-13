@@ -229,6 +229,10 @@ def run():
         content = template.read().replace('@PORT@', str(options.port))
     with open("test/spread.conf", "w") as config:
         config.write(content)
+        
+    langs = languages
+    if len(args) > 0:
+        langs = args
 
     spreadExecutable = find_executable("spread")
     if options.spread:
@@ -241,21 +245,21 @@ def run():
     os.environ['RSB_TRANSPORT_SPREAD_PORT'] = str(options.port)
 
     # Add a test method for the configuration test for each language.
-    map(IntegrationTest.addParserTest, languages)
+    map(IntegrationTest.addParserTest, langs)
 
     # Add a test method for the event id generation mechanism for each
     # language.
-    map(IntegrationTest.addEventIdTest, languages)
+    map(IntegrationTest.addEventIdTest, langs)
 
     # Add a test method for the listener/informer communication test
     # for each pair of languages.
     map(lambda x: IntegrationTest.addListenerInformerPair(*x),
-        itertools.product(languages, languages))
+        itertools.product(langs, langs))
 
     # Add a test method for the client/server communication test for
     # each pair of languages.
     map(lambda x: IntegrationTest.addClientServerPair(*x),
-        itertools.product(languages, languages))
+        itertools.product(langs, langs))
 
     # Execute the generated test suite.
     xmlrunner.XMLTestRunner(output='test-reports').run(unittest.TestLoader().loadTestsFromTestCase(IntegrationTest))
