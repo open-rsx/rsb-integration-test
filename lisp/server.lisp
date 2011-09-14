@@ -11,6 +11,9 @@
 
 (defvar *client/server-test-uri* "spread:/rsbtest/clientserver")
 
+(deftype cookie-type ()
+  'non-negative-integer)
+
 (defvar *cookie* nil
   "Contains the magic number we expect to receive from the
 client. This is intended to protect against crosstalk between test
@@ -37,7 +40,7 @@ cases.")
    :item (make-flag    :long-name     "help"
 		       :description   "Display help text.")
    :item (make-lispobj :long-name     "cookie"
-		       :typespec      'positive-integer
+		       :typespec      'cookie-type
 		       :default-value 0
 		       :description   "A cookie for verification in \"ping\" method call.")
    :item (rsb:make-options))
@@ -52,7 +55,7 @@ cases.")
 
   (rsb.patterns:with-local-server (server *client/server-test-uri*)
     (rsb.patterns:with-methods (server)
-	(("ping" (request positive-integer)
+	(("ping" (request cookie-type)
 	   (format t "[Lisp   Server] \"ping\" method called with request ~A~%"
 		   request)
 	   (assert (= request *cookie*))
@@ -62,7 +65,7 @@ cases.")
 	   (format t "[Lisp   Server] \"echo\" method called~%")
 	   request)
 
-	 ("addone" (request positive-integer)
+	 ("addone" (request non-negative-integer)
 	   (when (zerop request)
 	     (format t "[Lisp   Server] \"addone\" method called (for 0)~%"))
 	   (1+ request))
