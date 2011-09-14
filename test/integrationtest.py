@@ -22,6 +22,7 @@ import subprocess
 import os
 import time
 import itertools
+import random
 
 from distutils.spawn import find_executable
 from optparse import OptionParser
@@ -47,6 +48,8 @@ binaryExtensions = {LANG_CPP: "",
                     LANG_JAVA: ".sh",
                     LANG_PYTHON: ".py",
                     LANG_LISP: ""}
+
+tests = [ "parser", "id", "pubsub", "rpc" ]
 
 values= {LANG_CPP:    {'true':       '1',
                        'false':      '0',
@@ -158,9 +161,12 @@ class IntegrationTest(unittest.TestCase):
     @classmethod
     def addClientServerPair(clazz, clientLang, serverLang):
         def testFunc(self):
-            serverProc = self.startProcess(serverLang, "server")
+            cookie = str(random.randint(0, 1 << 31))
+            serverProc = self.startProcess(serverLang, "server",
+                                           "--cookie", cookie)
             time.sleep(1) # TODO proper waiting
-            clientProc = self.startProcess(clientLang, "client")
+            clientProc = self.startProcess(clientLang, "client",
+                                           "--cookie", cookie)
 
             codes = self.waitForProcesses(10, clientProc, serverProc)
             if None in codes:
@@ -215,24 +221,41 @@ def run():
     logging.getLogger().setLevel(logging.DEBUG)
 
     # Commandline options
-    parser = OptionParser()
-    parser.add_option("-s", "--spread", dest="spread", help="spread executable", metavar="executable")
+    parser = OptionParser(usage = ("usage: %%prog [OPTIONS] [LANG1 [LANG2 [...]]]\nwhere LANGN in %s"
+                                   % languages))
+    parser.add_option("-s", "--spread",
+                      dest    = "spread",
+                      metavar = "EXECUTABLE",
+                      help    = "spread executable")
     parser.add_option("-p", "--spread-port",
                       dest    = "port",
                       type    = int,
                       default = 4545,
                       help    = "Number of the port that the Spread daemon should use.")
+    parser.add_option("-t", "--test",
+                      dest    = "tests",
+                      action  = "append",
+                      metavar = "CATEGORY",
+                      help    = ("Test categories that should be executed. Can be supplied multiple times. Valid categories are: %s"
+                                 % tests))
     (options, args) = parser.parse_args()
+
+    # Restrict languages to specified ones.
+    selectedLanguages = languages
+    if len(args) > 0:
+        selectedLanguages = args
+
+    # Determine tests categories to run.
+    if options.tests:
+        selectedTests = options.tests
+    else:
+        selectedTests = tests
 
     # Prepare config file and launch spread
     with open("test/spread.conf.in") as template:
         content = template.read().replace('@PORT@', str(options.port))
     with open("test/spread.conf", "w") as config:
         config.write(content)
-        
-    langs = languages
-    if len(args) > 0:
-        langs = args
 
     spreadExecutable = find_executable("spread")
     if options.spread:
@@ -245,21 +268,25 @@ def run():
     os.environ['RSB_TRANSPORT_SPREAD_PORT'] = str(options.port)
 
     # Add a test method for the configuration test for each language.
-    map(IntegrationTest.addParserTest, langs)
+    if "parser" in selectedTests:
+        map(IntegrationTest.addParserTest, selectedLanguages)
 
     # Add a test method for the event id generation mechanism for each
     # language.
-    map(IntegrationTest.addEventIdTest, langs)
+    if "id" in selectedTests:
+        map(IntegrationTest.addEventIdTest, selectedLanguages)
 
     # Add a test method for the listener/informer communication test
     # for each pair of languages.
-    map(lambda x: IntegrationTest.addListenerInformerPair(*x),
-        itertools.product(langs, langs))
+    if "pubsub" in selectedTests:
+        map(lambda x: IntegrationTest.addListenerInformerPair(*x),
+            itertools.product(selectedLanguages, selectedLanguages))
 
     # Add a test method for the client/server communication test for
     # each pair of languages.
-    map(lambda x: IntegrationTest.addClientServerPair(*x),
-        itertools.product(langs, langs))
+    if "rpc" in selectedTests:
+        map(lambda x: IntegrationTest.addClientServerPair(*x),
+            itertools.product(selectedLanguages, selectedLanguages))
 
     # Execute the generated test suite.
     xmlrunner.XMLTestRunner(output='test-reports').run(unittest.TestLoader().loadTestsFromTestCase(IntegrationTest))
