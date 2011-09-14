@@ -11,16 +11,30 @@
 
 (defvar *client/server-test-uri* "spread:/rsbtest/clientserver")
 
+(deftype cookie-type ()
+  'non-negative-integer)
+
+(defvar *cookie* nil
+  "Contains the magic number we expect to receive from the
+client. This is intended to protect against crosstalk between test
+cases.")
+
 (defun main ()
+  ;; Commandline option boilerplate.
   (setf rsb:*default-configuration* (rsb:options-from-default-sources))
   (make-synopsis
-   :item (make-flag    :long-name   "help"
-		       :description "Display help text.")
+   :item (make-flag    :long-name     "help"
+		       :description   "Display help text.")
+   :item (make-lispobj :long-name     "cookie"
+		       :typespec      'cookie-type
+		       :default-value 0
+		       :description   "A cookie that is verified by the server in the \"ping\" method call.")
    :item (rsb:make-options))
   (make-context)
   (when (getopt :long-name "help")
     (help)
     (return-from main))
+  (setf *cookie* (getopt :long-name "cookie"))
 
   (format t "[Lisp   Client] Communicating with remote server at ~A~%"
 	  *client/server-test-uri*)
