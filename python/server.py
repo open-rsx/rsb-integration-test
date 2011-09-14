@@ -18,6 +18,7 @@
 
 import time
 import threading
+import optparse
 
 import rsb
 import rsb.patterns
@@ -39,16 +40,36 @@ def terminateNotify():
         condition.notify()
 
 if __name__ == '__main__':
+    parser = optparse.OptionParser()
+    parser.add_option('--cookie',
+                      dest    = 'cookie',
+                      type    = int,
+                      default = 0,
+                      help    = 'A cookie for verification in \"ping\" method call.')
+    options, args = parser.parse_args()
+    cookie = options.cookie
 
     scope = rsb.Scope('/rsbtest/clientserver')
     print '[Python Server] Providing service at scope %s' % scope
 
     localServer = rsb.patterns.LocalServer(scope)
 
+    def ping(request):
+        print '[Python Server] "ping" method called with request %s' % request
+        assert(request == cookie)
+        return 'pong'
+    localServer.addMethod('ping', ping, int, str)
+
     def echo(x):
         print '[Python Server] "echo" method called'
         return x
     localServer.addMethod('echo', echo, str, str)
+
+    def addOne(x):
+        if x == 0:
+            print '[Python Server] "addone" method called (for 0)'
+        return x + 1
+    localServer.addMethod('addone', addOne, int, int)
 
     def error(x):
         print '[Python Server] "error" method called'
