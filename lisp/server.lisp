@@ -58,7 +58,10 @@ cases.")
 	(("ping" (request cookie-type)
 	   (format t "[Lisp   Server] \"ping\" method called with request ~A~%"
 		   request)
-	   (assert (= request *cookie*))
+	   (unless (= request *cookie*)
+	     (format *error-output* "Received cookie value ~D not equal to expected value ~D"
+		     request *cookie*)
+	     (sb-ext:quit :unix-status 1))
 	   "pong")
 
 	 ("echo" (request string)
