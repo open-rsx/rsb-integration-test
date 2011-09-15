@@ -43,7 +43,7 @@ if __name__ == '__main__':
     parser = optparse.OptionParser()
     parser.add_option('--cookie',
                       dest    = 'cookie',
-                      type    = int,
+                      type    = long,
                       default = 0,
                       help    = 'A cookie for verification in \"ping\" method call.')
     options, args = parser.parse_args()
@@ -58,7 +58,7 @@ if __name__ == '__main__':
         print '[Python Server] "ping" method called with request %s' % request
         assert(request == cookie)
         return 'pong'
-    localServer.addMethod('ping', ping, int, str)
+    localServer.addMethod('ping', ping, long, str)
 
     def echo(x):
         print '[Python Server] "echo" method called'
@@ -69,7 +69,7 @@ if __name__ == '__main__':
         if x == 0:
             print '[Python Server] "addone" method called (for 0)'
         return x + 1
-    localServer.addMethod('addone', addOne, int, int)
+    localServer.addMethod('addone', addOne, long, long)
 
     def error(x):
         print '[Python Server] "error" method called'
