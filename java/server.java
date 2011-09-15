@@ -15,68 +15,96 @@ public class server {
 
 	private boolean terminate;
 
-		public String invoke(String request) {
-			System.out.println("[Java   Server] \"terminate\" method called");
-			synchronized (this) {
-				this.terminate = true;
-				this.notify();
-			}
-			return "";
-		}
-
-		public void waitForCall() throws InterruptedException {
-			synchronized (this) {
-				while (!this.terminate) {
-					this.wait();
-				}
-			}
-		}
+	public String invoke(String request) {
+	    System.out.println("[Java   Server] \"terminate\" method called");
+	    synchronized (this) {
+		this.terminate = true;
+		this.notify();
+	    }
+	    return "";
 	}
 
-	public static void main(String[] args) throws Throwable {
+	public void waitForCall() throws InterruptedException {
+	    synchronized (this) {
+		while (!this.terminate) {
+		    this.wait();
+		}
+	    }
+	}
+    }
 
-		Scope scope = new Scope("/rsbtest/clientserver");
+    public static void main(String[] args) throws Throwable {
+	if (args.length < 2 || !args[0].equals("--cookie")) {
+	    System.err.println("Missing --cookie option");
+	    System.exit(1);
+	}
+	final Long cookie = Long.parseLong(args[1]);
 
-		System.out.println("[Java   Server] Providing service on " + scope);
+	Scope scope = new Scope("/rsbtest/clientserver");
 
-		try {
-			LocalServer s = Factory.getInstance().createLocalServer(scope);
-			s.activate();
+	System.out.println("[Java   Server] Providing service on " + scope);
 
-			// Implement and register "echo" method.
-			DataCallback<String, String> echo = new DataCallback<String, String>() {
-				public String invoke(String request) {
-					System.out
-							.println("[Java   Server] \"echo\" method called");
-					return request;
-				}
-			};
-			s.addMethod("echo", echo);
+	try {
+	    LocalServer s = Factory.getInstance().createLocalServer(scope);
+	    s.activate();
 
-			// Implement and register "error" method.
-			DataCallback<String, String> error = new DataCallback<String, String>() {
-				public String invoke(String request) throws Throwable {
-					System.out
-							.println("[Java   Server] \"error\" method called");
-					throw new Throwable("intentional error");
-				}
-			};
-			s.addMethod("error", error);
-
-			// Register "terminate" method.
-			Terminate terminate = new Terminate();
-			s.addMethod("terminate", terminate);
-
-			// Block until "terminate" method has been called.
-			terminate.waitForCall();
-
-			s.deactivate();
-		} catch (InitializeException e) {
-			e.printStackTrace();
+	    // Implement and register "ping" method.
+	    DataCallback<String, Long> ping = new DataCallback<String, Long>() {
+		public String invoke(Long request) throws Throwable {
+		    System.out.println("[Java   Server] \"ping\" method called with request " + request);
+		    if (!(request.equals(cookie))) {
+			System.err.println("Received cookie value " + request + " not equal to expected value " + cookie);
 			System.exit(1);
+		    }
+		    return "pong";
 		}
+	    };
+	    s.addMethod("ping", ping);
 
-		System.out.println("[Java   Server] Done!");
+	    // Implement and register "echo" method.
+	    DataCallback<String, String> echo = new DataCallback<String, String>() {
+		public String invoke(String request) {
+		    System.out.println("[Java   Server] \"echo\" method called");
+		    return request;
+		}
+	    };
+	    s.addMethod("echo", echo);
+
+	    // Implement and register "addone" method.
+	    DataCallback<Long, Long> addOne
+		= new DataCallback<Long, Long>() {
+		public Long invoke(Long request) throws Throwable {
+		    if (request == 0) {
+			System.out.println("[Java   Server] \"addone\" method called (for 0)");
+		    }
+		    return request + 1;
+		}
+	    };
+	    s.addMethod("addone", addOne);
+
+	    // Implement and register "error" method.
+	    DataCallback<String, String> error = new DataCallback<String, String>() {
+		public String invoke(String request) throws Throwable {
+		    System.out.println("[Java   Server] \"error\" method called");
+		    throw new Throwable("intentional error");
+		}
+	    };
+	    s.addMethod("error", error);
+
+	    // Register "terminate" method.
+	    Terminate terminate = new Terminate();
+	    s.addMethod("terminate", terminate);
+
+	    // Block until "terminate" method has been called.
+	    terminate.waitForCall();
+
+	    s.deactivate();
+	} catch (InitializeException e) {
+	    e.printStackTrace();
+	    System.exit(1);
 	}
+
+	System.out.println("[Java   Server] Done!");
+    }
 
 }
