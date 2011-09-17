@@ -118,12 +118,12 @@ int main(int argc, char *argv[]) {
         }
     }
 
-    cout << "[C++    Client] Calling \"error\" method" << endl;
+    cout << "[C++    Client] Calling \"putimage\" method" << endl;
     boost::shared_ptr<running::example::Image>
 	image(new running::example::Image());
     image->set_width(100);
     image->set_height(100);
-    image->set_data("bla");
+    image->set_data(string('a', 3 * 1024 * 1024));
     remoteServer->call<void>("putimage", image);
 
     // Exercise exception mechanism.
