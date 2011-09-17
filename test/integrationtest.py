@@ -168,7 +168,7 @@ class IntegrationTest(unittest.TestCase):
             clientProc = self.startProcess(clientLang, "client",
                                            "--cookie", cookie)
 
-            codes = self.waitForProcesses(10, clientProc, serverProc)
+            codes = self.waitForProcesses(30, clientProc, serverProc)
             if None in codes:
                 self.__logger.info("Timeout")
                 self.killProcesses(serverProc, clientProc)
