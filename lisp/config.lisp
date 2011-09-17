@@ -1,13 +1,3 @@
-(load-system :com.dvlsoft.clon)
-(load-system :cl-protobuf)
-(load-system :cl-spread)
-(load-system :cl-rsb)
-(map nil #'unintern '(for finally collect else with in)) ;; iterate bug
-
-(use-package :alexandria)
-(use-package :iter)
-(use-package :com.dvlsoft.clon)
-
 (defvar *interesting-options*
   '((:qualityofservice :reliability)
     (:qualityofservice :ordering)
@@ -23,6 +13,7 @@
     (:transport :spread :converter :lisp :utf-8-string)))
 
 (defun main ()
+  ;; Commandline option boilerplate.
   (setf rsb:*default-configuration*
 	(append '(((:transport :spread :enabled) . "1"))
 		(rsb:options-from-default-sources)))

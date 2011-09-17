@@ -1,16 +1,5 @@
-
-(load-system :sb-posix)
-(load-system :com.dvlsoft.clon)
-(load-system :cl-protobuf)
-(load-system :cl-spread)
-(load-system :cl-rsb)
-(map nil #'unintern '(for finally collect else with in)) ;; iterate bug
-
-(use-package :alexandria)
-(use-package :iter)
-(use-package :com.dvlsoft.clon)
-
 (defun main ()
+  ;; Commandline option boilerplate.
   (setf rsb:*default-configuration* (rsb:options-from-default-sources))
   (make-synopsis
    :item (make-flag    :long-name   "help"

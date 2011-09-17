@@ -1,14 +1,3 @@
-(load-system :bordeaux-threads)
-(load-system :com.dvlsoft.clon)
-(load-system :cl-protobuf)
-(load-system :cl-spread)
-(load-system :cl-rsb)
-(map nil #'unintern '(for finally collect else with in)) ;; iterate bug
-
-(use-package :alexandria)
-(use-package :iter)
-(use-package :com.dvlsoft.clon)
-
 (defun listener-for-scope (size scope)
   (bt:make-thread
    (lambda ()
@@ -22,6 +11,7 @@
 		       (rsb:participant-scope reader) i 120 event)))))))
 
 (defun main ()
+  ;; Commandline option boilerplate.
   (setf rsb:*default-configuration* (rsb:options-from-default-sources))
   (make-synopsis
    :item (make-flag :long-name   "help"
@@ -45,4 +35,4 @@
 
   (format t "[Lisp   Listener] done!~%"))
 
-(com.dvlsoft.clon:dump "listener" main)
+(dump "listener" main)

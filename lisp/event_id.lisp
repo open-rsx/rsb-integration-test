@@ -1,13 +1,3 @@
-(load-system :com.dvlsoft.clon)
-(load-system :cl-rsb)
-(map nil #'unintern '(for finally collect else with in)) ;; iterate bug
-
-(use-package :split-sequence)
-(use-package :alexandria)
-(use-package :bind)
-(use-package :iter)
-(use-package :com.dvlsoft.clon)
-
 (defun main ()
   ;; Commandline option boilerplate.
   (setf rsb:*default-configuration* (rsb:options-from-default-sources))
@@ -31,7 +21,7 @@
 					       :scope           "/"
 					       :origin          origin
 					       :sequence-number sequence-number)))
-	  (format t "~A ~8,'0X ~A [~A]~%"
+	  (format t "~(~A~) ~(~8,'0X~) => ~(~A~) [~(~A~)]~%"
 		  origin sequence-number (rsb:event-id event) expected)
 	  (assert (rsb::uuid= (rsb:event-id event) expected)))))
 
