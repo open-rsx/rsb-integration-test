@@ -21,8 +21,7 @@ ENDIF()
 
 PROTOBUF_GENERATE(JAVA JAVA_PROTO_SOURCE
                   PROTOROOT  "${CMAKE_SOURCE_DIR}/data"
-                  PROTOFILES "${CMAKE_SOURCE_DIR}/data/Image.proto"
-		  DEBUG)
+                  PROTOFILES "${CMAKE_SOURCE_DIR}/data/Image.proto")
 
 SET(CONFIGURE_FILES build.xml
                     config.sh event_id.sh
