@@ -1,4 +1,6 @@
-FILE(GLOB SCRIPTS "*.lisp")
+SET(SCRIPTS "client.lisp"   "server.lisp"
+            "informer.lisp" "listener.lisp"
+	    "config.lisp"   "event_id.lisp")
 
 # Find and check SBCL installation.
 SET(SBCL_HOME $ENV{SBCL_HOME})
@@ -14,6 +16,7 @@ IF(SBCL_HOME)
     # Create images.
     SET(IMAGES)
     FOREACH(SCRIPT ${SCRIPTS})
+        SET(SCRIPT "${CMAKE_CURRENT_SOURCE_DIR}/${SCRIPT}")
         STRING(REPLACE ".lisp" "" IMAGE ${SCRIPT})
         GET_FILENAME_COMPONENT(NAME ${IMAGE} NAME)
         CONFIGURE_FILE("${CMAKE_CURRENT_SOURCE_DIR}/sbcl.cmake.in"
@@ -21,7 +24,7 @@ IF(SBCL_HOME)
 		       @ONLY)
         ADD_CUSTOM_COMMAND(OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/${IMAGE}"
                            COMMAND ${CMAKE_COMMAND} -P "${CMAKE_CURRENT_BINARY_DIR}/sbcl.${NAME}.cmake"
-                           DEPENDS ${SCRIPT}
+                           DEPENDS "${SCRIPT}"
                            COMMENT "Creating Lisp image ${NAME} (this can take a long time)")
         LIST(APPEND IMAGES "${CMAKE_CURRENT_BINARY_DIR}/${IMAGE}")
     ENDFOREACH()
