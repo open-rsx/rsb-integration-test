@@ -1,8 +1,6 @@
-
 SET(JAR_FILE "${CMAKE_CURRENT_BINARY_DIR}/rsbintegration.jar")
 
 FIND_PROGRAM(ANT_EXECUTABLE ant)
-FIND_PACKAGE(ProtocolBuffers REQUIRED)
 IF(NOT PROTOBUF_PROTOC_EXECUTABLE)
     MESSAGE(FATAL_ERROR "protoc executable not found")
 ENDIF()
@@ -21,6 +19,11 @@ IF(NOT RSB_JAVA_LIBRARY)
     MESSAGE(SEND_ERROR "Could not find RSBJava.jar. Please define JAVA_ROOT with a folder containing the library.")
 ENDIF()
 
+PROTOBUF_GENERATE(JAVA JAVA_PROTO_SOURCE
+                  PROTOROOT  "${CMAKE_SOURCE_DIR}/data"
+                  PROTOFILES "${CMAKE_SOURCE_DIR}/data/Image.proto"
+		  DEBUG)
+
 SET(CONFIGURE_FILES build.xml
                     config.sh event_id.sh
                     listener.sh informer.sh
@@ -36,6 +39,8 @@ SET(JAVA_FILES config.java event_id.java
 	       client.java   server.java)
 ADD_CUSTOM_COMMAND(OUTPUT  ${JAR_FILE}
                    COMMAND ${ANT_EXECUTABLE} dist
-                   DEPENDS ${JAVA_FILES} "${CMAKE_CURRENT_BINARY_DIR}/build.xml"
+                   DEPENDS "${JAVA_FILES}"
+		           "${JAVA_PROTO_SOURCE}"
+		           "${CMAKE_CURRENT_BINARY_DIR}/build.xml"
                    COMMENT "Creating java jar file")
 ADD_CUSTOM_TARGET(java ALL DEPENDS ${JAR_FILE})
