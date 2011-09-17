@@ -26,6 +26,10 @@
 #include <boost/program_options.hpp>
 
 #include <rsb/Factory.h>
+#include <rsb/converter/Repository.h>
+#include <rsb/converter/ProtocolBufferConverter.h>
+
+#include <Image.pb.h>
 
 using namespace std;
 
@@ -33,6 +37,7 @@ using namespace boost;
 using namespace boost::program_options;
 
 using namespace rsb;
+using namespace rsb::converter;
 using namespace rsb::patterns;
 
 typedef boost::uint64_t IntegerType;
@@ -78,6 +83,14 @@ public:
     }
 };
 
+class PutimageCallback: public Server::Callback<running::example::Image, void> {
+public:
+    void call(const string &/*methodName*/,
+	      boost::shared_ptr<running::example::Image> /*request*/) {
+        cout << "[C++    Server] \"putimage\" method called" << endl;
+    }
+};
+
 class ErrorCallback: public Server::Callback<string, string> {
 public:
     boost::shared_ptr<string> call(const string &/*methodName*/,
@@ -115,6 +128,8 @@ private:
 };
 
 int main(int argc, char *argv[]) {
+    stringConverterRepository()->registerConverter(Converter<string>::Ptr(new ProtocolBufferConverter<running::example::Image>()));
+
     IntegerType cookie;
 
     options_description options("Allowed options");
@@ -146,6 +161,7 @@ int main(int argc, char *argv[]) {
     server->registerMethod("ping",      Server::CallbackPtr(new PingCallback(cookie)));
     server->registerMethod("echo",      Server::CallbackPtr(new EchoCallback()));
     server->registerMethod("addone",    Server::CallbackPtr(new AddOneCallback()));
+    server->registerMethod("putimage",  Server::CallbackPtr(new PutimageCallback()));
     server->registerMethod("error",     Server::CallbackPtr(new ErrorCallback()));
     server->registerMethod("terminate", terminate);
 
