@@ -2,16 +2,27 @@
 
 	<description>
         Robotics Service Bus Integration Test
-    </description>
+        </description>
 
 	<path id="classpath">
 		<pathelement location="@PROTOBUF_JAVA_LIBRARY@" />
 		<pathelement location="@RSB_JAVA_LIBRARY@" />
+		<pathelement location="@CMAKE_CURRENT_BINARY_DIR@" />
 	</path>
 
 	<target name="compile" description="compile the source ">
 		<mkdir dir="classes" />
-		<javac srcdir="@CMAKE_CURRENT_SOURCE_DIR@" destdir="classes" debug="on" deprecation="on">
+		<javac srcdir="@CMAKE_CURRENT_BINARY_DIR@"
+		       destdir="classes"
+		       debug="on"
+		       deprecation="on">
+			<compilerarg value="-Xlint" />
+			<classpath refid="classpath" />
+		</javac>
+		<javac srcdir="@CMAKE_CURRENT_SOURCE_DIR@"
+		       destdir="classes"
+		       debug="on"
+		       deprecation="on">
 			<compilerarg value="-Xlint" />
 			<classpath refid="classpath" />
 		</javac>
