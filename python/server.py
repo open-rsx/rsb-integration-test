@@ -16,6 +16,7 @@
 #
 # ============================================================
 
+import sys
 import time
 import threading
 import optparse
@@ -24,6 +25,7 @@ import rsb
 from rsb.transport.converter import registerGlobalConverter, ProtocolBufferConverter
 import rsb.patterns
 
+sys.path.append('build/python')
 from Image_pb2 import Image
 
 terminate = False
