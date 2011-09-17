@@ -21,7 +21,10 @@ import threading
 import optparse
 
 import rsb
+from rsb.transport.converter import registerGlobalConverter, ProtocolBufferConverter
 import rsb.patterns
+
+from Image_pb2 import Image
 
 terminate = False
 lock      = threading.Lock()
@@ -40,6 +43,10 @@ def terminateNotify():
         condition.notify()
 
 if __name__ == '__main__':
+    converter = ProtocolBufferConverter(messageClass = Image)
+    registerGlobalConverter(converter)
+    rsb.__defaultParticipantConfig = rsb.ParticipantConfig.fromDefaultSources()
+
     parser = optparse.OptionParser()
     parser.add_option('--cookie',
                       dest    = 'cookie',
@@ -71,6 +78,10 @@ if __name__ == '__main__':
         return x + 1
     localServer.addMethod('addone', addOne, long, long)
 
+    def putImage(x):
+        pass
+    localServer.addMethod('putimage', putImage, Image, type(None))
+
     def error(x):
         print '[Python Server] "error" method called'
         raise RuntimeError, "intentional error"
@@ -79,12 +90,11 @@ if __name__ == '__main__':
     def _terminate(x):
         print '[Python Server] "terminate" method called'
         terminateNotify()
-        return ''
-    localServer.addMethod('terminate', _terminate, str, str)
+    localServer.addMethod('terminate', _terminate, str, type(None))
 
     terminateWait()
     time.sleep(1) # give the terminate call time to complete
 
-    print '[Python Server] done!'
+    print '[Python Server] Done!'
 
     localServer.deactivate()
