@@ -20,9 +20,17 @@ import sys
 import optparse
 
 import rsb
+from rsb.transport.converter import registerGlobalConverter, ProtocolBufferConverter
 import rsb.patterns
 
+sys.path.append('build/python')
+from Image_pb2 import Image
+
 if __name__ == '__main__':
+    converter = ProtocolBufferConverter(messageClass = Image)
+    registerGlobalConverter(converter)
+    rsb.__defaultParticipantConfig = rsb.ParticipantConfig.fromDefaultSources()
+
     parser = optparse.OptionParser()
     parser.add_option('--cookie',
                       dest    = 'cookie',
@@ -37,28 +45,35 @@ if __name__ == '__main__':
 
     remoteServer = rsb.patterns.RemoteServer(scope)
 
-    print '[Python Client] calling method "ping" with request %s' % cookie
+    print '[Python Client] Calling "ping" method with request %s' % cookie
     remoteServer.ping(cookie)
 
-    print '[Python Client] calling method "echo"'
+    print '[Python Client] Calling "echo" method'
     assert(remoteServer.echo('hello from Python') == 'hello from Python')
 
-    print '[Python Client] calling "addone" method (100 times, synchronous)'
+    print '[Python Client] Calling "addone" method (100 times, synchronous)'
     assert(map(remoteServer.addone, range(100)) == range(1, 101))
 
-    print '[Python Client] calling "addone" method (100 times, asynchronous)'
+    print '[Python Client] Calling "addone" method (100 times, asynchronous)'
     assert(map(lambda x: x.get(),
                map(remoteServer.addone.async, range(100)))
            == range(1, 101))
 
-    print '[Python Client] calling method "error"'
+    print '[Python Client] Calling "putimage" method'
+    image = Image()
+    image.width  = 100
+    image.height = 100
+    image.data   = '1'*(3 * 1024 * 1024)
+    remoteServer.putimage(image)
+
+    print '[Python Client] Calling "error" method'
     try:
         remoteServer.error('does not matter')
         sys.exit(1)
     except:
         pass
 
-    print '[Python Client] calling method "terminate"'
+    print '[Python Client] Calling "terminate" method'
     remoteServer.terminate('')
 
     print '[Python Client] Done!'

@@ -41,6 +41,17 @@
 				(iota 100)))
 		      (iota 100 :start 1))))
 
+    ;; Test protocol buffer payload
+    (format t "[Lisp   Client] Calling \"putimage\" method~%")
+    (rsb.patterns:call server "putimage"
+		       (make-instance 'running.example:image
+				      :width  1024
+				      :height 1024
+				      :depths #(8 8 8)
+				      :data   (make-array (* 3 1024 1024)
+							  :element-type    '(unsigned-byte 8)
+							  :initial-element 3)))
+    
     ;; Test error-producing method.
     (format t "[Lisp   Client] Calling \"error\" method~%")
     (let ((signaled? t))

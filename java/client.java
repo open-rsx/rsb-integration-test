@@ -3,15 +3,24 @@ import java.util.ArrayList;
 
 import java.util.concurrent.Future;
 
+import com.google.protobuf.ByteString;
+
 import rsb.Factory;
 import rsb.InitializeException;
 import rsb.Scope;
 
+import rsb.converter.ProtocolBufferConverter;
+import rsb.converter.DefaultConverterRepository;
+
 import rsb.patterns.RemoteServer;
+
+import running.example.RunningExample.Image;
 
 public class client {
 
     public static void main(String[] args) throws Throwable {
+	ProtocolBufferConverter<Image> converter = new ProtocolBufferConverter<Image>(Image.getDefaultInstance());
+	DefaultConverterRepository.getDefaultConverterRepository().addConverter(converter);
 
 	Long cookie = 0L;
 	if (args[0].equals("--cookie")) {
@@ -68,6 +77,16 @@ public class client {
 		}
 		i += 1;
 	    }
+
+	    // Call "putimage" method
+	    System.out.println("[Java   Client] Calling \"putimage\" method");
+	    byte[] temp = new byte[3 * 1024 * 1024];
+	    Image image = Image.newBuilder()
+		.setWidth(100)
+		.setHeight(100)
+		.setData(com.google.protobuf.ByteString.copyFrom(temp))
+		.build();
+	    server.call("putimage", image);
 
 	    // Call "error" method.
 	    {

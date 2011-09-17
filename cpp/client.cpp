@@ -20,6 +20,10 @@
 #include <boost/program_options.hpp>
 
 #include <rsb/Factory.h>
+#include <rsb/converter/Repository.h>
+#include <rsb/converter/ProtocolBufferConverter.h>
+
+#include <Image.pb.h>
 
 using namespace std;
 
@@ -27,11 +31,14 @@ using namespace boost;
 using namespace boost::program_options;
 
 using namespace rsb;
+using namespace rsb::converter;
 using namespace rsb::patterns;
 
 typedef boost::uint64_t IntegerType;
 
 int main(int argc, char *argv[]) {
+    stringConverterRepository()->registerConverter(Converter<string>::Ptr(new ProtocolBufferConverter<running::example::Image>()));
+
     IntegerType cookie;
 
     options_description options("Allowed options");
@@ -67,10 +74,10 @@ int main(int argc, char *argv[]) {
 	    return EXIT_FAILURE;
 	}
     }
-    
+
     // Call echo method.
     {
-        cout << "[C++    Client] calling \"echo\" method" << endl;
+        cout << "[C++    Client] Calling \"echo\" method" << endl;
         shared_ptr<string> request(new string("hello from C++"));
         if (*remoteServer->call<string>("echo", request)
 	    != "hello from C++") {
@@ -93,7 +100,7 @@ int main(int argc, char *argv[]) {
 	    }
         }
     }
-    
+
     cout << "[C++    Client] Calling \"addone\" method (100 times, asynchronous)" << endl;
     {
         vector< RemoteServer::DataFuture<IntegerType> > futures;
@@ -111,24 +118,32 @@ int main(int argc, char *argv[]) {
         }
     }
 
+    cout << "[C++    Client] Calling \"error\" method" << endl;
+    boost::shared_ptr<running::example::Image>
+	image(new running::example::Image());
+    image->set_width(100);
+    image->set_height(100);
+    image->set_data("bla");
+    remoteServer->call<void>("putimage", image);
+
     // Exercise exception mechanism.
-    cout << "[C++    Client] calling \"error\" method" << endl;
+    cout << "[C++    Client] Calling \"error\" method" << endl;
     try {
         shared_ptr<string> request(new string(""));
         remoteServer->call<string>("error", request);
-        cout << "[C++    Client] call to error method did not produce an exception" << endl;
+        cout << "[C++    Client] Call to error method did not produce an exception" << endl;
         return EXIT_FAILURE;
     } catch (const std::exception &) {
     }
 
     // Ask the remote server to terminate
     {
-        cout << "[C++    Client] calling \"terminate\" method" << endl;
+        cout << "[C++    Client] Calling \"terminate\" method" << endl;
         shared_ptr<string> request(new string(""));
         remoteServer->call<string>("terminate", request);
     }
 
-    cout << "[C++    Client] done! " << endl;
+    cout << "[C++    Client] Done! " << endl;
 
     return EXIT_SUCCESS;
 }
