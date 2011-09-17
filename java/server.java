@@ -6,8 +6,13 @@ import rsb.InitializeException;
 import rsb.Scope;
 import rsb.Factory;
 
+import rsb.converter.ProtocolBufferConverter;
+import rsb.converter.DefaultConverterRepository;
+
 import rsb.patterns.LocalServer;
 import rsb.patterns.DataCallback;
+
+import running.example.RunningExample.Image;
 
 public class server {
 
@@ -34,6 +39,9 @@ public class server {
     }
 
     public static void main(String[] args) throws Throwable {
+	ProtocolBufferConverter<Image> converter = new ProtocolBufferConverter<Image>(Image.getDefaultInstance());
+	DefaultConverterRepository.getDefaultConverterRepository().addConverter(converter);
+
 	if (args.length < 2 || !args[0].equals("--cookie")) {
 	    System.err.println("Missing --cookie option");
 	    System.exit(1);
@@ -81,6 +89,15 @@ public class server {
 		}
 	    };
 	    s.addMethod("addone", addOne);
+
+	    // Implement and register "putimage" method.
+	    DataCallback<Object, Image> putImage = new DataCallback<Object, Image>() {
+		public Object invoke(Image request) throws Throwable {
+		    System.out.println("[Java   Server] \"putimage\" method called");
+		    return null;
+		}
+	    };
+	    s.addMethod("putimage", putImage);
 
 	    // Implement and register "error" method.
 	    DataCallback<String, String> error = new DataCallback<String, String>() {
