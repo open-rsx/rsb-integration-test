@@ -57,11 +57,16 @@
 	   (format t "[Lisp   Server] \"error\" method called~%")
 	   (error "intentional error"))
 
+	 ("putimage" (request running.example:image)
+	   (declare (ignore request))
+	   (format t "[Lisp   Server] \"putimage\" method called~%")
+	   (values))
+
 	 ("terminate" (request string)
 	   (declare (ignore request))
 	   (format t "[Lisp   Server] \"terminate\" method called~%")
 	   (terminate-notify)
-	   "")) ;; ensure valid reply
+	   (values)))
 
       ;; Wait for "terminate" call.
       (terminate-wait)))
