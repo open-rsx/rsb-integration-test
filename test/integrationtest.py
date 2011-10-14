@@ -265,7 +265,9 @@ def run():
         spread = CommandStarter([spreadExecutable, "-n", "localhost", "-c", "test/spread.conf"])
 
     # Export configured spread port into configuration variable
-    os.environ['RSB_TRANSPORT_SPREAD_PORT'] = str(options.port)
+    os.environ['RSB_TRANSPORT_INPROCESS_ENABLED'] = '0'
+    os.environ['RSB_TRANSPORT_SPREAD_ENABLED']    = '1'
+    os.environ['RSB_TRANSPORT_SPREAD_PORT']       = str(options.port)
 
     # Add a test method for the configuration test for each language.
     if "parser" in selectedTests:
