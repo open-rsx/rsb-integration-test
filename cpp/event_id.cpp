@@ -4,6 +4,9 @@
 #include <rsc/runtime/TypeStringTools.h>
 
 #include <rsb/Event.h>
+#include <rsb/Scope.h>
+#include <rsb/EventId.h>
+#include <rsb/MetaData.h>
 
 using namespace std;
 

@@ -31,6 +31,9 @@
 
 #include <rsb/Informer.h>
 #include <rsb/Factory.h>
+#include <rsb/Scope.h>
+#include <rsb/EventId.h>
+#include <rsb/MetaData.h>
 
 using namespace std;
 using namespace boost;
