@@ -32,11 +32,7 @@ public class listener {
 
 		@Override
 		public void handleEvent(T data) {
-			if (this.count++ % 30 == 0) {
-				System.out.println("[Java   Listener] Scope " + scope
-						+ ": received " + this.count + "/" + this.expected
-						+ ": " + ((String) data).length() + " bytes");
-			}
+		        this.count++;
 		}
 
 		public boolean isDone() {

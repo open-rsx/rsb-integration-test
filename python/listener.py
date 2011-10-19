@@ -39,9 +39,6 @@ if __name__ == '__main__':
 
             with self.condition:
                 self.counter += 1
-                if (self.counter % 30 == 0):
-                    print("[Python Listener] Scope %s: Received event %d/%d: %s"
-                          % (self.scope, self.counter, self.expected, event))
                 if self.isDone():
                     self.condition.notifyAll()
 

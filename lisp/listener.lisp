@@ -2,13 +2,10 @@
   (bt:make-thread
    (lambda ()
      (rsb:with-reader (reader (format nil "spread:/size~D~A"
-					  size (rsb:scope-string scope)))
+				      size (rsb:scope-string scope)))
        (iter (for i :from 0 :below 120)
 	     (for event next (rsb:receive reader))
-	     (assert (= (length (rsb:event-data event)) size))
-	     (when (zerop (mod i 30))
-	       (format t "[Lisp   Listener] ~@<Scope ~A: ~_received event ~D/~D: ~_~S~@:>~%"
-		       (rsb:participant-scope reader) i 120 event)))))))
+	     (assert (= (length (rsb:event-data event)) size)))))))
 
 (defun main ()
   ;; Commandline option boilerplate.
