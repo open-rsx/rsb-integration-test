@@ -56,6 +56,7 @@ public:
     void handle(boost::shared_ptr<string> e) {
         assert(e->size() == this->size);
 
+        ++this->count;
         if (isDone()) {
             boost::recursive_mutex::scoped_lock lock(m);
             cond.notify_all();

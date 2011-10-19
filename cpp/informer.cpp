@@ -68,6 +68,7 @@ int main(int argc, char *argv[]) {
 
         Informer<string>::DataPtr s(new string(*it, 'c'));
         EventPtr event = informer->createEvent();
+        event->setData(s);
         event->mutableMetaData().setUserInfo("informer-lang", "cpp");
         event->mutableMetaData().setUserTime("informer-start", start);
         for (int j = 0; j < 120; j++) {
