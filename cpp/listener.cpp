@@ -33,6 +33,7 @@
 
 #include <rsc/logging/Logger.h>
 
+#include <rsb/EventId.h>
 #include <rsb/Listener.h>
 #include <rsb/Handler.h>
 #include <rsb/filter/ScopeFilter.h>
@@ -45,16 +46,25 @@ using namespace rsc::misc;
 using namespace rsb;
 using namespace rsb::filter;
 
-class MyDataHandler: public DataFunctionHandler<string> {
+class MyEventHandler: public Handler {
 public:
-    MyDataHandler(const Scope &scope, unsigned int size, long expected) :
-        DataFunctionHandler<string>(
-            boost::bind(&MyDataHandler::handle, this, _1)), scope(
-                scope), size(size), count(0), expected(expected) {
+    MyEventHandler(const Scope  &expectedScope,
+                   unsigned int  expectedSize,
+                   EventId       expectedCause,
+                   long          expectedCount) :
+        expectedScope(expectedScope),
+        expectedSize(expectedSize), expectedCause(expectedCause),
+        count(0), expectedCount(expectedCount) {
     }
 
-    void handle(boost::shared_ptr<string> e) {
-        assert(e->size() == this->size);
+    void handle(EventPtr event) {
+        boost::shared_ptr<string> datum
+            = static_pointer_cast<string>(event->getData());
+
+        assert(event->getScope() == this->expectedScope);
+        assert(datum->size() == this->expectedSize);
+        assert(event->getCauses().size() == 1);
+        assert(*event->getCauses().begin() == this->expectedCause);
 
         ++this->count;
         if (isDone()) {
@@ -64,18 +74,21 @@ public:
     }
 
     bool isDone() {
-        return this->count == this->expected;
+        return this->count == this->expectedCount;
     }
 
-    Scope scope;
-    unsigned int size;
-    long count;
-    long expected;
+    Scope                  expectedScope;
+    unsigned int           expectedSize;
+    EventId                expectedCause;
+
+    long                   count;
+    long                   expectedCount;
+
     boost::recursive_mutex m;
-    boost::condition cond;
+    boost::condition       cond;
 };
 
-typedef boost::shared_ptr<MyDataHandler> MyDataHandlerPtr;
+typedef boost::shared_ptr<MyEventHandler> MyEventHandlerPtr;
 
 int main(void) {
 
@@ -85,8 +98,8 @@ int main(void) {
 
     boost::timer t;
 
-    vector < ListenerPtr > listeners;
-    vector<MyDataHandlerPtr> handlers;
+    vector<ListenerPtr> listeners;
+    vector<MyEventHandlerPtr> handlers;
 
     vector<int> sizes;
     sizes.push_back(4);
@@ -95,11 +108,15 @@ int main(void) {
     for (vector<int>::const_iterator it = sizes.begin(); it != sizes.end();
          ++it) {
         Scope scope(str(format("/size%1%/sub1/sub2") % *it));
-        vector < Scope > scopes = scope.superScopes(true);
+        vector<Scope> scopes = scope.superScopes(true);
         for (vector<Scope>::const_iterator it_ = scopes.begin() + 1;
              it_ != scopes.end(); ++it_) {
             listeners.push_back(factory.createListener(*it_));
-            handlers.push_back(MyDataHandlerPtr(new MyDataHandler(*it_, *it, 120)));
+            handlers.push_back(MyEventHandlerPtr(new MyEventHandler(scope,
+                                                                    *it,
+                                                                    EventId(rsc::misc::UUID("00000000-0000-0000-0000-000000000000"),
+                                                                            0),
+                                                                    120)));
             listeners.back()->addHandler(handlers.back());
         }
     }
@@ -111,9 +128,9 @@ int main(void) {
     }
 
     // wait *here* for shutdown as this is not known to the Subscriber
-    for (vector<MyDataHandlerPtr>::const_iterator it = handlers.begin();
+    for (vector<MyEventHandlerPtr>::const_iterator it = handlers.begin();
          it != handlers.end(); ++it) {
-        MyDataHandlerPtr handler = *it;
+        MyEventHandlerPtr handler = *it;
         boost::recursive_mutex::scoped_lock lock(handler->m);
         while (!handler->isDone()) {
             handler->cond.wait(lock);

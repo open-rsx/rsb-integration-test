@@ -18,6 +18,7 @@
 
 import rsb
 import logging
+import uuid
 from threading import Condition
 
 if __name__ == '__main__':
@@ -27,15 +28,21 @@ if __name__ == '__main__':
 
     class Receiver(object):
 
-        def __init__(self, scope, size, expected):
-            self.scope = scope
-            self.size = size
-            self.expected = expected
-            self.counter = 0
-            self.condition = Condition()
+        def __init__(self, expectedScope, expectedSize, expectedCause, expectedCount):
+            self.expectedScope = expectedScope
+            self.expectedSize  = expectedSize
+            self.expectedCause = expectedCause
+
+            self.expectedCount = expectedCount
+            self.counter       = 0
+
+            self.condition     = Condition()
 
         def __call__(self, event):
-            assert(len(event.getData()) == self.size)
+            assert(event.scope == self.expectedScope)
+            assert(len(event.data) == self.expectedSize)
+            assert(len(event.causes) == 1)
+            assert(event.causes[0] == self.expectedCause)
 
             with self.condition:
                 self.counter += 1
@@ -43,18 +50,21 @@ if __name__ == '__main__':
                     self.condition.notifyAll()
 
         def isDone(self):
-            return self.counter == self.expected
+            return self.counter == self.expectedCount
 
     listeners = []
     receivers = []
     for size in [ 4, 256, 400000 ]:
         scope = rsb.Scope("/size%d/sub1/sub2" % size)
         scopes = scope.superScopes(True)
-        for scope in scopes[1:]:
-            listener = rsb.Listener(scope)
+        for superscope in scopes[1:]:
+            listener = rsb.Listener(superscope)
             listeners.append(listener)
 
-            receiver = Receiver(scope, size, 120)
+            receiver = Receiver(scope,
+                                size,
+                                rsb.EventId(uuid.UUID('00000000-0000-0000-0000-000000000000'), 0),
+                                120)
             receivers.append(receiver)
             listener.addHandler(receiver)
 
@@ -63,7 +73,7 @@ if __name__ == '__main__':
     for receiver in receivers:
         with receiver.condition:
             while not receiver.isDone():
-                print("[Python Listener] waiting for receiver %s" % receiver.scope)
+                print("[Python Listener] Waiting for receiver %s" % receiver.expectedScope)
                 receiver.condition.wait(60)
                 assert(receiver.isDone())
 

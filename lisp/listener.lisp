@@ -17,14 +17,22 @@
 ;; You should have received a copy of the GNU General Public License
 ;; along with this program. If not, see <http://www.gnu.org/licenses>.
 
-(defun listener-for-scope (size scope)
+(defun listener-for-scope (sub-scope expected-size expected-causes nested-scope)
   (bt:make-thread
    (lambda ()
-     (rsb:with-reader (reader (format nil "spread:/size~D~A"
-				      size (rsb:scope-string scope)))
-       (iter (for i :from 0 :below 120)
-	     (for event next (rsb:receive reader))
-	     (assert (= (length (rsb:event-data event)) size)))))))
+     (let* ((size-scope     (rsb:make-scope (format nil "/size~D" expected-size)))
+	    (expected-scope (rsb:merge-scopes nested-scope size-scope))
+	    (listen-scope   (rsb:merge-scopes sub-scope size-scope))
+	    (uri            (make-instance 'puri:uri
+					 :scheme :spread
+					 :path   (rsb:scope-string listen-scope))))
+       (rsb:with-reader (reader uri)
+	(iter (for i :from 0 :below 120)
+	      (for event next (rsb:receive reader))
+	      (assert (rsb:scope= (rsb:event-scope event) expected-scope))
+	      (assert (= (length (rsb:event-data event)) expected-size))
+	      (assert (set-equal (rsb:event-causes event) expected-causes
+				 :test #'rsb:event-id=))))))))
 
 (defun main ()
   ;; Commandline option boilerplate.
@@ -38,11 +46,12 @@
     (help)
     (return-from main))
 
-  (let ((listeners (map-product
-		    #'listener-for-scope
-		    '(4 256 400000)
-		    (rsb:super-scopes (rsb:make-scope "/sub1/sub2")
-				      :include-self? t))))
+  (let* ((causes       (list (cons (uuid:make-null-uuid) 0)))
+	 (nested-scope (rsb:make-scope "/sub1/sub2"))
+	 (listeners    (map-product
+			(rcurry #'listener-for-scope causes nested-scope)
+			(rsb:super-scopes nested-scope :include-self? t)
+			'(4 256 400000))))
     (sleep 1)
     (with-open-file (stream "test/lisp-listener-ready"
 			    :if-does-not-exist :create)

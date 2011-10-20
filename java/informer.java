@@ -2,7 +2,7 @@
  *
  * This file is part of the RSB project.
  *
- * Copyright (C) 2011 Jan Moringen jmoringe@techfak.uni-bielefeld.de
+ * Copyright (C) 2011 Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -24,6 +24,8 @@ import rsb.InitializeException;
 import rsb.Scope;
 import rsb.MetaData;
 import rsb.Event;
+import rsb.EventId;
+import rsb.ParticipantId;
 
 public class informer {
 
@@ -51,6 +53,7 @@ public class informer {
                 String data = builder.toString();
 
                 Event event = new Event(scope, String.class, data);
+		event.addCause(new EventId(new ParticipantId("00000000-0000-0000-0000-000000000000"), 0));
                 MetaData metaData = event.getMetaData();
                 metaData.setUserInfo("informer-lang", "Java");
                 metaData.setUserTime("informer-start", startTime);
@@ -59,8 +62,6 @@ public class informer {
                     metaData.setUserInfo("index", "" + (listenerPid + j));
                     p.send(event);
                 }
-
-                System.out.println("[Java   Informer] Sent messages");
 
                 p.deactivate();
 

@@ -21,6 +21,7 @@ import os
 import time
 import rsb
 import logging
+import uuid
 
 if __name__ == '__main__':
 
@@ -32,17 +33,23 @@ if __name__ == '__main__':
     for size in [ 4, 256, 400000 ]:
         scope = "/size%d/sub1/sub2" % size
         print("[Python Informer] Processing scope %s" % scope)
-        informer = rsb.Informer(rsb.Scope(scope), str)
+        informer = rsb.createInformer(scope, dataType = str)
 
         for i in range(120):
-            informer.publishData('c' * size,
-                                 userInfos = {
+            event = rsb.Event(scope = scope,
+                              data = 'c' * size,
+                              type = str,
+                              userInfos = {
                     "informer-lang": "Python",
                     "index":         str(listenerPid + i)
                     },
-                                 userTimes = {
+                              userTimes = {
                     "informer-start": time.time()
-                    })
+                    },
+                              causes = set([
+                        rsb.EventId(uuid.UUID('00000000-0000-0000-0000-000000000000'), 0)
+                        ]))
+            informer.publishEvent(event)
 
     print("[Python Informer] done!")
 

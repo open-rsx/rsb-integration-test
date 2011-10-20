@@ -33,22 +33,24 @@
     (return-from main))
 
   (let ((listener-pid (getopt :long-name "listener-pid"))
-	(start        (local-time:now)))
+	(start        (local-time:now))
+	(causes       (list (cons (uuid:make-null-uuid) 0))))
     (unless listener-pid
       (help)
       (exit 1))
 
     (iter (for size in '(4 256 400000))
-	  (let ((scope (format nil "/size~D/sub1/sub2" size))
-		(uri   (format nil "spread:/size~D/sub1/sub2" size))
-		(data  (make-string size :initial-element #\c)))
+	  (let* ((scope (format nil "/size~D/sub1/sub2" size))
+		 (uri   (format nil "spread:~A" scope))
+		 (data  (make-string size :initial-element #\c)))
 	    (format t "[Lisp   Informer] ~@<Processing scope ~A~@:>~%" scope)
-	    (rsb:with-informer (informer uri 'string)
+	    (rsb:with-informer (informer uri t)
 	      (iter (for i :from 0 :below 120)
-		    (let ((event (rsb:make-event/typed
-				  scope data 'string
+		    (let ((event (rsb:make-event
+				  scope data
 				  :informer-lang "Lisp"
-				  :index         (format nil "~D" (+ listener-pid i)))))
+				  :index         (format nil "~D" (+ listener-pid i))
+				  :causes        causes)))
 		      (setf (rsb:timestamp event :informer-start) start)
 		      (rsb:send informer event))))))))
 

@@ -63,7 +63,7 @@ int main(int argc, char *argv[]) {
     for (vector<int>::const_iterator it = sizes.begin(); it != sizes.end();
          ++it) {
         Scope scope(str(format("/size%1%/sub1/sub2") % *it));
-        cout << "[C++    Informer] processing scope " << scope << endl;
+        cout << "[C++    Informer] Processing scope " << scope << endl;
         Informer<string>::Ptr informer = factory.createInformer<string>(scope);
 
         Informer<string>::DataPtr s(new string(*it, 'c'));
@@ -71,6 +71,7 @@ int main(int argc, char *argv[]) {
         event->setData(s);
         event->mutableMetaData().setUserInfo("informer-lang", "cpp");
         event->mutableMetaData().setUserTime("informer-start", start);
+        event->addCause(EventId(rsc::misc::UUID("00000000-0000-0000-0000-000000000000"), 0));
         for (int j = 0; j < 120; j++) {
             event->mutableMetaData().setUserInfo("index",
                                                  lexical_cast<string>(listenerPid + j));

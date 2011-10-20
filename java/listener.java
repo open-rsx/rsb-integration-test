@@ -2,7 +2,7 @@
  *
  * This file is part of the RSB project.
  *
- * Copyright (C) 2011 Jan Moringen jmoringe@techfak.uni-bielefeld.de
+ * Copyright (C) 2011 Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -27,34 +27,43 @@ import java.io.IOException;
 
 import java.util.ArrayList;
 
+import rsb.ParticipantId;
+import rsb.EventId;
+import rsb.Event;
+import rsb.Scope;
 import rsb.Factory;
 import rsb.Listener;
+import rsb.AbstractEventHandler;
 import rsb.transport.TransportFactory;
-import rsb.Scope;
-import rsb.AbstractDataHandler;
 
 public class listener {
 
-	private static class DataHandler<T> extends AbstractDataHandler<T> implements
+	private static class EventHandler extends AbstractEventHandler implements
 			Runnable {
-		public DataHandler(Scope scope, int size, int expected)
+	    public EventHandler(Scope listenScope,
+				Scope expectedScope,
+				int expectedSize,
+				int expectedCount)
 				throws Throwable {
-			this.scope = scope;
-			this.size = size;
-			this.expected = expected;
+			this.expectedScope = expectedScope;
+			this.expectedSize = expectedSize;
 
-			this.listener = Factory.getInstance().createListener(scope);
+			this.expectedCount = expectedCount;
+
+			this.listener = Factory.getInstance().createListener(listenScope);
 			this.listener.activate();
 			listener.addHandler(this, true);
 		}
 
 		@Override
-		public void handleEvent(T data) {
+		public void handleEvent(Event event) {
+		    String data = (String) event.getData();
+
 		        this.count++;
 		}
 
 		public boolean isDone() {
-			return this.count == this.expected;
+			return this.count == this.expectedCount;
 		}
 
 		public void run() {
@@ -68,10 +77,12 @@ public class listener {
 			this.listener.deactivate();
 		}
 
-		private Scope scope;
-		private int size;
+		private final Scope expectedScope;
+		private final int expectedSize;
+	        private final EventId expectedCause = new EventId(new ParticipantId("00000000-0000-0000-0000-000000000000"), 0);
+
 		private int count;
-		private int expected;
+		private final int expectedCount;
 
 		private Listener listener;
 	}
@@ -93,8 +104,10 @@ public class listener {
 				scopeString += component;
 				Scope scope = new Scope(scopeString);
 				try {
-					Thread thread = new Thread(new DataHandler<String>(scope,
-							size, 120));
+					Thread thread = new Thread(new EventHandler(scope,
+										    new Scope("/size" + size),
+										    size,
+										    120));
 					thread.start();
 					listeners.add(thread);
 					Thread.sleep(1);
