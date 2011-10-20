@@ -40,8 +40,6 @@
 					       :scope           "/"
 					       :origin          origin
 					       :sequence-number sequence-number)))
-	  (format t "~(~A~) ~(~8,'0X~) => ~(~A~) [~(~A~)]~%"
-		  origin sequence-number (rsb:event-id event) expected)
-	  (assert (rsb::uuid= (rsb:event-id event) expected)))))
+	  (assert (uuid:uuid= (rsb:event-id event) expected)))))
 
 (dump "event_id" main)

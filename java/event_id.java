@@ -21,7 +21,6 @@ public class event_id {
 	    long sequenceNumber = Long.parseLong(tokens[1], 16);
 	    UUID expectedId = UUID.fromString(tokens[2]);
 	    EventId id = new EventId(originId, sequenceNumber);
-	    System.out.println("" + originId + " " + sequenceNumber + " => " + id.getAsUUID() + " [" + expectedId + "]");
 	    if (!expectedId.equals(id.getAsUUID())) {
 		System.exit(1);
 	    }

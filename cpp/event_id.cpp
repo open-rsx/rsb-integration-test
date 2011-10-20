@@ -28,9 +28,6 @@ int main() {
 		Event e(Scope("/"), shared_ptr<string>(new string("")),
 				typeName<string>());
 		e.setEventId(originId, sequenceNumber);
-		cout << originId << " " << hex << setw(8) << setfill('0')
-				<< sequenceNumber << " => " << e.getId() << " [" << expectedId
-				<< "]" << endl;
 		assert(expectedId == e.getId());
 	}
 

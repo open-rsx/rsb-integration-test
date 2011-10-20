@@ -27,5 +27,4 @@ if __name__ == "__main__":
             originId, seqnum, expectedId = \
                 (uuid.UUID(hex = origin), int(seqnum, 16), uuid.UUID(hex = expected))
             event = rsb.Event(id = rsb.EventId(participantId = originId, sequenceNumber = seqnum))
-            print '%s %08x => %s [%s]' % (origin, seqnum, event.id.getAsUUID(),  expected)
             assert event.id.getAsUUID() == expectedId
