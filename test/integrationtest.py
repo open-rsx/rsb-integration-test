@@ -142,7 +142,7 @@ class IntegrationTest(unittest.TestCase):
 
             informerStatus, listenerStatus = self.waitForProcesses(60, informerProc, listenerProc)
 
-            self.__logger.info("waiting finished for listener = %s and informer = %s, listenerStauts = %s, informerStatus = %s" % (listenerLang, informerLang, listenerStatus, informerStatus))
+            self.__logger.info("waiting finished for listener = %s and informer = %s, listenerStatus = %s, informerStatus = %s" % (listenerLang, informerLang, listenerStatus, informerStatus))
 
             if listenerStatus == None or informerStatus == None:
                 # one of the processes timed out
