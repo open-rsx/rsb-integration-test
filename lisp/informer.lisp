@@ -17,7 +17,7 @@
 ;; You should have received a copy of the GNU General Public License
 ;; along with this program. If not, see <http://www.gnu.org/licenses>.
 
-(defun main ()
+(defun informer-main ()
   ;; Commandline option boilerplate.
   (setf rsb:*default-configuration* (rsb:options-from-default-sources))
   (make-synopsis
@@ -30,7 +30,7 @@
   (make-context)
   (when (getopt :long-name "help")
     (help)
-    (return-from main))
+    (return-from informer-main))
 
   (let ((listener-pid (getopt :long-name "listener-pid"))
 	(start        (local-time:now))
@@ -53,5 +53,3 @@
 				  :causes        causes)))
 		      (setf (rsb:timestamp event :informer-start) start)
 		      (rsb:send informer event))))))))
-
-(dump "informer" main)

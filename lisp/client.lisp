@@ -17,7 +17,7 @@
 ;; You should have received a copy of the GNU General Public License
 ;; along with this program. If not, see <http://www.gnu.org/licenses>.
 
-(defun main ()
+(defun client-main ()
   ;; Commandline option boilerplate.
   (setf rsb:*default-configuration* (rsb:options-from-default-sources))
   (make-synopsis
@@ -31,7 +31,7 @@
   (make-context)
   (when (getopt :long-name "help")
     (help)
-    (return-from main))
+    (return-from client-main))
   (setf *cookie* (getopt :long-name "cookie"))
 
   (format t "[Lisp   Client] Communicating with remote server at ~A~%"
@@ -85,5 +85,3 @@
     (rsb.patterns:call server "terminate" "does not matter"))
 
   (format t "[Lisp   Client] Done!~%"))
-
-(dump "client" main)

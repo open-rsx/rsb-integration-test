@@ -34,7 +34,7 @@
 	      (assert (set-equal (rsb:event-causes event) expected-causes
 				 :test #'rsb:event-id=))))))))
 
-(defun main ()
+(defun listener-main ()
   ;; Commandline option boilerplate.
   (setf rsb:*default-configuration* (rsb:options-from-default-sources))
   (make-synopsis
@@ -44,7 +44,7 @@
   (make-context)
   (when (getopt :long-name "help")
     (help)
-    (return-from main))
+    (return-from listener-main))
 
   (let* ((causes       (list (cons (uuid:make-null-uuid) 0)))
 	 (nested-scope (rsb:make-scope "/sub1/sub2"))
@@ -59,5 +59,3 @@
     (map 'nil #'bt:join-thread listeners))
 
   (format t "[Lisp   Listener] done!~%"))
-
-(dump "listener" main)

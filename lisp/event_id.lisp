@@ -17,7 +17,7 @@
 ;; You should have received a copy of the GNU General Public License
 ;; along with this program. If not, see <http://www.gnu.org/licenses>.
 
-(defun main ()
+(defun event-id-main ()
   ;; Commandline option boilerplate.
   (setf rsb:*default-configuration* (rsb:options-from-default-sources))
   (make-synopsis
@@ -27,7 +27,7 @@
   (make-context)
   (when (getopt :long-name "help")
     (help)
-    (return-from main))
+    (return-from event-id-main))
 
   ;; Check event id generation test cases.
   (iter (for line in-file "data/event-id-cases.txt" :using #'read-line)
@@ -41,5 +41,3 @@
 					       :origin          origin
 					       :sequence-number sequence-number)))
 	  (assert (uuid:uuid= (rsb:event-id event) expected)))))
-
-(dump "event_id" main)

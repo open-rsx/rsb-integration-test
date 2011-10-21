@@ -31,7 +31,7 @@
     (setf (third *terminate*) t)
     (bt:condition-notify (second *terminate*))))
 
-(defun main ()
+(defun server-main ()
   ;; Commandline option boilerplate.
   (setf rsb:*default-configuration* (rsb:options-from-default-sources))
   (make-synopsis
@@ -45,7 +45,7 @@
   (make-context)
   (when (getopt :long-name "help")
     (help)
-    (return-from main))
+    (return-from server-main))
   (setf *cookie* (getopt :long-name "cookie"))
 
   (format t "[Lisp   Server] Providing service on ~A~%"
@@ -91,5 +91,3 @@
       (terminate-wait)))
 
   (format t "[Lisp   Server] Done!~%"))
-
-(dump "server" main)

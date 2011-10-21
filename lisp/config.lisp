@@ -31,7 +31,7 @@
 
     (:transport :spread :converter :lisp :utf-8-string)))
 
-(defun main ()
+(defun config-main ()
   ;; Commandline option boilerplate.
   (setf rsb:*default-configuration*
 	(append '(((:transport :spread :enabled) . "1"))
@@ -44,7 +44,7 @@
   (make-context)
   (when (getopt :long-name "help")
     (help)
-    (return-from main))
+    (return-from config-main))
   (unless (length= 2 (remainder))
     (help)
     (exit 1))
@@ -57,5 +57,3 @@
     (iter (for key   in   *interesting-options*)
 	  (for value next (rsb:option-value key))
 	  (format stream "~{~(~A~)~^.~}: ~A~%" key value))))
-
-(dump "config" main)
