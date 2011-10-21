@@ -101,20 +101,35 @@ class IntegrationTest(unittest.TestCase):
 
         return subprocess.Popen(commandline)
 
-    def waitForProcesses(self, timeout, *processes):
-        waitStart = time.time()
-        codes     = [None]*len(processes)
-        while time.time() < waitStart + timeout and None in codes:
-            codes = map(lambda x: x.poll(), processes)
-            time.sleep(0.2)
-        return codes
-
     def killProcesses(self, *processes):
         for process in processes:
             try:
                 process.kill()
             except:
                 pass
+
+    def waitForProcesses(self, timeout, *processes):
+        waitStart = time.time()
+        codes     = [None]*len(processes)
+        while time.time() < waitStart + timeout and None in codes:
+            codes = map(lambda x: x.poll(), processes)
+            time.sleep(0.2)
+        if None in codes:
+            self.killProcesses(*processes)
+        return codes
+
+    def analyzeExitCodes(self, codes, names):
+        failed, reason = False, ""
+        for code, name in zip(codes, names):
+            if code is None:
+                self.__logger.info("Timeout; process: %s", name)
+                failed = True
+                reason += 'timeout of %s process; ' % name
+            elif not code == 0:
+                self.__logger.info("Error; process: %s, exit-code: %s", name, code)
+                failed = True
+                reason += 'non-zero exit code of %s process; ' % name
+        return failed, reason
 
     @classmethod
     def addListenerInformerPair(clazz, listenerLang, informerLang):
@@ -140,20 +155,14 @@ class IntegrationTest(unittest.TestCase):
                                              "--listener-pid", str(listenerProc.pid))
             time.sleep(1)
 
-            informerStatus, listenerStatus = self.waitForProcesses(60, informerProc, listenerProc)
-
-            self.__logger.info("waiting finished for listener = %s and informer = %s, listenerStatus = %s, informerStatus = %s" % (listenerLang, informerLang, listenerStatus, informerStatus))
-
-            if listenerStatus == None or informerStatus == None:
-                # one of the processes timed out
-                self.__logger.info("Timeout")
-                self.killProcesses(listenerProc, informerProc)
-                self.fail("Timeout receiving messages with a %s listener and a %s informer" % (listenerLang, informerLang))
-
-            self.assertEqual(0, listenerStatus, "Error of listener, informer language: %s, listener language: %s" % (informerLang, listenerLang))
-            self.assertEqual(0, informerStatus, "Error of informer, informer language: %s, listener language: %s" % (informerLang, listenerLang))
+            codes = self.waitForProcesses(60, informerProc, listenerProc)
+            failed, reason = self.analyzeExitCodes(codes, ("listener", "informer"))
+            if failed:
+                self.fail("Listener/Informer communication failed for %s listener and %s informer: %s"
+                          % (listenerLang, informerLang, reason))
 
             # TODO check message contents parsed from stdout of the listeners
+
         setattr(clazz,
                 'testListenerInformer' + listenerLang.capitalize() + informerLang.capitalize(),
                 testFunc)
@@ -169,11 +178,10 @@ class IntegrationTest(unittest.TestCase):
                                            "--cookie", cookie)
 
             codes = self.waitForProcesses(30, clientProc, serverProc)
-            if None in codes:
-                self.__logger.info("Timeout")
-                self.killProcesses(serverProc, clientProc)
-                self.fail("Client/Server communication timed out for %s client and %s server"
-                          % (clientLang, serverLang))
+            failed, reason = self.analyzeExitCodes(codes, ("client", "server"))
+            if failed:
+                self.fail("Client/Server communication failed for %s client and %s server: %s"
+                          % (clientLang, serverLang, reason))
 
         setattr(clazz,
                 'testClientServer' + clientLang.capitalize() + serverLang.capitalize(),
