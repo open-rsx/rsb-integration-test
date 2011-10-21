@@ -2,7 +2,7 @@
  *
  * This file is part of the RSB project.
  *
- * Copyright (C) 2011 Jan Moringen jmoringe@techfak.uni-bielefeld.de
+ * Copyright (C) 2011 Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -49,15 +49,16 @@ public class client {
 
 	System.out.println("[Java   Client] Communicating with remote server at " + scope);
 
+	boolean failed = false;
+	RemoteServer server = null;
 	try {
-	    RemoteServer server = Factory.getInstance().createRemoteServer(scope);
+	    server = Factory.getInstance().createRemoteServer(scope);
 	    server.activate();
 
 	    // Call "ping" method.
 	    System.out.println("[Java   Client] Calling \"ping\" method");
 	    if (!server.call("ping", cookie).equals("pong")) {
-		System.err.println("Incorrect reply from \"ping\" method");
-		System.exit(1);
+		throw new Throwable("Incorrect reply from \"ping\" method");
 	    }
 
 	    // Call "echo" method.
@@ -65,8 +66,7 @@ public class client {
 	    {
 		String result = server.call("echo", "hello from Java");
 		if (!result.equals("hello from Java")) {
-		    System.err.println("Incorrect reply from \"echo\" method");
-		    System.exit(1);
+		    throw new Throwable("Incorrect reply from \"echo\" method");
 		}
 	    }
 
@@ -75,8 +75,7 @@ public class client {
 	    for (long i = 0; i < 100; ++i) {
 		Long result = server.call("addone", i);
 		if (result != i + 1) {
-		    System.err.println("Incorrect result for " + i + "-th call: " + result);
-		    System.exit(1);
+		    throw new Throwable("Incorrect result for " + i + "-th call: " + result);
 		}
 	    }
 
@@ -85,13 +84,12 @@ public class client {
 	    for (long i = 0; i < 100; ++i) {
 		Future<Long> future = server.callAsync("addone", i);
 		futures.add(future);
-		}
+	    }
 	    int i = 0;
 	    for (Future<Long> future : futures) {
 		Long result = future.get();
 		if (result != i + 1) {
-		    System.err.println("Incorrect result for " + i + "-th call: " + result);
-		    System.exit(1);
+		    throw new Throwable("Incorrect result for " + i + "-th call: " + result);
 		}
 		i += 1;
 	    }
@@ -118,7 +116,7 @@ public class client {
 		    error = true;
 		}
 		if (!error) {
-		    System.exit(1);
+		    throw new Throwable("Expected exception has not been thrown");
 		}
 	    }
 
@@ -127,13 +125,16 @@ public class client {
 		System.out.println("[Java   Client] Calling \"terminate\" method");
 		String result = server.call("terminate", "no sense");
 	    }
-
-	    server.deactivate();
-
-	    System.out.println("[Java   Client] Deactivate complete");
-
-	} catch (InitializeException e) {
+	} catch (Throwable e) {
 	    e.printStackTrace();
+	    failed = true;
+	} finally {
+	    if (server != null) {
+		server.deactivate();
+	    }
+	}
+
+	if (failed) {
 	    System.exit(1);
 	}
 

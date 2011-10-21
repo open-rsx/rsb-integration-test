@@ -2,7 +2,7 @@
  *
  * This file is part of the RSB project.
  *
- * Copyright (C) 2011 Jan Moringen jmoringe@techfak.uni-bielefeld.de
+ * Copyright (C) 2011 Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -56,6 +56,8 @@ public class server {
 	}
     }
 
+    static boolean failed = false;
+
     public static void main(String[] args) throws Throwable {
 	ProtocolBufferConverter<Image> converter = new ProtocolBufferConverter<Image>(Image.getDefaultInstance());
 	DefaultConverterRepository.getDefaultConverterRepository().addConverter(converter);
@@ -70,9 +72,10 @@ public class server {
 
 	System.out.println("[Java   Server] Providing service on " + scope);
 
+	LocalServer server = null;
 	try {
-	    LocalServer s = Factory.getInstance().createLocalServer(scope);
-	    s.activate();
+	    server = Factory.getInstance().createLocalServer(scope);
+	    server.activate();
 
 	    // Implement and register "ping" method.
 	    DataCallback<String, Long> ping = new DataCallback<String, Long>() {
@@ -80,12 +83,12 @@ public class server {
 		    System.out.println("[Java   Server] \"ping\" method called with request " + request);
 		    if (!(request.equals(cookie))) {
 			System.err.println("Received cookie value " + request + " not equal to expected value " + cookie);
-			System.exit(1);
+			failed = true;
 		    }
 		    return "pong";
 		}
 	    };
-	    s.addMethod("ping", ping);
+	    server.addMethod("ping", ping);
 
 	    // Implement and register "echo" method.
 	    DataCallback<String, String> echo = new DataCallback<String, String>() {
@@ -94,7 +97,7 @@ public class server {
 		    return request;
 		}
 	    };
-	    s.addMethod("echo", echo);
+	    server.addMethod("echo", echo);
 
 	    // Implement and register "addone" method.
 	    DataCallback<Long, Long> addOne
@@ -106,7 +109,7 @@ public class server {
 		    return request + 1;
 		}
 	    };
-	    s.addMethod("addone", addOne);
+	    server.addMethod("addone", addOne);
 
 	    // Implement and register "putimage" method.
 	    DataCallback<Object, Image> putImage = new DataCallback<Object, Image>() {
@@ -115,7 +118,7 @@ public class server {
 		    return null;
 		}
 	    };
-	    s.addMethod("putimage", putImage);
+	    server.addMethod("putimage", putImage);
 
 	    // Implement and register "error" method.
 	    DataCallback<String, String> error = new DataCallback<String, String>() {
@@ -124,18 +127,24 @@ public class server {
 		    throw new Throwable("intentional error");
 		}
 	    };
-	    s.addMethod("error", error);
+	    server.addMethod("error", error);
 
 	    // Register "terminate" method.
 	    Terminate terminate = new Terminate();
-	    s.addMethod("terminate", terminate);
+	    server.addMethod("terminate", terminate);
 
 	    // Block until "terminate" method has been called.
 	    terminate.waitForCall();
-
-	    s.deactivate();
-	} catch (InitializeException e) {
+	} catch (Throwable e) {
 	    e.printStackTrace();
+	    failed = true;
+	} finally {
+	    if (server != null) {
+		server.deactivate();
+	    }
+	}
+
+	if (failed) {
 	    System.exit(1);
 	}
 
