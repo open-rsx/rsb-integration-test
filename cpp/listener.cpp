@@ -26,17 +26,12 @@
 #include <fstream>
 
 #include <boost/format.hpp>
-#include <boost/bind.hpp>
 #include <boost/thread/recursive_mutex.hpp>
 #include <boost/thread/condition.hpp>
-#include <boost/timer.hpp>
-
-#include <rsc/logging/Logger.h>
 
 #include <rsb/EventId.h>
 #include <rsb/Listener.h>
 #include <rsb/Handler.h>
-#include <rsb/filter/ScopeFilter.h>
 #include <rsb/Factory.h>
 
 using namespace std;
@@ -91,12 +86,7 @@ public:
 typedef boost::shared_ptr<MyEventHandler> MyEventHandlerPtr;
 
 int main(void) {
-
-    LoggerPtr l = Logger::getLogger("receiver");
-
     Factory &factory = Factory::getInstance();
-
-    boost::timer t;
 
     vector<ListenerPtr> listeners;
     vector<MyEventHandlerPtr> handlers;
@@ -136,8 +126,6 @@ int main(void) {
             handler->cond.wait(lock);
         }
     }
-
-    cout << "[C++    Listener] Elapsed time " << t.elapsed() << " s" << endl;
 
     return EXIT_SUCCESS;
 }

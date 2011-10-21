@@ -25,10 +25,9 @@
 #include <math.h>
 
 #include <boost/format.hpp>
-#include <boost/timer.hpp>
+#include <boost/lexical_cast.hpp>
 
 #include <rsc/misc/langutils.h>
-#include <rsc/logging/Logger.h>
 
 #include <rsb/Informer.h>
 #include <rsb/Factory.h>
@@ -48,13 +47,9 @@ int main(int argc, char *argv[]) {
     }
     int listenerPid = lexical_cast<int>(argv[2]);
 
-    LoggerPtr l = Logger::getLogger("informer");
-
     Factory &factory = Factory::getInstance();
 
     uint64_t start = currentTimeMicros();
-
-    boost::timer t;
 
     vector<int> sizes;
     sizes.push_back(4);
@@ -78,8 +73,6 @@ int main(int argc, char *argv[]) {
             informer->publish(event);
         }
     }
-    cout << "[C++    Informer] Elapsed time sending messages: " << t.elapsed()
-         << " s" << endl;
 
     return EXIT_SUCCESS;
 }
