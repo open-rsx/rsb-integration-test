@@ -2,6 +2,7 @@
 # ============================================================
 #
 # Copyright (C) 2011 by Johannes Wienke <jwienke at techfak dot uni-bielefeld dot de>
+#               2011 Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 #
 # This program is free software; you can redistribute it
 # and/or modify it under the terms of the GNU General
@@ -24,9 +25,6 @@ import logging
 import uuid
 
 if __name__ == '__main__':
-
-    #logging.basicConfig()
-    #logging.getLogger().setLevel(logging.DEBUG)
 
     listenerPid = int(sys.argv[2])
 
@@ -51,6 +49,6 @@ if __name__ == '__main__':
                         ]))
             informer.publishEvent(event)
 
-    print("[Python Informer] done!")
+        informer.deactivate()
 
-    informer.deactivate()
+    print("[Python Informer] done!")

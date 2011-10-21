@@ -54,27 +54,31 @@ if __name__ == '__main__':
 
     listeners = []
     receivers = []
-    for size in [ 4, 256, 400000 ]:
-        scope = rsb.Scope("/size%d/sub1/sub2" % size)
-        scopes = scope.superScopes(True)
-        for superscope in scopes[1:]:
-            listener = rsb.Listener(superscope)
-            listeners.append(listener)
+    try:
+        for size in [ 4, 256, 400000 ]:
+            scope = rsb.Scope("/size%d/sub1/sub2" % size)
+            scopes = scope.superScopes(True)
+            for superscope in scopes[1:]:
+                listener = rsb.Listener(superscope)
+                listeners.append(listener)
 
-            receiver = Receiver(scope,
-                                size,
-                                rsb.EventId(uuid.UUID('00000000-0000-0000-0000-000000000000'), 0),
-                                120)
-            receivers.append(receiver)
-            listener.addHandler(receiver)
+                receiver = Receiver(scope,
+                                    size,
+                                    rsb.EventId(uuid.UUID('00000000-0000-0000-0000-000000000000'), 0),
+                                    120)
+                receivers.append(receiver)
+                listener.addHandler(receiver)
 
-    open('test/python-listener-ready', 'w').close()
+        open('test/python-listener-ready', 'w').close()
 
-    for receiver in receivers:
-        with receiver.condition:
-            while not receiver.isDone():
-                print("[Python Listener] Waiting for receiver %s" % receiver.expectedScope)
-                receiver.condition.wait(60)
-                assert(receiver.isDone())
+        for receiver in receivers:
+            with receiver.condition:
+                while not receiver.isDone():
+                    print("[Python Listener] Waiting for receiver %s" % receiver.expectedScope)
+                    receiver.condition.wait(60)
+                    assert(receiver.isDone())
+    finally:
+        for listener in listeners:
+            listener.deactivate()
 
     print("[Python Listener] done!")
