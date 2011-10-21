@@ -30,13 +30,17 @@ IF(SBCL_HOME)
     ADD_CUSTOM_TARGET(binary ALL DEPENDS "${CMAKE_CURRENT_BINARY_DIR}/${NAME}")
 
     # Create symlinks.
+    SET(LINKS "")
     FOREACH(SCRIPT ${SCRIPTS})
-        ADD_CUSTOM_COMMAND(OUTPUT  "${CMAKE_CURRENT_BINARY_DIR}/${SCRIPT}"
-                           COMMAND "${CMAKE_COMMAND}" -E create_symlink "${CMAKE_CURRENT_BINARY_DIR}/${NAME}" "${CMAKE_CURRENT_BINARY_DIR}/${SCRIPT}"
+      message(${SCRIPT})
+        STRING(REPLACE ".lisp" "" LINK "${SCRIPT}")
+	SET(LINKS ${LINKS} "${CMAKE_CURRENT_BINARY_DIR}/${LINK}")
+        ADD_CUSTOM_COMMAND(OUTPUT  "${CMAKE_CURRENT_BINARY_DIR}/${LINK}"
+                           COMMAND "${CMAKE_COMMAND}" -E create_symlink "${CMAKE_CURRENT_BINARY_DIR}/${NAME}" "${CMAKE_CURRENT_BINARY_DIR}/${LINK}"
                            DEPENDS "${CMAKE_CURRENT_BINARY_DIR}/${NAME}"
-                           COMMENT "Creating symlink ${TOOL} -> ${NAME}")
+                           COMMENT "Creating symlink ${LINK} -> ${NAME}")
     ENDFOREACH()
-    ADD_CUSTOM_TARGET(links ALL DEPENDS ${SCRIPTS})
+    ADD_CUSTOM_TARGET(links ALL DEPENDS ${LINKS})
 
 ELSE()
     MESSAGE(STATUS "SBCL_HOME is not set. Common Lisp disabled for testing.")
