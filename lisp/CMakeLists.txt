@@ -32,7 +32,6 @@ IF(SBCL_HOME)
     # Create symlinks.
     SET(LINKS "")
     FOREACH(SCRIPT ${SCRIPTS})
-      message(${SCRIPT})
         STRING(REPLACE ".lisp" "" LINK "${SCRIPT}")
 	SET(LINKS ${LINKS} "${CMAKE_CURRENT_BINARY_DIR}/${LINK}")
         ADD_CUSTOM_COMMAND(OUTPUT  "${CMAKE_CURRENT_BINARY_DIR}/${LINK}"
