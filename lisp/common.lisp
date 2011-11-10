@@ -20,6 +20,7 @@
 (load-system :sb-posix)
 (load-system :com.dvlsoft.clon)
 (load-system :cl-protobuf)
+(load-system :usocket)
 (load-system :cl-spread)
 (load-system :cl-rsb)
 (map nil #'unintern '(for finally collect else with in)) ;; iterate bug
@@ -36,7 +37,7 @@
   (pbb:emit descriptor :serializer)
   (pbb:emit descriptor :deserializer))
 
-(defvar *client/server-test-uri* "spread:/rsbtest/clientserver")
+(defvar *client/server-test-uri* "/rsbtest/clientserver")
 
 (deftype cookie-type ()
   'non-negative-integer)

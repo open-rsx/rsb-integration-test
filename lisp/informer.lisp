@@ -41,10 +41,9 @@
 
     (iter (for size in '(4 256 400000))
 	  (let* ((scope (format nil "/size~D/sub1/sub2" size))
-		 (uri   (format nil "spread:~A" scope))
 		 (data  (make-string size :initial-element #\c)))
 	    (format t "[Lisp   Informer] ~@<Processing scope ~A~@:>~%" scope)
-	    (rsb:with-informer (informer uri t)
+	    (rsb:with-informer (informer scope t)
 	      (iter (for i :from 0 :below 120)
 		    (let ((event (rsb:make-event
 				  scope data

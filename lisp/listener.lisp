@@ -23,9 +23,7 @@
      (let* ((size-scope     (rsb:make-scope (format nil "/size~D" expected-size)))
 	    (expected-scope (rsb:merge-scopes nested-scope size-scope))
 	    (listen-scope   (rsb:merge-scopes sub-scope size-scope))
-	    (uri            (make-instance 'puri:uri
-					 :scheme :spread
-					 :path   (rsb:scope-string listen-scope))))
+	    (uri            (rsb:scope-string listen-scope)))
        (rsb:with-reader (reader uri)
 	(iter (for i :from 0 :below 120)
 	      (for event next (rsb:receive reader))
