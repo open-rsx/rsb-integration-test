@@ -9,7 +9,6 @@ IF(SBCL_HOME)
                  PATHS "${SBCL_HOME}/../../bin"
 	     NO_DEFAULT_PATH)
 
-    # Configure ASDF.
     # Configure Lisp environment.
     SET(LISP_INIT_FILE "" CACHE FILEPATH "File to load as Lisp init file.")
     SET(LISP_INIT_CODE "" CACHE STRING "Lisp code to be evaulated during initialization.")
