@@ -28,41 +28,43 @@ from distutils.spawn import find_executable
 from optparse import OptionParser
 
 LANG_PYTHON = "python"
-LANG_CPP = "cpp"
-LANG_JAVA = "java"
-LANG_LISP = "lisp"
+LANG_CPP    = "cpp"
+LANG_JAVA   = "java"
+LANG_LISP   = "lisp"
 
 languages = [ LANG_PYTHON, LANG_CPP, LANG_JAVA, LANG_LISP ]
 
-binaryExecutorList = {LANG_CPP: [],
-                      LANG_JAVA: ["bash"],
-                      LANG_PYTHON: [],
-                      LANG_LISP: []}
+binaryExecutorList = { LANG_CPP:    [],
+                       LANG_JAVA:   [ "bash" ],
+                       LANG_PYTHON: [],
+                       LANG_LISP:   []}
 
-binaryPaths = {LANG_CPP: "build/cpp",
-               LANG_JAVA: "build/java",
-               LANG_PYTHON: "python",
-               LANG_LISP: "build/lisp"}
+binaryPaths = { LANG_CPP:    "build/cpp",
+                LANG_JAVA:   "build/java",
+                LANG_PYTHON: "python",
+                LANG_LISP:   "build/lisp" }
 
-binaryExtensions = {LANG_CPP: "",
-                    LANG_JAVA: ".sh",
-                    LANG_PYTHON: ".py",
-                    LANG_LISP: ""}
+binaryExtensions = { LANG_CPP:    "",
+                     LANG_JAVA:   ".sh",
+                     LANG_PYTHON: ".py",
+                     LANG_LISP:   "" }
+
+transports = [ "spread" ]
 
 tests = [ "parser", "id", "pubsub", "rpc" ]
 
-values= {LANG_CPP:    {'true':       '1',
-                       'false':      '0',
-                       'stringtype': 'std::string'},
-         LANG_JAVA:   {'true':       'true',
-                       'false':      'false',
-                       'stringtype': 'String'},
-         LANG_PYTHON: {'true':       'True',
-                       'false':      'False',
-                       'stringtype': 'str'},
-         LANG_LISP:   {'true':       '1',
-                       'false':      '0',
-                       'stringtype': 'string'} }
+values= { LANG_CPP:    { 'true':       '1',
+                         'false':      '0',
+                         'stringtype': 'std::string' },
+          LANG_JAVA:   { 'true':       'true',
+                         'false':      'false',
+                         'stringtype': 'String' },
+          LANG_PYTHON: { 'true':       'True',
+                         'false':      'False',
+                         'stringtype': 'str' },
+          LANG_LISP:   { 'true':       '1',
+                         'false':      '0',
+                         'stringtype': 'string' } }
 
 class CommandStarter(object):
     """
@@ -93,13 +95,18 @@ class IntegrationTest(unittest.TestCase):
     def tearDown(self):
         pass
 
-    def startProcess(self, lang, kind, *args):
+    def startProcess(self, lang, kind, args = [], env = None):
         binary = os.path.join(binaryPaths[lang], kind + binaryExtensions[lang])
         commandline = binaryExecutorList[lang] + [binary] + list(args)
 
-        self.__logger.info("starting %s with command line: %s" % (kind, commandline))
+        self.__logger.info("starting %s with command line: %s and environment %s"
+                           % (kind, commandline, env))
 
-        return subprocess.Popen(commandline)
+        environment = dict(os.environ)
+        if env:
+            for k, v in env.items():
+                environment[k] = v
+        return subprocess.Popen(commandline, env = environment)
 
     def killProcesses(self, *processes):
         for process in processes:
@@ -132,14 +139,34 @@ class IntegrationTest(unittest.TestCase):
         return failed, reason
 
     @classmethod
-    def addListenerInformerPair(clazz, listenerLang, informerLang):
+    def prepareTransportConfiguration(clazz, transport):
+        if transport == 'spread':
+            spread, socket     = '1', '0'
+            options1, options2 = {}, {}
+        elif transport == 'socket':
+            spread, socket     = '0', '1'
+            options1, options2 = {}, { 'RSB_TRANSPORT_SOCKET_SERVER': '1' }
+        else:
+            raise ValueError, "Unknown transport `%s'" % transport
+
+        os.environ['RSB_TRANSPORT_INPROCESS_ENABLED'] = '0'
+        os.environ['RSB_TRANSPORT_SPREAD_ENABLED']    = spread
+        os.environ['RSB_TRANSPORT_SOCKET_ENABLED']    = socket
+
+        return options1, options2
+
+    @classmethod
+    def addListenerInformerPair(clazz, transport, listenerLang, informerLang):
         def testFunc(self):
+            # Prepare environment
+            informerOptions, listenerOptions = clazz.prepareTransportConfiguration(transport)
+
             # Start listener and informer processes
             waitFile = 'test/%s-listener-ready' % listenerLang
             if os.path.exists(waitFile):
                 self.__logger.warn("Deleting old waitFile %s" % waitFile)
                 os.remove(waitFile)
-            listenerProc = self.startProcess(listenerLang, "listener")
+            listenerProc = self.startProcess(listenerLang, "listener", env = listenerOptions)
             waitStart = time.time()
             while not os.path.exists(waitFile):
                 if time.time() > waitStart + 5:
@@ -152,7 +179,8 @@ class IntegrationTest(unittest.TestCase):
             self.__logger.info("%s listener startup took %s seconds"
                                % (listenerLang, time.time() - waitStart))
             informerProc = self.startProcess(informerLang, "informer",
-                                             "--listener-pid", str(listenerProc.pid))
+                                             [ "--listener-pid", str(listenerProc.pid) ],
+                                             env = informerOptions)
             time.sleep(1)
 
             codes = self.waitForProcesses(60, informerProc, listenerProc)
@@ -164,18 +192,24 @@ class IntegrationTest(unittest.TestCase):
             # TODO check message contents parsed from stdout of the listeners
 
         setattr(clazz,
-                'testListenerInformer' + listenerLang.capitalize() + informerLang.capitalize(),
+                'testListenerInformer' + transport.capitalize() + listenerLang.capitalize() + informerLang.capitalize(),
                 testFunc)
 
     @classmethod
-    def addClientServerPair(clazz, clientLang, serverLang):
+    def addClientServerPair(clazz, transport, clientLang, serverLang):
         def testFunc(self):
+            # Prepare environment
+            clientOptions, serverOptions = clazz.prepareTransportConfiguration(transport)
+
+            # Start client and server processes
             cookie = str(random.randint(0, 1 << 31))
             serverProc = self.startProcess(serverLang, "server",
-                                           "--cookie", cookie)
-            time.sleep(1) # TODO proper waiting
+                                           [ "--cookie", cookie ],
+                                           env = serverOptions)
+            time.sleep(2) # TODO proper waiting
             clientProc = self.startProcess(clientLang, "client",
-                                           "--cookie", cookie)
+                                           [ "--cookie", cookie ],
+                                           env = clientOptions)
 
             codes = self.waitForProcesses(30, clientProc, serverProc)
             failed, reason = self.analyzeExitCodes(codes, ("client", "server"))
@@ -184,7 +218,7 @@ class IntegrationTest(unittest.TestCase):
                           % (clientLang, serverLang, reason))
 
         setattr(clazz,
-                'testClientServer' + clientLang.capitalize() + serverLang.capitalize(),
+                'testClientServer' + transport.capitalize() + clientLang.capitalize() + serverLang.capitalize(),
                 testFunc)
 
     @classmethod
@@ -194,7 +228,7 @@ class IntegrationTest(unittest.TestCase):
             output   = 'test/config-smoke-%s.output' % lang
             expected = 'test/config-smoke.expected'
 
-            configProc = self.startProcess(lang, 'config', input, output)
+            configProc = self.startProcess(lang, 'config', [ input, output ])
             configProc.wait()
 
             actual = open(output).read()
@@ -231,21 +265,39 @@ def run():
     # Commandline options
     parser = OptionParser(usage = ("usage: %%prog [OPTIONS] [LANG1 [LANG2 [...]]]\nwhere LANGN in %s"
                                    % languages))
-    parser.add_option("-s", "--spread",
-                      dest    = "spread",
-                      metavar = "EXECUTABLE",
-                      help    = "spread executable")
-    parser.add_option("-p", "--spread-port",
-                      dest    = "port",
-                      type    = int,
-                      default = 4545,
-                      help    = "Number of the port that the Spread daemon should use.")
+
+    # General options
     parser.add_option("-t", "--test",
                       dest    = "tests",
                       action  = "append",
                       metavar = "CATEGORY",
                       help    = ("Test categories that should be executed. Can be supplied multiple times. Valid categories are: %s"
                                  % tests))
+    parser.add_option("-r", "--transport",
+                      dest    = "transports",
+                      action  = "append",
+                      metavar = "TRANSPORT",
+                      help    = ("Transports for which tests should be executed. Can be supplied multiple times. Valid transports are: %s"
+                                 % transports))
+
+    # Spread options
+    parser.add_option("-s", "--spread",
+                      dest    = "spreadExecutable",
+                      metavar = "EXECUTABLE",
+                      help    = "spread executable")
+    parser.add_option("-p", "--spread-port",
+                      dest    = "spreadPort",
+                      type    = int,
+                      default = 4545,
+                      help    = "Number of the port that the Spread daemon should use.")
+
+    # Socket options
+    parser.add_option("-o", "--socket-port",
+                      dest    = "socketPort",
+                      type    = int,
+                      default = 7777,
+                      help    = "Number of the port that the socket transport should use.")
+
     (options, args) = parser.parse_args()
 
     # Restrict languages to specified ones.
@@ -259,23 +311,32 @@ def run():
     else:
         selectedTests = tests
 
-    # Prepare config file and launch spread
-    with open("test/spread.conf.in") as template:
-        content = template.read().replace('@PORT@', str(options.port))
-    with open("test/spread.conf", "w") as config:
-        config.write(content)
+    # Determine transports to use.
+    if options.transports:
+        selectedTransports = options.transports
+    else:
+        selectedTransports = transports
 
-    spreadExecutable = find_executable("spread")
-    if options.spread:
-        spreadExecutable = options.spread
-    spread = None
-    if spreadExecutable:
-        spread = CommandStarter([spreadExecutable, "-n", "localhost", "-c", "test/spread.conf"])
+    # Prepare config file and launch spread
+    if 'spread' in selectedTransports:
+        with open("test/spread.conf.in") as template:
+            content = template.read().replace('@PORT@', str(options.spreadPort))
+        with open("test/spread.conf", "w") as config:
+            config.write(content)
+
+        spreadExecutable = find_executable("spread")
+        if options.spreadExecutable:
+            spreadExecutable = options.spreadExecutable
+        spread = None
+        if spreadExecutable:
+            spread = CommandStarter([spreadExecutable, "-n", "localhost", "-c", "test/spread.conf"])
 
     # Export configured spread port into configuration variable
-    os.environ['RSB_TRANSPORT_INPROCESS_ENABLED'] = '0'
-    os.environ['RSB_TRANSPORT_SPREAD_ENABLED']    = '1'
-    os.environ['RSB_TRANSPORT_SPREAD_PORT']       = str(options.port)
+    if 'spread' in selectedTransports:
+        os.environ['RSB_TRANSPORT_SPREAD_PORT'] = str(options.spreadPort)
+
+    if 'socket' in selectedTransports:
+        os.environ['RSB_TRANSPORT_SOCKET_PORT'] = str(options.socketPort)
 
     # Add a test method for the configuration test for each language.
     if "parser" in selectedTests:
@@ -290,13 +351,13 @@ def run():
     # for each pair of languages.
     if "pubsub" in selectedTests:
         map(lambda x: IntegrationTest.addListenerInformerPair(*x),
-            itertools.product(selectedLanguages, selectedLanguages))
+            itertools.product(selectedTransports, selectedLanguages, selectedLanguages))
 
     # Add a test method for the client/server communication test for
     # each pair of languages.
     if "rpc" in selectedTests:
         map(lambda x: IntegrationTest.addClientServerPair(*x),
-            itertools.product(selectedLanguages, selectedLanguages))
+            itertools.product(selectedTransports, selectedLanguages, selectedLanguages))
 
     # Execute the generated test suite.
     xmlrunner.XMLTestRunner(output='test-reports').run(unittest.TestLoader().loadTestsFromTestCase(IntegrationTest))
