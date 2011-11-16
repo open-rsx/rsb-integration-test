@@ -43,20 +43,20 @@ int main(int argc, char *argv[]) {
 
     options_description options("Allowed options");
     options.add_options()
-	("help",
-	 "Display a help message.")
-	("cookie",
-	 value<IntegerType>(&cookie),
-	 "A cookie that is verified by the server in the \"ping\" method call.");
+        ("help",
+         "Display a help message.")
+        ("cookie",
+         value<IntegerType>(&cookie),
+         "A cookie that is verified by the server in the \"ping\" method call.");
     variables_map map;
     store(command_line_parser(argc, argv)
-	  .options(options)
-	  .run(), map);
+          .options(options)
+          .run(), map);
     notify(map);
     if (map.count("help")) {
-	cout << "usage: server [OPTIONS]" << endl;
-	cout << options << endl;
-	exit(0);
+        cout << "usage: server [OPTIONS]" << endl;
+        cout << options << endl;
+        exit(0);
     }
 
     Scope scope("/rsbtest/clientserver");
@@ -69,10 +69,10 @@ int main(int argc, char *argv[]) {
     {
         cout << "[C++    Client] calling \"ping\" method" << endl;
         shared_ptr<IntegerType> request(new IntegerType(cookie));
-	if (*remoteServer->call<string>("ping", request) != "pong") {
-	    cerr << "Call to \"ping\" method did produce expected result" << endl;
-	    return EXIT_FAILURE;
-	}
+        if (*remoteServer->call<string>("ping", request) != "pong") {
+            cerr << "Call to \"ping\" method did produce expected result" << endl;
+            return EXIT_FAILURE;
+        }
     }
 
     // Call echo method.
@@ -80,24 +80,24 @@ int main(int argc, char *argv[]) {
         cout << "[C++    Client] Calling \"echo\" method" << endl;
         shared_ptr<string> request(new string("hello from C++"));
         if (*remoteServer->call<string>("echo", request)
-	    != "hello from C++") {
-	    cerr << "Call to \"echo\" method did not produce expected result." << endl;
-	    return EXIT_FAILURE;
-	}
+            != "hello from C++") {
+            cerr << "Call to \"echo\" method did not produce expected result." << endl;
+            return EXIT_FAILURE;
+        }
     }
 
     // Call a method multiple times with and without overlapping calls.
     cout << "[C++    Client] Calling \"addone\" method (100 times, synchronous)" << endl;
     {
-	for (IntegerType i = 0; i < 100; ++i) {
+        for (IntegerType i = 0; i < 100; ++i) {
             shared_ptr<IntegerType> request(new IntegerType(i));
-	    IntegerType result
-		= *remoteServer->call<IntegerType>("addone", request);
+            IntegerType result
+                = *remoteServer->call<IntegerType>("addone", request);
             if (result != i + 1) {
-		cerr << "Synchronous call to \"addone\" method returned " << result
-		     << " instead of " << i + 1 << endl;
-		return EXIT_FAILURE;
-	    }
+                cerr << "Synchronous call to \"addone\" method returned " << result
+                     << " instead of " << i + 1 << endl;
+                return EXIT_FAILURE;
+            }
         }
     }
 
@@ -109,21 +109,21 @@ int main(int argc, char *argv[]) {
             futures.push_back(remoteServer->callAsync<IntegerType>("addone", request));
         }
         for (IntegerType i = 0; i < 100; ++i) {
-	    IntegerType result = *futures[i].get(10);
-	    if (result != i + 1) {
-		cerr << "Asynchronous call to \"addone\" method returned " << result
-		     << " instead of " << i + 1 << endl;
-		return EXIT_FAILURE;
-	    }
+            IntegerType result = *futures[i].get(10);
+            if (result != i + 1) {
+                cerr << "Asynchronous call to \"addone\" method returned " << result
+                     << " instead of " << i + 1 << endl;
+                return EXIT_FAILURE;
+            }
         }
     }
 
     cout << "[C++    Client] Calling \"putimage\" method" << endl;
     boost::shared_ptr<running::example::Image>
-	image(new running::example::Image());
+        image(new running::example::Image());
     image->set_width(100);
     image->set_height(100);
-    image->set_data(string('a', 3 * 1024 * 1024));
+    image->set_data(string(3 * 1024 * 1024, 'a'));
     remoteServer->call<void>("putimage", image);
 
     // Exercise exception mechanism.
