@@ -81,7 +81,7 @@ if __name__ == '__main__':
     localServer.addMethod('addone', addOne, long, long)
 
     def putImage(x):
-        pass
+        print '[Python Server] "putImage" method called'
     localServer.addMethod('putimage', putImage, Image, type(None))
 
     def error(x):
