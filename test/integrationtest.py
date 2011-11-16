@@ -1,6 +1,7 @@
 # ============================================================
 #
 # Copyright (C) 2011 by Johannes Wienke <jwienke at techfak dot uni-bielefeld dot de>
+# Copyright (C) 2011 Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 #
 # This program is free software; you can redistribute it
 # and/or modify it under the terms of the GNU General
@@ -138,14 +139,18 @@ class IntegrationTest(unittest.TestCase):
                 reason += 'non-zero exit code of %s process; ' % name
         return failed, reason
 
+    nextSocketPort = 0
+
     @classmethod
     def prepareTransportConfiguration(clazz, transport):
         if transport == 'spread':
             spread, socket     = '1', '0'
             options1, options2 = {}, {}
         elif transport == 'socket':
-            spread, socket     = '0', '1'
-            options1, options2 = {}, { 'RSB_TRANSPORT_SOCKET_SERVER': '1' }
+            spread, socket = '0', '1'
+            options1 = { 'RSB_TRANSPORT_SOCKET_PORT': str(clazz.nextSocketPort) }
+            options2 = { 'RSB_TRANSPORT_SOCKET_PORT': str(clazz.nextSocketPort) }
+            clazz.nextSocketPort += 1
         else:
             raise ValueError, "Unknown transport `%s'" % transport
 
@@ -336,7 +341,8 @@ def run():
         os.environ['RSB_TRANSPORT_SPREAD_PORT'] = str(options.spreadPort)
 
     if 'socket' in selectedTransports:
-        os.environ['RSB_TRANSPORT_SOCKET_PORT'] = str(options.socketPort)
+        IntegrationTest.nextSocketPort = options.socketPort
+        os.environ['RSB_TRANSPORT_SOCKET_SERVER'] = 'auto'
 
     # Add a test method for the configuration test for each language.
     if "parser" in selectedTests:
