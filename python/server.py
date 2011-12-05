@@ -45,7 +45,7 @@ def terminateNotify():
         condition.notify()
 
 if __name__ == '__main__':
-    converter = ProtocolBufferConverter(messageClass = Image)
+    converter = rsb.converter.ProtocolBufferConverter(messageClass = Image)
     rsb.converter.registerGlobalConverter(converter)
     rsb.__defaultParticipantConfig = rsb.ParticipantConfig.fromDefaultSources()
 
