@@ -22,7 +22,7 @@ import threading
 import optparse
 
 import rsb
-from rsb.transport.converter import registerGlobalConverter, ProtocolBufferConverter
+import rsb.converter
 import rsb.patterns
 
 sys.path.append('build/python')
@@ -46,7 +46,7 @@ def terminateNotify():
 
 if __name__ == '__main__':
     converter = ProtocolBufferConverter(messageClass = Image)
-    registerGlobalConverter(converter)
+    rsb.converter.registerGlobalConverter(converter)
     rsb.__defaultParticipantConfig = rsb.ParticipantConfig.fromDefaultSources()
 
     parser = optparse.OptionParser()

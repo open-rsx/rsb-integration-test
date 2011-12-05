@@ -20,15 +20,15 @@ import sys
 import optparse
 
 import rsb
-from rsb.transport.converter import registerGlobalConverter, ProtocolBufferConverter
+import rsb.converter
 import rsb.patterns
 
 sys.path.append('build/python')
 from Image_pb2 import Image
 
 if __name__ == '__main__':
-    converter = ProtocolBufferConverter(messageClass = Image)
-    registerGlobalConverter(converter)
+    converter = rsb.converter.ProtocolBufferConverter(messageClass = Image)
+    rsb.converter.registerGlobalConverter(converter)
     rsb.__defaultParticipantConfig = rsb.ParticipantConfig.fromDefaultSources()
 
     parser = optparse.OptionParser()
