@@ -61,9 +61,9 @@ public:
         assert(event->getCauses().size() == 1);
         assert(*event->getCauses().begin() == this->expectedCause);
 
+        boost::recursive_mutex::scoped_lock lock(m);
         ++this->count;
         if (isDone()) {
-            boost::recursive_mutex::scoped_lock lock(m);
             cond.notify_all();
         }
     }
