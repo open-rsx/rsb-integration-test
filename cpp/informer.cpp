@@ -43,6 +43,7 @@ using namespace rsb;
 
 int main(int argc, char *argv[]) {
     if (argc != 3) {
+        cerr << "usage: informer --listener-pid LISTENER-PID " << endl;
         return EXIT_FAILURE;
     }
     int listenerPid = lexical_cast<int>(argv[2]);
@@ -55,11 +56,13 @@ int main(int argc, char *argv[]) {
     sizes.push_back(4);
     sizes.push_back(256);
     sizes.push_back(400000);
+    vector< Informer<string>::Ptr > informers;
     for (vector<int>::const_iterator it = sizes.begin(); it != sizes.end();
          ++it) {
         Scope scope(str(format("/size%1%/sub1/sub2") % *it));
         cout << "[C++    Informer] Processing scope " << scope << endl;
         Informer<string>::Ptr informer = factory.createInformer<string>(scope);
+        informers.push_back(informer);
 
         Informer<string>::DataPtr s(new string(*it, 'c'));
         EventPtr event = informer->createEvent();
