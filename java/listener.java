@@ -2,7 +2,7 @@
  *
  * This file is part of the RSB project.
  *
- * Copyright (C) 2011 Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
+ * Copyright (C) 2011, 2012 Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -38,106 +38,107 @@ import rsb.transport.TransportFactory;
 
 public class listener {
 
-	private static class EventHandler extends AbstractEventHandler implements
-			Runnable {
-	    public EventHandler(Scope listenScope,
-				Scope expectedScope,
-				int expectedSize,
-				int expectedCount)
-				throws Throwable {
-			this.expectedScope = expectedScope;
-			this.expectedSize = expectedSize;
+    private static class EventHandler extends AbstractEventHandler
+                                      implements Runnable {
 
-			this.expectedCount = expectedCount;
+        public EventHandler(Scope listenScope,
+                            Scope expectedScope,
+                            int expectedSize,
+                            int expectedCount)
+            throws Throwable {
+            this.expectedScope = expectedScope;
+            this.expectedSize = expectedSize;
 
-			this.listener = Factory.getInstance().createListener(listenScope);
-			this.listener.activate();
-			listener.addHandler(this, true);
-		}
+            this.expectedCount = expectedCount;
 
-		@Override
-		public void handleEvent(Event event) {
-		    String data = (String) event.getData();
+            this.listener = Factory.getInstance().createListener(listenScope);
+            this.listener.activate();
+            listener.addHandler(this, true);
+        }
 
-		        this.count++;
-		}
+        @Override
+        public void handleEvent(Event event) {
+            String data = (String) event.getData();
 
-		public boolean isDone() {
-			return this.count == this.expectedCount;
-		}
+            this.count++;
+        }
 
-		public void run() {
-			while (!isDone()) {
-				try {
-					Thread.sleep(1);
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				}
-			}
-			this.listener.deactivate();
-		}
+        public boolean isDone() {
+            return this.count == this.expectedCount;
+        }
 
-		private final Scope expectedScope;
-		private final int expectedSize;
-	        private final EventId expectedCause = new EventId(new ParticipantId("00000000-0000-0000-0000-000000000000"), 0);
+        public void run() {
+            while (!isDone()) {
+                try {
+                    Thread.sleep(1);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+            this.listener.deactivate();
+        }
 
-		private int count;
-		private final int expectedCount;
+        private final Scope expectedScope;
+        private final int expectedSize;
+        private final EventId expectedCause = new EventId(new ParticipantId("00000000-0000-0000-0000-000000000000"), 0);
 
-		private Listener listener;
-	}
+        private int count;
+        private final int expectedCount;
 
-	public static void main(String[] args) {
+        private Listener listener;
+    }
 
-		ArrayList<Integer> sizes = new ArrayList<Integer>();
-		sizes.add(4);
-		sizes.add(256);
-		sizes.add(400000);
-		ArrayList<String> components = new ArrayList<String>();
-		components.add("/");
-		components.add("sub1");
-		components.add("/sub2");
-		ArrayList<Thread> listeners = new ArrayList<Thread>();
-		for (int size : sizes) {
-			String scopeString = "/size" + size;
-			for (String component : components) {
-				scopeString += component;
-				Scope scope = new Scope(scopeString);
-				try {
-					Thread thread = new Thread(new EventHandler(scope,
-										    new Scope("/size" + size),
-										    size,
-										    120));
-					thread.start();
-					listeners.add(thread);
-					Thread.sleep(1);
-				} catch (java.lang.Throwable e) {
-					System.err.println("[Java   Listener] Failure for size "
-							+ size + ": " + e);
-					System.exit(1);
-				}
-			}
-		}
+    public static void main(String[] args) {
 
-		try {
-			File file = new File("test/java-listener-ready");
-			file.createNewFile();
-			System.err.println("[Java   Listener] Created marker file.");
-		} catch (IOException e) {
-			System.err.println("[Java   Listener] Could not create marker file.");
-			System.exit(1);
-		}
+        ArrayList<Integer> sizes = new ArrayList<Integer>();
+        sizes.add(4);
+        sizes.add(256);
+        sizes.add(400000);
+        ArrayList<String> components = new ArrayList<String>();
+        components.add("/");
+        components.add("sub1");
+        components.add("/sub2");
+        ArrayList<Thread> listeners = new ArrayList<Thread>();
+        for (int size : sizes) {
+            String scopeString = "/size" + size;
+            for (String component : components) {
+                scopeString += component;
+                Scope scope = new Scope(scopeString);
+                try {
+                    Thread thread = new Thread(new EventHandler(scope,
+                                                                new Scope("/size" + size),
+                                                                size,
+                                                                120));
+                    thread.start();
+                    listeners.add(thread);
+                    Thread.sleep(1);
+                } catch (java.lang.Throwable e) {
+                    System.err.println("[Java   Listener] Failure for size "
+                                       + size + ": " + e);
+                    System.exit(1);
+                }
+            }
+        }
 
-		for (Thread listener : listeners) {
-			try {
-				listener.join();
-			} catch (InterruptedException e) {
-				System.err
-						.println("[Java   Listener] Interrupted while waiting for thread.");
-				System.exit(1);
-			}
-		}
-		System.err.println("[Java   Listener] done!");
-	}
+        try {
+            File file = new File("test/java-listener-ready");
+            file.createNewFile();
+            System.err.println("[Java   Listener] Created marker file.");
+        } catch (IOException e) {
+            System.err.println("[Java   Listener] Could not create marker file.");
+            System.exit(1);
+        }
+
+        for (Thread listener : listeners) {
+            try {
+                listener.join();
+            } catch (InterruptedException e) {
+                System.err
+                    .println("[Java   Listener] Interrupted while waiting for thread.");
+                System.exit(1);
+            }
+        }
+        System.err.println("[Java   Listener] done!");
+    }
 
 }

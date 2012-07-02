@@ -2,7 +2,7 @@
  *
  * This file is part of the RSB project.
  *
- * Copyright (C) 2011 Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
+ * Copyright (C) 2011, 2012 Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -53,7 +53,7 @@ public class informer {
                 String data = builder.toString();
 
                 Event event = new Event(scope, String.class, data);
-		event.addCause(new EventId(new ParticipantId("00000000-0000-0000-0000-000000000000"), 0));
+                event.addCause(new EventId(new ParticipantId("00000000-0000-0000-0000-000000000000"), 0));
                 MetaData metaData = event.getMetaData();
                 metaData.setUserInfo("informer-lang", "Java");
                 metaData.setUserTime("informer-start", startTime);
