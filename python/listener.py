@@ -2,6 +2,7 @@
 # ============================================================
 #
 # Copyright (C) 2011 by Johannes Wienke <jwienke at techfak dot uni-bielefeld dot de>
+# Copyright (C) 2011, 2012 Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 #
 # This program is free software; you can redistribute it
 # and/or modify it under the terms of the GNU General
@@ -22,9 +23,6 @@ import uuid
 from threading import Condition
 
 if __name__ == '__main__':
-
-#    logging.basicConfig()
-#    logging.getLogger().setLevel(logging.DEBUG)
 
     class Receiver(object):
 
@@ -56,6 +54,10 @@ if __name__ == '__main__':
     receivers = []
     try:
         for size in [ 4, 256, 400000 ]:
+            # Create listeners for all scopes below the /sizeSIZE scope:
+            # * /sizeSIZE
+            # * /sizeSIZE/sub1
+            # * /sizeSIZE/sub1/sub2
             scope = rsb.Scope("/size%d/sub1/sub2" % size)
             scopes = scope.superScopes(True)
             for superscope in scopes[1:]:
