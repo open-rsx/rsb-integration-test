@@ -1,6 +1,6 @@
 ;;; informer.lisp --- Informer part of the Lisp integration test code.
 ;;
-;; Copyright (C) 2011 Jan Moringen
+;; Copyright (C) 2011, 2012 Jan Moringen
 ;;
 ;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 ;;
@@ -51,4 +51,6 @@
 				  :index         (format nil "~D" (+ listener-pid i))
 				  :causes        causes)))
 		      (setf (rsb:timestamp event :informer-start) start)
-		      (rsb:send informer event))))))))
+		      (rsb:send informer event)))))))
+
+  (format t "[Lisp   Informer] Done~%"))

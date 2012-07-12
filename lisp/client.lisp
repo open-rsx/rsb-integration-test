@@ -1,6 +1,6 @@
 ;;; client.lisp --- Client part of the Lisp integration test code.
 ;;
-;; Copyright (C) 2011 Jan Moringen
+;; Copyright (C) 2011, 2012 Jan Moringen
 ;;
 ;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 ;;
@@ -66,7 +66,9 @@
 		       (make-instance 'running.example:image
 				      :width  1024
 				      :height 1024
-				      :depths #(8 8 8)
+				      :depths (make-array 3
+                                                          :element-type     '(unsigned-byte 32)
+                                                          :initial-contents '(8 8 8))
 				      :data   (make-array (* 3 1024 1024)
 							  :element-type    '(unsigned-byte 8)
 							  :initial-element 3)))
