@@ -10,13 +10,13 @@ ENDIF()
 
 # find rsb java file
 FIND_FILE(RSB_JAVA_LIBRARY
-          NAMES RSBJava.jar ${JAVA_NAME}
+          NAMES rsb.jar ${JAVA_NAME}
           HINTS ${JAVA_ROOT}
                 "${CMAKE_INSTALL_PREFIX}/lib/java"
                 "${CMAKE_INSTALL_PREFIX}/share/java"
                 "/usr/share/java")
 IF(NOT RSB_JAVA_LIBRARY)
-    MESSAGE(SEND_ERROR "Could not find RSBJava.jar. Please define JAVA_ROOT with a folder containing the library.")
+    MESSAGE(SEND_ERROR "Could not find rsb.jar (or the value of JAVA_NAME). Please define JAVA_ROOT with a folder containing the library.")
 ENDIF()
 
 PROTOBUF_GENERATE(JAVA JAVA_PROTO_SOURCE
