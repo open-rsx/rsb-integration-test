@@ -17,6 +17,8 @@
 ;; You should have received a copy of the GNU General Public License
 ;; along with this program. If not, see <http://www.gnu.org/licenses>.
 
+(cl:in-package :rsb.integration-test)
+
 (defun informer-main ()
   ;; Commandline option boilerplate.
   (setf rsb:*default-configuration* (rsb:options-from-default-sources))
