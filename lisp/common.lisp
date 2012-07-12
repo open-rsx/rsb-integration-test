@@ -1,6 +1,6 @@
 ;;; common.lisp --- Common stuff used in the Lisp integration test code.
 ;;
-;; Copyright (C) 2011 Jan Moringen
+;; Copyright (C) 2011, 2012 Jan Moringen
 ;;
 ;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 ;;
@@ -23,19 +23,24 @@
 (load-system :usocket)
 (load-system :cl-spread)
 (load-system :cl-rsb)
-(map nil #'unintern '(for finally collect else with in)) ;; iterate bug
-
-(use-package :split-sequence)
-(use-package :alexandria)
-(use-package :bind)
-(use-package :iter)
-(use-package :com.dvlsoft.clon)
 
 (let ((descriptor (pbf:load/text #P"../../data/Image.proto")))
   (pbb:emit descriptor :class)
   (pbb:emit descriptor :packed-size)
   (pbb:emit descriptor :serializer)
   (pbb:emit descriptor :deserializer))
+
+(cl:defpackage :rsb.integration-test
+  (:use
+   :cl
+   :alexandria
+   :split-sequence
+   :bind
+   :iter
+
+   :com.dvlsoft.clon))
+
+(cl:in-package :rsb.integration-test)
 
 (defvar *client/server-test-uri* "/rsbtest/clientserver")
 
