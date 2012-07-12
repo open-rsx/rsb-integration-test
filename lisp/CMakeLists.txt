@@ -10,8 +10,12 @@ IF(SBCL_HOME)
              NO_DEFAULT_PATH)
 
     # Configure Lisp environment.
-    SET(LISP_INIT_FILE "" CACHE FILEPATH "File to load as Lisp init file.")
-    SET(LISP_INIT_CODE "" CACHE STRING "Lisp code to be evaulated during initialization.")
+    SET(LISP_FASL_DIR  "/tmp/fasl-cache-rsb-integrationtest/"
+                       CACHE STRING   "Directory in which compiled Lisp code should be placed.")
+    SET(LISP_INIT_FILE ""
+                       CACHE FILEPATH "File to load as Lisp init file.")
+    SET(LISP_INIT_CODE ""
+                       CACHE STRING   "Lisp code to be evaulated during initialization.")
     SET(LISP_INIT "")
     IF(LISP_INIT_FILE)
         SET(LISP_INIT "${LISP_INIT} --userinit ${LISP_INIT_FILE}")
@@ -21,7 +25,7 @@ IF(SBCL_HOME)
     ENDIF()
 
     SET(CL_SOURCE_REGISTRY "${CMAKE_CURRENT_SOURCE_DIR}//:")
-    SET(ASDF_OUTPUT_TRANSLATIONS "(:output-translations (t (\\\"/tmp/fasl-cache-rsb-integrationtest/\\\" :implementation)) :ignore-inherited-configuration)")
+    SET(ASDF_OUTPUT_TRANSLATIONS "(:output-translations (t (\\\"${LISP_FASL_DIR}\\\" :implementation)) :ignore-inherited-configuration)")
 
     # Create binary.
     SET(SCRIPT       "${CMAKE_CURRENT_SOURCE_DIR}/dump.lisp")
