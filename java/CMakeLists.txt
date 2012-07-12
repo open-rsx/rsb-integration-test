@@ -26,20 +26,20 @@ PROTOBUF_GENERATE(JAVA JAVA_PROTO_SOURCE
 SET(CONFIGURE_FILES build.xml
                     config.sh event_id.sh
                     listener.sh informer.sh
-		    client.sh   server.sh)
+                    client.sh   server.sh)
 FOREACH(FILE ${CONFIGURE_FILES})
     CONFIGURE_FILE("${CMAKE_CURRENT_SOURCE_DIR}/${FILE}.in"
                    "${CMAKE_CURRENT_BINARY_DIR}/${FILE}"
-		   @ONLY)
+                   @ONLY)
 ENDFOREACH()
 
 SET(JAVA_FILES config.java event_id.java
                listener.java informer.java
-	       client.java   server.java)
+               client.java   server.java)
 ADD_CUSTOM_COMMAND(OUTPUT  ${JAR_FILE}
                    COMMAND ${ANT_EXECUTABLE} dist
                    DEPENDS "${JAVA_FILES}"
-		           "${JAVA_PROTO_SOURCE}"
-		           "${CMAKE_CURRENT_BINARY_DIR}/build.xml"
+                           "${JAVA_PROTO_SOURCE}"
+                           "${CMAKE_CURRENT_BINARY_DIR}/build.xml"
                    COMMENT "Creating java jar file")
 ADD_CUSTOM_TARGET(java ALL DEPENDS ${JAR_FILE})

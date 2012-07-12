@@ -5,7 +5,7 @@ PROTOBUF_GENERATE(CPP PROTO_SOURCE PROTO_HEADER
 
 SET(PROGRAMS config.cpp event_id.cpp
              informer.cpp listener.cpp
-	     server.cpp   client.cpp)
+             server.cpp   client.cpp)
 
 FOREACH(PROGRAM ${PROGRAMS})
     GET_FILENAME_COMPONENT(BINARY "${PROGRAM}" NAME_WE)

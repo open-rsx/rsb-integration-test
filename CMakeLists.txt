@@ -42,9 +42,9 @@ INCLUDE(PedanticCompilerWarnings)
 INCLUDE_DIRECTORIES(BEFORE SYSTEM
                     ${Boost_INCLUDE_DIRS}
                     ${BOOSTUUID_INCLUDE_DIRS}
-		    ${PROTOBUF_INCLUDE_DIRS}
-		    ${RSC_INCLUDE_DIRS}
-		    ${RSB_INCLUDE_DIRS})
+                    ${PROTOBUF_INCLUDE_DIRS}
+                    ${RSC_INCLUDE_DIRS}
+                    ${RSB_INCLUDE_DIRS})
 LINK_DIRECTORIES(${Boost_LIBRARY_DIRS})
 
 # --- source code ---

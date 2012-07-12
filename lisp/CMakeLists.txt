@@ -1,13 +1,13 @@
 SET(SCRIPTS "client.lisp"   "server.lisp"
             "informer.lisp" "listener.lisp"
-	    "config.lisp"   "event_id.lisp")
+            "config.lisp"   "event_id.lisp")
 
 # Find and check SBCL installation.
 SET(SBCL_HOME $ENV{SBCL_HOME})
 IF(SBCL_HOME)
     FIND_PROGRAM(SBCL_EXECUTABLE sbcl
                  PATHS "${SBCL_HOME}/../../bin"
-	     NO_DEFAULT_PATH)
+             NO_DEFAULT_PATH)
 
     # Configure Lisp environment.
     SET(LISP_INIT_FILE "" CACHE FILEPATH "File to load as Lisp init file.")
@@ -43,7 +43,7 @@ IF(SBCL_HOME)
     SET(LINKS "")
     FOREACH(SCRIPT ${SCRIPTS})
         STRING(REPLACE ".lisp" "" LINK "${SCRIPT}")
-	SET(LINKS ${LINKS} "${CMAKE_CURRENT_BINARY_DIR}/${LINK}")
+        SET(LINKS ${LINKS} "${CMAKE_CURRENT_BINARY_DIR}/${LINK}")
         ADD_CUSTOM_COMMAND(OUTPUT  "${CMAKE_CURRENT_BINARY_DIR}/${LINK}"
                            COMMAND "${CMAKE_COMMAND}" -E create_symlink "${CMAKE_CURRENT_BINARY_DIR}/${NAME}" "${CMAKE_CURRENT_BINARY_DIR}/${LINK}"
                            DEPENDS "${CMAKE_CURRENT_BINARY_DIR}/${NAME}"
