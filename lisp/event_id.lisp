@@ -33,7 +33,7 @@
 
   ;; Check event id generation test cases.
   (iter (for line in-file "data/event-id-cases.txt" :using #'read-line)
-	(bind (((origin sequence-number expected)
+	(let+ (((origin sequence-number expected)
 		(split-sequence #\Space line))
 	       (origin          (uuid:make-uuid-from-string origin))
 	       (sequence-number (parse-integer sequence-number :radix 16))
