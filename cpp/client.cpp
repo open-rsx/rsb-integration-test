@@ -2,7 +2,7 @@
  *
  * This file is part of the RSB project
  *
- * Copyright (C) 2011 Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
+ * Copyright (C) 2011, 2012 Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
  *
  * This program is free software; you can redistribute it
  * and/or modify it under the terms of the GNU General
@@ -67,7 +67,7 @@ int main(int argc, char *argv[]) {
 
     // Call "ping" method with cookie value.
     {
-        cout << "[C++    Client] calling \"ping\" method" << endl;
+        cout << "[C++    Client] Calling \"ping\" method" << endl;
         shared_ptr<IntegerType> request(new IntegerType(cookie));
         if (*remoteServer->call<string>("ping", request) != "pong") {
             cerr << "Call to \"ping\" method did produce expected result" << endl;
@@ -143,7 +143,7 @@ int main(int argc, char *argv[]) {
         remoteServer->call<string>("terminate", request);
     }
 
-    cout << "[C++    Client] Done! " << endl;
+    cout << "[C++    Client] Done " << endl;
 
     return EXIT_SUCCESS;
 }

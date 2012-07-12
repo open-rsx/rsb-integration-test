@@ -72,6 +72,7 @@ if __name__ == '__main__':
                 listener.addHandler(receiver)
 
         open('test/python-listener-ready', 'w').close()
+        print("[Python Listener] Ready")
 
         for receiver in receivers:
             with receiver.condition:
@@ -83,4 +84,4 @@ if __name__ == '__main__':
         for listener in listeners:
             listener.deactivate()
 
-    print("[Python Listener] done!")
+    print("[Python Listener] Done")

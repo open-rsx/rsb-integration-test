@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # ============================================================
 #
-# Copyright (C) 2011 Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
+# Copyright (C) 2011, 2012 Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 #
 # This program is free software; you can redistribute it
 # and/or modify it under the terms of the GNU General
@@ -76,6 +76,6 @@ if __name__ == '__main__':
     print '[Python Client] Calling "terminate" method'
     remoteServer.terminate('')
 
-    print '[Python Client] Done!'
+    print '[Python Client] Done'
 
     remoteServer.deactivate()

@@ -88,4 +88,4 @@
     (format t "[Lisp   Client] Calling \"terminate\" method~%")
     (rsb.patterns:call server "terminate" "does not matter"))
 
-  (format t "[Lisp   Client] Done!~%"))
+  (format t "[Lisp   Client] Done~%"))

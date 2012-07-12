@@ -111,11 +111,11 @@ int main(void) {
         }
     }
 
-    cout << "[C++    Listener] Listener setup finished. Waiting for messages..."
-         << endl;
     {
         ofstream stream("test/cpp-listener-ready");
     }
+    cout << "[C++    Listener] Ready"
+         << endl;
 
     // wait *here* for shutdown as this is not known to the Subscriber
     for (vector<MyEventHandlerPtr>::const_iterator it = handlers.begin();

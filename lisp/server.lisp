@@ -92,4 +92,4 @@
       ;; Wait for "terminate" call.
       (terminate-wait)))
 
-  (format t "[Lisp   Server] Done!~%"))
+  (format t "[Lisp   Server] Done~%"))

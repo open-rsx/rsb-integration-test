@@ -138,7 +138,7 @@ public class client {
             System.exit(1);
         }
 
-        System.out.println("[Java   Client] Done!");
+        System.out.println("[Java   Client] Done");
     }
 
 }

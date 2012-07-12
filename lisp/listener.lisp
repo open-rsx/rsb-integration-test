@@ -58,4 +58,4 @@
       (declare (ignorable stream)))
     (map 'nil #'bt:join-thread listeners))
 
-  (format t "[Lisp   Listener] done!~%"))
+  (format t "[Lisp   Listener] Done~%"))

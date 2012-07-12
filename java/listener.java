@@ -123,7 +123,7 @@ public class listener {
         try {
             File file = new File("test/java-listener-ready");
             file.createNewFile();
-            System.err.println("[Java   Listener] Created marker file.");
+            System.err.println("[Java   Listener] Ready");
         } catch (IOException e) {
             System.err.println("[Java   Listener] Could not create marker file.");
             System.exit(1);
@@ -138,7 +138,7 @@ public class listener {
                 System.exit(1);
             }
         }
-        System.err.println("[Java   Listener] done!");
+        System.err.println("[Java   Listener] Done");
     }
 
 }

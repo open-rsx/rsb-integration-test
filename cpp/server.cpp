@@ -2,7 +2,7 @@
  *
  * This file is part of the RSB project
  *
- * Copyright (C) 2011 Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
+ * Copyright (C) 2011, 2012 Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
  *
  * This program is free software; you can redistribute it
  * and/or modify it under the terms of the GNU General
@@ -45,19 +45,19 @@ typedef boost::uint64_t IntegerType;
 class PingCallback: public Server::Callback<IntegerType, string> {
 public:
     PingCallback(IntegerType expected) :
-	expected(expected) {
+        expected(expected) {
     }
 
     boost::shared_ptr<string> call(const string &/*methodName*/,
-				   boost::shared_ptr<IntegerType> request) {
-	cout << "[C++    Server] \"ping\" method called with request "
-	     << *request << endl;
-	if (*request != this->expected) {
-	    cerr << "Received cookie " << *request
-		 << " when expecting " << this->expected << endl;
-	    exit(1);
-	}
-	return boost::shared_ptr<string>(new string("pong"));
+                                   boost::shared_ptr<IntegerType> request) {
+        cout << "[C++    Server] \"ping\" method called with request "
+             << *request << endl;
+        if (*request != this->expected) {
+            cerr << "Received cookie " << *request
+                 << " when expecting " << this->expected << endl;
+            exit(1);
+        }
+        return boost::shared_ptr<string>(new string("pong"));
     }
 private:
     IntegerType expected;
@@ -66,7 +66,7 @@ private:
 class EchoCallback: public Server::Callback<string, string> {
 public:
     boost::shared_ptr<string> call(const string &/*methodName*/,
-				   boost::shared_ptr<string> request) {
+                                   boost::shared_ptr<string> request) {
         cout << "[C++    Server] \"echo\" method called" << endl;
         return request;
     }
@@ -75,18 +75,18 @@ public:
 class AddOneCallback: public Server::Callback<IntegerType, IntegerType> {
 public:
     boost::shared_ptr<IntegerType> call(const string &/*methodName*/,
-					boost::shared_ptr<IntegerType> request) {
-	if (*request == 0) {
-	    cout << "[C++    Server] \"addone\" method called (for 0)" << endl;
-	}
-	return boost::shared_ptr<IntegerType>(new IntegerType(*request + 1));
+                                        boost::shared_ptr<IntegerType> request) {
+        if (*request == 0) {
+            cout << "[C++    Server] \"addone\" method called (for 0)" << endl;
+        }
+        return boost::shared_ptr<IntegerType>(new IntegerType(*request + 1));
     }
 };
 
 class PutimageCallback: public Server::Callback<running::example::Image, void> {
 public:
     void call(const string &/*methodName*/,
-	      boost::shared_ptr<running::example::Image> /*request*/) {
+              boost::shared_ptr<running::example::Image> /*request*/) {
         cout << "[C++    Server] \"putimage\" method called" << endl;
     }
 };
@@ -94,7 +94,7 @@ public:
 class ErrorCallback: public Server::Callback<string, string> {
 public:
     boost::shared_ptr<string> call(const string &/*methodName*/,
-				   boost::shared_ptr<string> /*request*/) {
+                                   boost::shared_ptr<string> /*request*/) {
         cout << "[C++    Server] \"error\" method called" << endl;
         throw runtime_error("intentional exception");
     }
@@ -134,20 +134,20 @@ int main(int argc, char *argv[]) {
 
     options_description options("Allowed options");
     options.add_options()
-	("help",
-	 "Display a help message.")
-	("cookie",
-	 value<IntegerType>(&cookie),
-	 "A cookie for verification in \"ping\" method call.");
+        ("help",
+         "Display a help message.")
+        ("cookie",
+         value<IntegerType>(&cookie),
+         "A cookie for verification in \"ping\" method call.");
     variables_map map;
     store(command_line_parser(argc, argv)
-	  .options(options)
-	  .run(), map);
+          .options(options)
+          .run(), map);
     notify(map);
     if (map.count("help")) {
-	cout << "usage: server [OPTIONS]" << endl;
-	cout << options << endl;
-	exit(0);
+        cout << "usage: server [OPTIONS]" << endl;
+        cout << options << endl;
+        exit(0);
     }
 
     Scope scope("/rsbtest/clientserver");
@@ -166,7 +166,7 @@ int main(int argc, char *argv[]) {
     server->registerMethod("terminate", terminate);
 
     terminate->wait();
-    cout << "[C++    Server] Done!" << endl;
+    cout << "[C++    Server] Done" << endl;
 
     return EXIT_SUCCESS;
 }
