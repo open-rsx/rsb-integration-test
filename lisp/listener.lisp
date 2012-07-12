@@ -1,6 +1,6 @@
 ;;; listener.lisp --- Listener part of the Lisp integration test code.
 ;;
-;; Copyright (C) 2011 Jan Moringen
+;; Copyright (C) 2011, 2012 Jan Moringen
 ;;
 ;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 ;;
@@ -16,6 +16,8 @@
 ;;
 ;; You should have received a copy of the GNU General Public License
 ;; along with this program. If not, see <http://www.gnu.org/licenses>.
+
+(cl:in-package :rsb.integration-test)
 
 (defun listener-for-scope (sub-scope expected-size expected-causes nested-scope)
   (bt:make-thread
