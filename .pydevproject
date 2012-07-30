@@ -5,9 +5,9 @@
 <pydev_property name="org.python.pydev.PYTHON_PROJECT_INTERPRETER">python2</pydev_property>
 <pydev_property name="org.python.pydev.PYTHON_PROJECT_VERSION">python 2.7</pydev_property>
 <pydev_pathproperty name="org.python.pydev.PROJECT_SOURCE_PATH">
-<path>/RSBIntegrationTest/python</path>
-<path>/RSBIntegrationTest/test</path>
-<path>/RSBIntegrationTest/unittest_xml_reporting-1.0.3-py2.6.egg</path>
+<path>/rsb-integrationtest/python</path>
+<path>/rsb-integrationtest/test</path>
+<path>/rsb-integrationtest/unittest_xml_reporting-1.0.3-py2.6.egg</path>
 </pydev_pathproperty>
 <pydev_pathproperty name="org.python.pydev.PROJECT_EXTERNAL_SOURCE_PATH">
 <path>/homes/jwienke/local/lucid/x86_64/lib/python2.6/site-packages</path>
