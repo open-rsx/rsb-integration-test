@@ -7,7 +7,11 @@
 
 (use-package :alexandria)
 (use-package :iter)
-(use-package :com.dvlsoft.clon)
+(import '(com.dvlsoft.clon:make-synopsis
+	  com.dvlsoft.clon:make-context
+	  com.dvlsoft.clon:make-flag
+	  com.dvlsoft.clon:getopt
+	  com.dvlsoft.clon:help))
 
 (defvar *client/server-test-uri* "spread:/rsbtest/clientserver")
 
@@ -45,4 +49,4 @@
 
   (format t "[Lisp   Client] Done!~%"))
 
-(dump "client" main)
+(com.dvlsoft.clon:dump "client" main)

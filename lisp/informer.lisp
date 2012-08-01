@@ -1,4 +1,3 @@
-
 (load-system :sb-posix)
 (load-system :com.dvlsoft.clon)
 (load-system :cl-protobuf)
@@ -8,7 +7,12 @@
 
 (use-package :alexandria)
 (use-package :iter)
-(use-package :com.dvlsoft.clon)
+(import '(com.dvlsoft.clon:make-synopsis
+	  com.dvlsoft.clon:make-context
+	  com.dvlsoft.clon:make-flag
+	  com.dvlsoft.clon:make-lispobj
+	  com.dvlsoft.clon:getopt
+	  com.dvlsoft.clon:help))
 
 (defun main ()
   (setf rsb:*default-configuration* (rsb:options-from-default-sources))
@@ -28,7 +32,7 @@
 	(start        (local-time:now)))
     (unless listener-pid
       (help)
-      (exit 1))
+      (com.dvlsoft.clon:exit 1))
 
     (iter (for size in '(4 256 400000))
 	  (let ((scope (format nil "/size~D/sub1/sub2" size))
@@ -44,4 +48,4 @@
 		      (setf (rsb:timestamp event :informer-start) start)
 		      (rsb:send informer event))))))))
 
-(dump "informer" main)
+(com.dvlsoft.clon:dump "informer" main)

@@ -6,7 +6,11 @@
 (use-package :alexandria)
 (use-package :bind)
 (use-package :iter)
-(use-package :com.dvlsoft.clon)
+(import '(com.dvlsoft.clon:make-synopsis
+	  com.dvlsoft.clon:make-context
+	  com.dvlsoft.clon:make-flag
+	  com.dvlsoft.clon:getopt
+	  com.dvlsoft.clon:help))
 
 (defun main ()
   ;; Commandline option boilerplate.
@@ -35,4 +39,4 @@
 		  origin sequence-number (rsb:event-id event) expected)
 	  (assert (rsb::uuid= (rsb:event-id event) expected)))))
 
-(dump "event_id" main)
+(com.dvlsoft.clon:dump "event_id" main)

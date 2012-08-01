@@ -7,7 +7,11 @@
 
 (use-package :alexandria)
 (use-package :iter)
-(use-package :com.dvlsoft.clon)
+(import '(com.dvlsoft.clon:make-synopsis
+	  com.dvlsoft.clon:make-context
+	  com.dvlsoft.clon:make-flag
+	  com.dvlsoft.clon:getopt
+	  com.dvlsoft.clon:help))
 
 (defun listener-for-scope (size scope)
   (bt:make-thread

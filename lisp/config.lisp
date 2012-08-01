@@ -6,7 +6,12 @@
 
 (use-package :alexandria)
 (use-package :iter)
-(use-package :com.dvlsoft.clon)
+(import '(com.dvlsoft.clon:make-synopsis
+	  com.dvlsoft.clon:make-context
+	  com.dvlsoft.clon:make-flag
+	  com.dvlsoft.clon:getopt
+	  com.dvlsoft.clon:remainder
+	  com.dvlsoft.clon:help))
 
 (defvar *interesting-options*
   '((:qualityofservice :reliability)
@@ -37,7 +42,7 @@
     (return-from main))
   (unless (length= 2 (remainder))
     (help)
-    (exit 1))
+    (com.dvlsoft.clon:exit 1))
 
   (with-input-from-file (stream (nth 0 (remainder)))
     (setf rsb:*default-configuration* (rsb:options-from-stream stream)))
@@ -48,4 +53,4 @@
 	  (for value next (rsb:option-value key))
 	  (format stream "~{~(~A~)~^.~}: ~A~%" key value))))
 
-(dump "config" main)
+(com.dvlsoft.clon:dump "config" main)
