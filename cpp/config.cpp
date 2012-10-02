@@ -2,7 +2,7 @@
  *
  * This file is a part of the RSB project
  *
- * Copyright (C) 2011 Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
+ * Copyright (C) 2011, 2012 Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
  *
  * This program is free software; you can redistribute it
  * and/or modify it under the terms of the GNU General
@@ -22,6 +22,8 @@
 #include <iostream>
 #include <fstream>
 
+#include <rsc/config/ConfigFileSource.h>
+
 #include <rsb/ParticipantConfig.h>
 
 using namespace std;
@@ -32,7 +34,12 @@ int main(int argc, char* argv[]) {
 		return EXIT_FAILURE;
 	}
 
-	ParticipantConfig config = ParticipantConfig::fromFile(argv[1]);
+	ParticipantConfig config;
+	{
+	    ifstream stream(argv[1]);
+	    rsc::config::ConfigFileSource source (stream);
+	    source.provideOptions(config);
+	}
 	ofstream out(argv[2]);
 	out << "qualityofservice.reliability: ";
 	switch (config.getQualityOfServiceSpec().getReliability()) {
