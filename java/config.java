@@ -30,7 +30,7 @@ public class config {
 	}
 
 	try {
-	    Properties p = new Properties();
+	    Properties p = Properties.getInstance();
 	    p.loadFile(args[0]);
 
 	    PrintWriter stream = new PrintWriter(new FileWriter(args[1]));
