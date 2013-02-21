@@ -2,7 +2,7 @@
  *
  * This file is a part of the RSB project
  *
- * Copyright (C) 2011, 2012 Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
+ * Copyright (C) 2011, 2012, 2013 Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
  *
  * This program is free software; you can redistribute it
  * and/or modify it under the terms of the GNU General
@@ -63,13 +63,13 @@ int main(int argc, char* argv[]) {
 	out << endl;
 	out << "errorhandling.onhandlererror: ";
 	switch (config.getErrorStrategy()) {
-	case ParticipantConfig::LOG:
+	case ParticipantConfig::ERROR_STRATEGY_LOG:
 		out << "LOG";
 		break;
-	case ParticipantConfig::PRINT:
+	case ParticipantConfig::ERROR_STRATEGY_PRINT:
 		out << "PRINT";
 		break;
-	case ParticipantConfig::EXIT:
+	case ParticipantConfig::ERROR_STRATEGY_EXIT:
 		out << "EXIT";
 		break;
 	}
