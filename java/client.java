@@ -73,7 +73,7 @@ public class client {
             // Test calling "addone" method synchronously and asynchronously.
             System.out.println("[Java   Client] Calling \"addone\" method (100 times, synchronous)");
             for (long i = 0; i < 100; ++i) {
-                Long result = server.call("addone", i);
+                Long result = server.<Long, Long>call("addone", new Long(i));
                 if (result != i + 1) {
                     throw new Throwable("Incorrect result for " + i + "-th call: " + result);
                 }

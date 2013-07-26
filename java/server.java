@@ -34,7 +34,7 @@ import running.example.RunningExample.Image;
 
 public class server {
 
-    private static class Terminate implements DataCallback<String, String> {
+    private static class Terminate extends DataCallback<String, String> {
 
         private boolean terminate;
 

@@ -35,6 +35,7 @@ import rsb.Factory;
 import rsb.Listener;
 import rsb.AbstractEventHandler;
 import rsb.transport.TransportFactory;
+import rsb.RSBException;
 
 public class listener {
 
@@ -75,7 +76,11 @@ public class listener {
                     e.printStackTrace();
                 }
             }
-            this.listener.deactivate();
+            try {
+                this.listener.deactivate();
+            } catch (RSBException e) {
+            	throw new RuntimeException(e);
+            }
         }
 
         private final Scope expectedScope;
