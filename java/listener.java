@@ -80,6 +80,8 @@ public class listener {
                 this.listener.deactivate();
             } catch (RSBException e) {
             	throw new RuntimeException(e);
+            } catch (InterruptedException e) {
+            	throw new RuntimeException(e);
             }
         }
 
