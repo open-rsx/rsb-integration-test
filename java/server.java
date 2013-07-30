@@ -52,6 +52,7 @@ public class server {
                 while (!this.terminate) {
                     this.wait();
                 }
+                Thread.currentThread().sleep(2000);
             }
         }
     }
