@@ -39,11 +39,11 @@ public class config {
 	    stream.println("qualityofservice.reliability: " + p.getProperty("qualityofservice.reliability").asString());
 	    stream.println("qualityofservice.ordering: " + p.getProperty("qualityofservice.ordering").asString());
 	    stream.println("errorhandling.onhandlererror: " + p.getProperty("errorhandling.onhandlererror").asString());
-	    stream.println("transport.inprocess.enabled: " + p.getProperty("transport.inprocess.enabled").asString());
+	    stream.println("transport.inprocess.enabled: " + p.getProperty("transport.inprocess.enabled").asBoolean());
 
 	    stream.println("transport.spread.host: " + p.getProperty("transport.spread.host").asString());
 	    stream.println("transport.spread.port: " + p.getProperty("transport.spread.port").asString());
-	    stream.println("transport.spread.enabled: " + p.getProperty("transport.spread.enabled").asString());
+	    stream.println("transport.spread.enabled: " + p.getProperty("transport.spread.enabled").asBoolean());
 	    stream.println("transport.spread.converter.java.utf-8-string: "
 			   + p.getProperty("transport.spread.converter.java.utf-8-string").asString());
 	    stream.close();
