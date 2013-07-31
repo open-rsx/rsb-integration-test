@@ -77,7 +77,7 @@ if __name__ == '__main__':
     def addOne(x):
         if x == 0:
             print '[Python Server] "addone" method called (for 0)'
-        return x + 1
+        return long(x + 1)
     localServer.addMethod('addone', addOne, long, long)
 
     def putImage(x):
