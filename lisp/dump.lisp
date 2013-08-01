@@ -1,6 +1,6 @@
 ;;; dump.lisp --- Dump a single binary for all tests.
 ;;
-;; Copyright (C) 2011, 2012 Jan Moringen
+;; Copyright (C) 2011, 2012, 2013 Jan Moringen
 ;;
 ;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 ;;
@@ -40,5 +40,4 @@
 usually done by creating symbolic links~_~_~:*~{~2T~A -> test~_~}~@:>~%"
 		(map 'list #'car *filename->entry-point*)))))
 
-(dump "test" main
-      :compression :default)
+(dump "test" main)
