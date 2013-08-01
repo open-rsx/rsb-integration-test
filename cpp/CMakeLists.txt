@@ -1,4 +1,10 @@
-INCLUDE_DIRECTORIES(${CMAKE_CURRENT_BINARY_DIR})
+FIND_PACKAGE(RSB REQUIRED)
+MESSAGE(STATUS "RSB version: ${RSB_VERSION}")
+MESSAGE(STATUS "RSB libraries: ${RSB_LIBRARIES}")
+MESSAGE(STATUS "RSB runtime library dirs: ${RSB_RUNTIME_LIBRARY_DIRS}")
+
+INCLUDE_DIRECTORIES(${CMAKE_CURRENT_BINARY_DIR}
+                    ${RSB_INCLUDE_DIRS})
 PROTOBUF_GENERATE(CPP PROTO_SOURCE PROTO_HEADER
                   PROTOROOT  "${CMAKE_SOURCE_DIR}/data"
                   PROTOFILES "${CMAKE_SOURCE_DIR}/data/Image.proto")
@@ -12,6 +18,5 @@ FOREACH(PROGRAM ${PROGRAMS})
     ADD_EXECUTABLE("${BINARY}" "${PROGRAM}" "${PROTO_SOURCE}")
     TARGET_LINK_LIBRARIES("${BINARY}" ${Boost_LIBRARIES}
                                       ${PROTOBUF_LIBRARY}
-                                      ${RSB_LIBRARIES}
-                                      ${RSC_LIBRARIES})
+                                      ${RSB_LIBRARIES})
 ENDFOREACH()
