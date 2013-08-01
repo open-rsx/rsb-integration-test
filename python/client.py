@@ -47,7 +47,7 @@ if __name__ == '__main__':
     remoteServer = rsb.patterns.RemoteServer(scope)
 
     print '[Python Client] Calling "ping" method with request %s' % cookie
-    remoteServer.ping(cookie)
+    assert(remoteServer.ping(long(cookie)) == 'pong')
 
     print '[Python Client] Calling "echo" method'
     assert(remoteServer.echo('hello from Python') == 'hello from Python')
