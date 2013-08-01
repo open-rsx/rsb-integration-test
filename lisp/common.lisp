@@ -21,7 +21,7 @@
 (load-system :com.dvlsoft.clon)
 (load-system :cl-protobuf)
 (load-system :usocket)
-(load-system :cl-spread)
+(load-system :network.spread)
 (load-system :cl-rsb)
 
 (let ((descriptor (pbf:load/text #P"../../data/Image.proto")))
