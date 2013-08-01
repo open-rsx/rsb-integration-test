@@ -1,7 +1,7 @@
 # ============================================================
 #
 # Copyright (C) 2011 by Johannes Wienke <jwienke at techfak dot uni-bielefeld dot de>
-# Copyright (C) 2011, 2012, 2013 Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
+# Copyright (C) 2011, 2012, 2013, 2014 Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 #
 # This program is free software; you can redistribute it
 # and/or modify it under the terms of the GNU General
@@ -139,7 +139,14 @@ class IntegrationTest(unittest.TestCase):
                 reason += 'non-zero exit code of %s process; ' % name
         return failed, reason
 
+    timeout = 1
+
     nextSocketPort = 0
+
+    @classmethod
+    def getTimeout(clazz, factor):
+        if not clazz.timeout is None:
+            return clazz.timeout * factor
 
     @classmethod
     def prepareTransportConfiguration(clazz, transport):
@@ -192,7 +199,7 @@ class IntegrationTest(unittest.TestCase):
                                              env = informerOptions)
             time.sleep(1)
 
-            codes = self.waitForProcesses(60, listenerProc, informerProc)
+            codes = self.waitForProcesses(clazz.getTimeout(60), listenerProc, informerProc)
             failed, reason = self.analyzeExitCodes(codes, ("listener", "informer"))
             if failed:
                 self.fail("Listener/Informer communication failed for %s listener and %s informer: %s"
@@ -223,7 +230,7 @@ class IntegrationTest(unittest.TestCase):
                                            [ "--cookie", cookie ],
                                            env = clientOptions)
 
-            codes = self.waitForProcesses(30, clientProc, serverProc)
+            codes = self.waitForProcesses(clazz.getTimeout(30), clientProc, serverProc)
             failed, reason = self.analyzeExitCodes(codes, ("client", "server"))
             if failed:
                 self.fail("Client/Server communication failed for %s client and %s server: %s"
@@ -291,6 +298,10 @@ def run():
                       metavar = "TRANSPORT",
                       help    = ("Transports for which tests should be executed. Can be supplied multiple times. Valid transports are: %s"
                                  % transports))
+    parser.add_option("-n", "--no-timeout",
+                      dest    = "noTimeout",
+                      action = 'store_true',
+                      help    = "Disable all timeouts")
 
     # Spread options
     parser.add_option("-s", "--spread",
@@ -371,6 +382,9 @@ def run():
     if "rpc" in selectedTests:
         map(lambda x: IntegrationTest.addClientServerPair(*x),
             itertools.product(selectedTransports, selectedLanguages, selectedLanguages))
+
+    if options.noTimeout:
+        IntegrationTest.timeout = None
 
     # Execute the generated test suite.
     xmlrunner.XMLTestRunner(output='test-reports').run(unittest.TestLoader().loadTestsFromTestCase(IntegrationTest))
