@@ -1,54 +1,54 @@
-CMAKE_MINIMUM_REQUIRED(VERSION 2.6)
-SET(CMAKE_ALLOW_LOOSE_LOOP_CONSTRUCTS TRUE)
+cmake_minimum_required(VERSION 2.6)
+set(CMAKE_ALLOW_LOOSE_LOOP_CONSTRUCTS TRUE)
 
-PROJECT("RSBIntegrationTest")
+project("RSBIntegrationTest")
 
-SET(VERSION_MAJOR "0")
-SET(VERSION_MINOR "11")
+set(VERSION_MAJOR "0")
+set(VERSION_MINOR "11")
 
 # --- dependency handling ---
 
-SET(Boost_USE_VERSION 1.38 CACHE INTERNAL "Boost Version to use")
-SET(Boost_USE_MULTITHREADED ON)
-SET(Boost_USE_STATIC_LIBS OFF)
-ADD_DEFINITIONS(-DBOOST_ALL_DYN_LINK)
-IF(BOOST_ROOT)
-  SET(Boost_NO_SYSTEM_PATHS ON)
-ENDIF()
+set(Boost_USE_VERSION 1.38 CACHE INTERNAL "Boost Version to use")
+set(Boost_USE_MULTITHREADED ON)
+set(Boost_USE_STATIC_LIBS OFF)
+add_definitions(-DBOOST_ALL_DYN_LINK)
+if(BOOST_ROOT)
+  set(Boost_NO_SYSTEM_PATHS ON)
+endif()
 
-FIND_PACKAGE(RSC "${VERSION_MAJOR}.${VERSION_MINOR}" REQUIRED)
+find_package(RSC "${VERSION_MAJOR}.${VERSION_MINOR}" REQUIRED)
 
-MESSAGE(STATUS "RSC version: ${RSC_VERSION}")
-MESSAGE(STATUS "RSC libraries: ${RSC_LIBRARIES}")
-MESSAGE(STATUS "RSC runtime library dirs: ${RSC_RUNTIME_LIBRARY_DIRS}")
-MESSAGE(STATUS "RSC CMake module path: ${RSC_CMAKE_MODULE_PATH}")
+message(STATUS "RSC version: ${RSC_VERSION}")
+message(STATUS "RSC libraries: ${RSC_LIBRARIES}")
+message(STATUS "RSC runtime library dirs: ${RSC_RUNTIME_LIBRARY_DIRS}")
+message(STATUS "RSC CMake module path: ${RSC_CMAKE_MODULE_PATH}")
 
 # Use CMake modules in additional locations.
 # Has to be done after RSC configuration, since RSC updates CMake's
 # module path.
-SET(PROJECT_CMAKE_PATH ${CMAKE_INSTALL_PREFIX}/share/cmake/Modules)
-SET(CMAKE_MODULE_PATH "${PROJECT_CMAKE_PATH}" "${CMAKE_MODULE_PATH}" "${RSC_CMAKE_MODULE_PATH}")
+set(PROJECT_CMAKE_PATH ${CMAKE_INSTALL_PREFIX}/share/cmake/Modules)
+set(CMAKE_MODULE_PATH "${PROJECT_CMAKE_PATH}" "${CMAKE_MODULE_PATH}" "${RSC_CMAKE_MODULE_PATH}")
 
 # May depend on updated CMake module path.
-FIND_PACKAGE(Boost ${Boost_USE_VERSION} REQUIRED thread system filesystem)
-FIND_PACKAGE(BoostUUID REQUIRED)
+find_package(Boost ${Boost_USE_VERSION} REQUIRED thread system filesystem)
+find_package(BoostUUID REQUIRED)
 
-FIND_PACKAGE(ProtocolBuffers REQUIRED)
+find_package(ProtocolBuffers REQUIRED)
 
 # Provided by RSC.
-INCLUDE(PedanticCompilerWarnings)
+include(PedanticCompilerWarnings)
 
-INCLUDE_DIRECTORIES(BEFORE SYSTEM
+include_directories(BEFORE SYSTEM
                     ${Boost_INCLUDE_DIRS}
                     ${BOOSTUUID_INCLUDE_DIRS}
                     ${PROTOBUF_INCLUDE_DIRS}
                     ${RSC_INCLUDE_DIRS}
                     ${RSB_INCLUDE_DIRS})
-LINK_DIRECTORIES(${Boost_LIBRARY_DIRS})
+link_directories(${Boost_LIBRARY_DIRS})
 
 # --- source code ---
 
-ADD_SUBDIRECTORY(cpp)
-ADD_SUBDIRECTORY(python)
-ADD_SUBDIRECTORY(java)
-ADD_SUBDIRECTORY(lisp)
+add_subdirectory(cpp)
+add_subdirectory(python)
+add_subdirectory(java)
+add_subdirectory(lisp)

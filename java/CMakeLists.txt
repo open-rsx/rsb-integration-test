@@ -1,45 +1,45 @@
-SET(JAR_FILE "${CMAKE_CURRENT_BINARY_DIR}/rsbintegration.jar")
+set(JAR_FILE "${CMAKE_CURRENT_BINARY_DIR}/rsbintegration.jar")
 
-FIND_PROGRAM(ANT_EXECUTABLE ant)
-IF(NOT PROTOBUF_PROTOC_EXECUTABLE)
-    MESSAGE(FATAL_ERROR "protoc executable not found")
-ENDIF()
-IF(NOT PROTOBUF_JAVA_LIBRARY)
-    MESSAGE(FATAL_ERROR "protobuf java library not found")
-ENDIF()
+find_program(ANT_EXECUTABLE ant)
+if(NOT PROTOBUF_PROTOC_EXECUTABLE)
+    message(FATAL_ERROR "protoc executable not found")
+endif()
+if(NOT PROTOBUF_JAVA_LIBRARY)
+    message(FATAL_ERROR "protobuf java library not found")
+endif()
 
 # find rsb java file
-FIND_FILE(RSB_JAVA_LIBRARY
+find_file(RSB_JAVA_LIBRARY
           NAMES rsb.jar ${JAVA_NAME}
           HINTS ${JAVA_ROOT}
                 "${CMAKE_INSTALL_PREFIX}/lib/java"
                 "${CMAKE_INSTALL_PREFIX}/share/java"
                 "/usr/share/java")
-IF(NOT RSB_JAVA_LIBRARY)
-    MESSAGE(SEND_ERROR "Could not find rsb.jar (or the value of JAVA_NAME). Please define JAVA_ROOT with a folder containing the library.")
-ENDIF()
+if(NOT RSB_JAVA_LIBRARY)
+    message(SEND_ERROR "Could not find rsb.jar (or the value of JAVA_NAME). Please define JAVA_ROOT with a folder containing the library.")
+endif()
 
-PROTOBUF_GENERATE(JAVA JAVA_PROTO_SOURCE
+protobuf_generate(JAVA JAVA_PROTO_SOURCE
                   PROTOROOT  "${CMAKE_SOURCE_DIR}/data"
                   PROTOFILES "${CMAKE_SOURCE_DIR}/data/Image.proto")
 
-SET(CONFIGURE_FILES build.xml
+set(CONFIGURE_FILES build.xml
                     config.sh event_id.sh
                     listener.sh informer.sh
                     client.sh   server.sh)
-FOREACH(FILE ${CONFIGURE_FILES})
-    CONFIGURE_FILE("${CMAKE_CURRENT_SOURCE_DIR}/${FILE}.in"
+foreach(FILE ${CONFIGURE_FILES})
+    configure_file("${CMAKE_CURRENT_SOURCE_DIR}/${FILE}.in"
                    "${CMAKE_CURRENT_BINARY_DIR}/${FILE}"
                    @ONLY)
-ENDFOREACH()
+endforeach()
 
-SET(JAVA_FILES config.java event_id.java
+set(JAVA_FILES config.java event_id.java
                listener.java informer.java
                client.java   server.java)
-ADD_CUSTOM_COMMAND(OUTPUT  ${JAR_FILE}
+add_custom_command(OUTPUT  ${JAR_FILE}
                    COMMAND ${ANT_EXECUTABLE} dist
                    DEPENDS "${JAVA_FILES}"
                            "${JAVA_PROTO_SOURCE}"
                            "${CMAKE_CURRENT_BINARY_DIR}/build.xml"
                    COMMENT "Creating java jar file")
-ADD_CUSTOM_TARGET(java ALL DEPENDS ${JAR_FILE})
+add_custom_target(java ALL DEPENDS ${JAR_FILE})

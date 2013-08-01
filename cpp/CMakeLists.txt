@@ -1,23 +1,23 @@
-FIND_PACKAGE(RSB "${VERSION_MAJOR}.${VERSION_MINOR}" REQUIRED)
+find_package(RSB "${VERSION_MAJOR}.${VERSION_MINOR}" REQUIRED)
 
-MESSAGE(STATUS "RSB version: ${RSB_VERSION}")
-MESSAGE(STATUS "RSB libraries: ${RSB_LIBRARIES}")
-MESSAGE(STATUS "RSB runtime library dirs: ${RSB_RUNTIME_LIBRARY_DIRS}")
+message(STATUS "RSB version: ${RSB_VERSION}")
+message(STATUS "RSB libraries: ${RSB_LIBRARIES}")
+message(STATUS "RSB runtime library dirs: ${RSB_RUNTIME_LIBRARY_DIRS}")
 
-INCLUDE_DIRECTORIES(${CMAKE_CURRENT_BINARY_DIR}
+include_directories(${CMAKE_CURRENT_BINARY_DIR}
                     ${RSB_INCLUDE_DIRS})
-PROTOBUF_GENERATE(CPP PROTO_SOURCE PROTO_HEADER
+protobuf_generate(CPP PROTO_SOURCE PROTO_HEADER
                   PROTOROOT  "${CMAKE_SOURCE_DIR}/data"
                   PROTOFILES "${CMAKE_SOURCE_DIR}/data/Image.proto")
 
-SET(PROGRAMS config.cpp event_id.cpp
+set(PROGRAMS config.cpp event_id.cpp
              informer.cpp listener.cpp
              server.cpp   client.cpp)
 
-FOREACH(PROGRAM ${PROGRAMS})
-    GET_FILENAME_COMPONENT(BINARY "${PROGRAM}" NAME_WE)
-    ADD_EXECUTABLE("${BINARY}" "${PROGRAM}" "${PROTO_SOURCE}")
-    TARGET_LINK_LIBRARIES("${BINARY}" ${Boost_LIBRARIES}
+foreach(PROGRAM ${PROGRAMS})
+    get_filename_component(BINARY "${PROGRAM}" NAME_WE)
+    add_executable("${BINARY}" "${PROGRAM}" "${PROTO_SOURCE}")
+    target_link_libraries("${BINARY}" ${Boost_LIBRARIES}
                                       ${PROTOBUF_LIBRARY}
                                       ${RSB_LIBRARIES})
-ENDFOREACH()
+endforeach()
