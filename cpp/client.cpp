@@ -34,7 +34,7 @@ using namespace rsb;
 using namespace rsb::converter;
 using namespace rsb::patterns;
 
-typedef boost::uint64_t IntegerType;
+typedef boost::int64_t IntegerType;
 
 int main(int argc, char *argv[]) {
     stringConverterRepository()->registerConverter(Converter<string>::Ptr(new ProtocolBufferConverter<running::example::Image>()));

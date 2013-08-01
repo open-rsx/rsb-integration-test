@@ -40,7 +40,7 @@ using namespace rsb;
 using namespace rsb::converter;
 using namespace rsb::patterns;
 
-typedef boost::uint64_t IntegerType;
+typedef boost::int64_t IntegerType;
 
 class PingCallback: public Server::Callback<IntegerType, string> {
 public:
