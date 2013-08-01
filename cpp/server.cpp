@@ -166,6 +166,7 @@ int main(int argc, char *argv[]) {
     server->registerMethod("terminate", terminate);
 
     terminate->wait();
+    sleep(1);
     cout << "[C++    Server] Done" << endl;
 
     return EXIT_SUCCESS;
