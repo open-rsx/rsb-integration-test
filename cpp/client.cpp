@@ -2,7 +2,7 @@
  *
  * This file is part of the RSB project
  *
- * Copyright (C) 2011, 2012 Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
+ * Copyright (C) 2011, 2012, 2013 Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
  *
  * This program is free software; you can redistribute it
  * and/or modify it under the terms of the GNU General
@@ -37,7 +37,7 @@ using namespace rsb::patterns;
 typedef boost::int64_t IntegerType;
 
 int main(int argc, char *argv[]) {
-    stringConverterRepository()->registerConverter(Converter<string>::Ptr(new ProtocolBufferConverter<running::example::Image>()));
+    converterRepository<string>()->registerConverter(Converter<string>::Ptr(new ProtocolBufferConverter<running::example::Image>()));
 
     IntegerType cookie;
 
@@ -62,8 +62,7 @@ int main(int argc, char *argv[]) {
     Scope scope("/rsbtest/clientserver");
     cout << "[C++    Client] Communicating with remote server at " << scope << endl;
 
-    Factory &factory = Factory::getInstance();
-    RemoteServerPtr remoteServer = factory.createRemoteServer(scope);
+    RemoteServerPtr remoteServer = getFactory().createRemoteServer(scope);
 
     // Call "ping" method with cookie value.
     {

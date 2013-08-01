@@ -86,7 +86,7 @@ public:
 typedef boost::shared_ptr<MyEventHandler> MyEventHandlerPtr;
 
 int main(void) {
-    Factory &factory = Factory::getInstance();
+    Factory &factory = getFactory();
 
     vector<ListenerPtr> listeners;
     vector<MyEventHandlerPtr> handlers;

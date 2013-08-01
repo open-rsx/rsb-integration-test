@@ -48,7 +48,7 @@ int main(int argc, char *argv[]) {
     }
     int listenerPid = lexical_cast<int>(argv[2]);
 
-    Factory &factory = Factory::getInstance();
+    Factory &factory = getFactory();
 
     uint64_t start = currentTimeMicros();
 

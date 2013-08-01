@@ -2,7 +2,7 @@
  *
  * This file is part of the RSB project
  *
- * Copyright (C) 2011, 2012 Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
+ * Copyright (C) 2011, 2012, 2013 Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
  *
  * This program is free software; you can redistribute it
  * and/or modify it under the terms of the GNU General
@@ -128,7 +128,7 @@ private:
 };
 
 int main(int argc, char *argv[]) {
-    stringConverterRepository()->registerConverter(Converter<string>::Ptr(new ProtocolBufferConverter<running::example::Image>()));
+    converterRepository<string>()->registerConverter(Converter<string>::Ptr(new ProtocolBufferConverter<running::example::Image>()));
 
     IntegerType cookie;
 
@@ -153,8 +153,7 @@ int main(int argc, char *argv[]) {
     Scope scope("/rsbtest/clientserver");
     cout << "[C++    Server] Providing service on " << scope << endl;
 
-    Factory &factory = Factory::getInstance();
-    ServerPtr server = factory.createServer(scope);
+    ServerPtr server = getFactory().createServer(scope);
 
     shared_ptr<TerminateCallback> terminate(new TerminateCallback());
 
