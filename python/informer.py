@@ -18,10 +18,8 @@
 # ============================================================
 
 import sys
-import os
 import time
 import rsb
-import logging
 import uuid
 
 if __name__ == '__main__':

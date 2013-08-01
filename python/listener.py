@@ -18,12 +18,11 @@
 # ============================================================
 
 import rsb
-import logging
 import uuid
 from threading import Condition
 
 if __name__ == '__main__':
-
+    
     class Receiver(object):
 
         def __init__(self, expectedScope, expectedSize, expectedCause, expectedCount):
