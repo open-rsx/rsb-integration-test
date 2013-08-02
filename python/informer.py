@@ -49,4 +49,4 @@ if __name__ == '__main__':
 
         informer.deactivate()
 
-    print("[Python Informer] done!")
+    print("[Python Informer] Done")

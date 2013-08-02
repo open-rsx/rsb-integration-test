@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # ============================================================
 #
-# Copyright (C) 2011, 2012 Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
+# Copyright (C) 2011, 2012, 2013 Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 #
 # This program is free software; you can redistribute it
 # and/or modify it under the terms of the GNU General
@@ -45,6 +45,7 @@ def terminateNotify():
         condition.notify()
 
 if __name__ == '__main__':
+
     converter = rsb.converter.ProtocolBufferConverter(messageClass = Image)
     rsb.converter.registerGlobalConverter(converter)
     rsb.__defaultParticipantConfig = rsb.ParticipantConfig.fromDefaultSources()
@@ -94,6 +95,7 @@ if __name__ == '__main__':
         terminateNotify()
     localServer.addMethod('terminate', _terminate, str, type(None))
 
+    print("[Python Server] Ready")
     terminateWait()
     time.sleep(1) # give the terminate call time to complete
 

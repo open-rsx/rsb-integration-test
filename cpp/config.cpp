@@ -30,68 +30,68 @@ using namespace std;
 using namespace rsb;
 
 int main(int argc, char* argv[]) {
-	if (argc != 3) {
-		return EXIT_FAILURE;
-	}
+    if (argc != 3) {
+        return EXIT_FAILURE;
+    }
 
-	ParticipantConfig config;
-	{
-	    ifstream stream(argv[1]);
-	    rsc::config::ConfigFileSource source (stream);
-	    source.provideOptions(config);
-	}
-	ofstream out(argv[2]);
-	out << "qualityofservice.reliability: ";
-	switch (config.getQualityOfServiceSpec().getReliability()) {
-	case QualityOfServiceSpec::RELIABLE:
-		out << "RELIABLE";
-		break;
-	case QualityOfServiceSpec::UNRELIABLE:
-		out << "UNRELIABLE";
-		break;
-	}
-	out << endl;
-	out << "qualityofservice.ordering: ";
-	switch (config.getQualityOfServiceSpec().getOrdering()) {
-	case QualityOfServiceSpec::ORDERED:
-		out << "ORDERED";
-		break;
-	case QualityOfServiceSpec::UNORDERED:
-		out << "UNORDERED";
-		break;
-	}
-	out << endl;
-	out << "errorhandling.onhandlererror: ";
-	switch (config.getErrorStrategy()) {
-	case ParticipantConfig::ERROR_STRATEGY_LOG:
-		out << "LOG";
-		break;
-	case ParticipantConfig::ERROR_STRATEGY_PRINT:
-		out << "PRINT";
-		break;
-	case ParticipantConfig::ERROR_STRATEGY_EXIT:
-		out << "EXIT";
-		break;
-	}
-	out << endl;
+    ParticipantConfig config;
+    {
+        ifstream stream(argv[1]);
+        rsc::config::ConfigFileSource source (stream);
+        source.provideOptions(config);
+    }
+    ofstream out(argv[2]);
+    out << "qualityofservice.reliability: ";
+    switch (config.getQualityOfServiceSpec().getReliability()) {
+    case QualityOfServiceSpec::RELIABLE:
+        out << "RELIABLE";
+        break;
+    case QualityOfServiceSpec::UNRELIABLE:
+        out << "UNRELIABLE";
+        break;
+    }
+    out << endl;
+    out << "qualityofservice.ordering: ";
+    switch (config.getQualityOfServiceSpec().getOrdering()) {
+    case QualityOfServiceSpec::ORDERED:
+        out << "ORDERED";
+        break;
+    case QualityOfServiceSpec::UNORDERED:
+        out << "UNORDERED";
+        break;
+    }
+    out << endl;
+    out << "errorhandling.onhandlererror: ";
+    switch (config.getErrorStrategy()) {
+    case ParticipantConfig::ERROR_STRATEGY_LOG:
+        out << "LOG";
+        break;
+    case ParticipantConfig::ERROR_STRATEGY_PRINT:
+        out << "PRINT";
+        break;
+    case ParticipantConfig::ERROR_STRATEGY_EXIT:
+        out << "EXIT";
+        break;
+    }
+    out << endl;
 
-	ParticipantConfig::Transport spread = config.getTransport("spread");
-	out << "transport.inprocess.enabled: " << '0' << endl;
-	out << "transport.spread.host: " << spread.getOptions().get < string
-			> ("host") << endl;
-	out << "transport.spread.port: " << spread.getOptions().get < string
-			> ("port") << endl;
-	out << "transport.spread.enabled: " << spread.isEnabled() << endl;
+    ParticipantConfig::Transport spread = config.getTransport("spread");
+    out << "transport.inprocess.enabled: " << '0' << endl;
+    out << "transport.spread.host: " << spread.getOptions().get < string
+                                                                  > ("host") << endl;
+    out << "transport.spread.port: " << spread.getOptions().get < string
+                                                                  > ("port") << endl;
+    out << "transport.spread.enabled: " << spread.isEnabled() << endl;
 
-	ParticipantConfig::Transport::ConverterNames names = spread.getConverters();
+    ParticipantConfig::Transport::ConverterNames names = spread.getConverters();
 
-	for (ParticipantConfig::Transport::ConverterNames::const_iterator it =
-			names.begin(); it != names.end(); ++it) {
-		if (it->first == "utf-8-string") {
-			out << "transport.spread.converter.cpp.utf-8-string: " << it->second
-					<< endl;
-		}
-	}
+    for (ParticipantConfig::Transport::ConverterNames::const_iterator it =
+             names.begin(); it != names.end(); ++it) {
+        if (it->first == "utf-8-string") {
+            out << "transport.spread.converter.cpp.utf-8-string: " << it->second
+                << endl;
+        }
+    }
 
-	return EXIT_SUCCESS;
+    return EXIT_SUCCESS;
 }

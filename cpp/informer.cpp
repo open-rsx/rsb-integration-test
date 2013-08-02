@@ -77,5 +77,7 @@ int main(int argc, char *argv[]) {
         }
     }
 
+    cout << "[C++    Informer] Done" << endl;
+
     return EXIT_SUCCESS;
 }

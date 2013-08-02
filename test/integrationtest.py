@@ -163,6 +163,9 @@ class IntegrationTest(unittest.TestCase):
     @classmethod
     def addListenerInformerPair(clazz, transport, listenerLang, informerLang):
         def testFunc(self):
+            self.__logger.info('\n\n\n==================== KIND: pubsub - TRANSPORT: %s - LISTENER: %s - INFORMER: %s ====================' %
+                               (transport, listenerLang, informerLang))
+
             # Prepare environment
             informerOptions, listenerOptions = clazz.prepareTransportConfiguration(transport)
 
@@ -203,6 +206,9 @@ class IntegrationTest(unittest.TestCase):
     @classmethod
     def addClientServerPair(clazz, transport, clientLang, serverLang):
         def testFunc(self):
+            self.__logger.info('\n\n\n==================== KIND: rpc - TRANSPORT: %s - CLIENT: %s - SERVER: %s ====================' %
+                               (transport, clientLang, serverLang))
+
             # Prepare environment
             clientOptions, serverOptions = clazz.prepareTransportConfiguration(transport)
 

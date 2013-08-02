@@ -114,8 +114,7 @@ int main(void) {
     {
         ofstream stream("test/cpp-listener-ready");
     }
-    cout << "[C++    Listener] Ready"
-         << endl;
+    cout << "[C++    Listener] Ready" << endl;
 
     // wait *here* for shutdown as this is not known to the Subscriber
     for (vector<MyEventHandlerPtr>::const_iterator it = handlers.begin();
@@ -126,6 +125,8 @@ int main(void) {
             handler->cond.wait(lock);
         }
     }
+
+    cout << "[C++    Listener] Done" << endl;
 
     return EXIT_SUCCESS;
 }
