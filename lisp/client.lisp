@@ -86,6 +86,6 @@
 
     ;; Ask server to terminate.
     (format t "[Lisp   Client] Calling \"terminate\" method~%")
-    (rsb.patterns:call server "terminate" "does not matter"))
+    (rsb.patterns:call server "terminate" rsb.converter:+no-value+))
 
   (format t "[Lisp   Client] Done~%"))

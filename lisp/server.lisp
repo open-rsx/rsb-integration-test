@@ -83,8 +83,7 @@
 	   (format t "[Lisp   Server] \"putimage\" method called~%")
 	   (values))
 
-	 ("terminate" (request string)
-	   (declare (ignore request))
+	 ("terminate" ()
 	   (format t "[Lisp   Server] \"terminate\" method called~%")
 	   (terminate-notify)
 	   (values)))

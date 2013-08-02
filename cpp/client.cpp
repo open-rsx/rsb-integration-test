@@ -138,8 +138,7 @@ int main(int argc, char *argv[]) {
     // Ask the remote server to terminate
     {
         cout << "[C++    Client] Calling \"terminate\" method" << endl;
-        shared_ptr<string> request(new string(""));
-        remoteServer->call<string>("terminate", request);
+        remoteServer->call<void>("terminate");
     }
 
     cout << "[C++    Client] Done " << endl;

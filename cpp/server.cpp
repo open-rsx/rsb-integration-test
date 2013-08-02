@@ -100,19 +100,17 @@ public:
     }
 };
 
-class TerminateCallback: public Server::Callback<string, string> {
+class TerminateCallback: public Server::Callback<void, void> {
 public:
     TerminateCallback():
         done(false) {
     }
 
-    shared_ptr<string> call(const string &/*methodName*/,
-                            shared_ptr<string> /*request*/) {
+    void call(const string &/*methodName*/) {
         cout << "[C++    Server] \"terminate\" method called" << endl;
         mutex::scoped_lock lock(this->mutex_);
         this->done = true;
         this->condition.notify_all();
-        return shared_ptr<string>(new string(""));
     }
 
     void wait() {

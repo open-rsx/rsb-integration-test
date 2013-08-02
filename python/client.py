@@ -75,7 +75,7 @@ if __name__ == '__main__':
         pass
 
     print '[Python Client] Calling "terminate" method'
-    remoteServer.terminate('')
+    remoteServer.terminate()
 
     print '[Python Client] Done'
 

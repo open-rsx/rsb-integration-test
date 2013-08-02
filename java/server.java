@@ -2,7 +2,7 @@
  *
  * This file is part of the RSB project.
  *
- * Copyright (C) 2011, 2012 Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
+ * Copyright (C) 2011, 2012, 2013 Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -34,17 +34,17 @@ import running.example.RunningExample.Image;
 
 public class server {
 
-    private static class Terminate extends DataCallback<String, String> {
+    private static class Terminate extends DataCallback<Void, Void> {
 
         private boolean terminate;
 
-        public String invoke(String request) {
+        public Void invoke(Void request) {
             System.out.println("[Java   Server] \"terminate\" method called");
             synchronized (this) {
                 this.terminate = true;
                 this.notify();
             }
-            return "";
+            return null;
         }
 
         public void waitForCall() throws InterruptedException {

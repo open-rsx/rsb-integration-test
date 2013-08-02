@@ -2,7 +2,7 @@
  *
  * This file is part of the RSB project.
  *
- * Copyright (C) 2011, 2012 Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
+ * Copyright (C) 2011, 2012, 2013 Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -123,7 +123,7 @@ public class client {
             // Call "terminate" method.
             {
                 System.out.println("[Java   Client] Calling \"terminate\" method");
-                String result = server.call("terminate", "no sense");
+                server.callAsync("terminate");
             }
         } catch (Throwable e) {
             e.printStackTrace();

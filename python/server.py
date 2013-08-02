@@ -90,10 +90,10 @@ if __name__ == '__main__':
         raise RuntimeError, "intentional error"
     localServer.addMethod('error', error, str, str)
 
-    def _terminate(x):
+    def _terminate():
         print '[Python Server] "terminate" method called'
         terminateNotify()
-    localServer.addMethod('terminate', _terminate, str, type(None))
+    localServer.addMethod('terminate', _terminate, type(None), type(None))
 
     print("[Python Server] Ready")
     terminateWait()
