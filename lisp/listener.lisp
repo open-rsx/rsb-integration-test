@@ -1,6 +1,6 @@
 ;;; listener.lisp --- Listener part of the Lisp integration test code.
 ;;
-;; Copyright (C) 2011, 2012 Jan Moringen
+;; Copyright (C) 2011, 2012, 2013 Jan Moringen
 ;;
 ;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 ;;
@@ -53,9 +53,7 @@
 			(rsb:super-scopes nested-scope :include-self? t)
 			'(4 256 400000))))
     (sleep 1)
-    (with-open-file (stream "test/lisp-listener-ready"
-			    :if-does-not-exist :create)
-      (declare (ignorable stream)))
+    (write-ready-file "listener")
     (map 'nil #'bt:join-thread listeners))
 
   (format t "[Lisp   Listener] Done~%"))

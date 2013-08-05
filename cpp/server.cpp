@@ -18,6 +18,7 @@
  * ============================================================ */
 
 #include <stdexcept>
+#include <fstream>
 
 #include <boost/cstdint.hpp>
 
@@ -161,6 +162,10 @@ int main(int argc, char *argv[]) {
     server->registerMethod("putimage",  Server::CallbackPtr(new PutimageCallback()));
     server->registerMethod("error",     Server::CallbackPtr(new ErrorCallback()));
     server->registerMethod("terminate", terminate);
+
+    {
+        ofstream stream("test/cpp-server-ready");
+    }
 
     terminate->wait();
     sleep(1);

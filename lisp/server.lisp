@@ -1,6 +1,6 @@
 ;;; server.lisp --- Server part of the Lisp integration test code.
 ;;
-;; Copyright (C) 2011, 2012, 2014 Jan Moringen
+;; Copyright (C) 2011, 2012, 2013 Jan Moringen
 ;;
 ;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 ;;
@@ -89,6 +89,7 @@
 	   (values)))
 
       ;; Wait for "terminate" call.
+      (write-ready-file "server")
       (terminate-wait)))
 
   (format t "[Lisp   Server] Done~%"))

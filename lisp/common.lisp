@@ -1,6 +1,6 @@
 ;;; common.lisp --- Common stuff used in the Lisp integration test code.
 ;;
-;; Copyright (C) 2011, 2012 Jan Moringen
+;; Copyright (C) 2011, 2012, 2013 Jan Moringen
 ;;
 ;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 ;;
@@ -53,3 +53,8 @@
   "Contains the magic number we expect to receive from the
 client. This is intended to protect against crosstalk between test
 cases.")
+
+(defun write-ready-file (tag)
+  (write-string-into-file "" (format nil "test/lisp-~A-ready" tag)
+                          :if-does-not-exist :create
+                          :if-exists :supersede))

@@ -119,12 +119,36 @@ class IntegrationTest(unittest.TestCase):
     def waitForProcesses(self, timeout, *processes):
         waitStart = time.time()
         codes     = [None]*len(processes)
-        while time.time() < waitStart + timeout and None in codes:
+        timeout   = self.getTimeout(timeout)
+        while (timeout is None or time.time() < waitStart + timeout) \
+              and None in codes:
             codes = map(lambda x: x.poll(), processes)
-            time.sleep(0.2)
+            time.sleep(0.1)
         if None in codes:
             self.killProcesses(*processes)
         return codes
+
+    def startProcessAndWait(self, lang, kind, args = [], env = None, timeout = 5):
+        waitFile = 'test/%s-%s-ready' % (lang, kind)
+        if os.path.exists(waitFile):
+            self.__logger.warn("Deleting old waitFile %s" % waitFile)
+            os.remove(waitFile)
+        proc = self.startProcess(lang, kind, args = args, env = env)
+        waitStart = time.time()
+        timeout = self.getTimeout(timeout)
+        try:
+            while not os.path.exists(waitFile):
+                if not timeout is None \
+                   and time.time() > waitStart + timeout:
+                    self.killProcesses(proc)
+                    return None
+                time.sleep(0.1)
+            self.__logger.info("%s %s startup took %s seconds"
+                               % (lang, kind, time.time() - waitStart))
+            return proc
+        finally:
+            if os.path.exists(waitFile):
+                os.remove(waitFile)
 
     def analyzeExitCodes(self, codes, names):
         failed, reason = False, ""
@@ -178,27 +202,12 @@ class IntegrationTest(unittest.TestCase):
             informerOptions, listenerOptions = clazz.prepareTransportConfiguration(transport)
 
             # Start listener and informer processes
-            waitFile = 'test/%s-listener-ready' % listenerLang
-            if os.path.exists(waitFile):
-                self.__logger.warn("Deleting old waitFile %s" % waitFile)
-                os.remove(waitFile)
-            listenerProc = self.startProcess(listenerLang, "listener", env = listenerOptions)
-            waitStart = time.time()
-            while not os.path.exists(waitFile):
-                if time.time() > waitStart + 5:
-                    self.killProcesses(listenerProc)
-                    self.fail("Timeout while waiting for %s listener to start" % listenerLang)
-                time.sleep(0.2)
-            os.remove(waitFile)
-            time.sleep(1)
-
-            self.__logger.info("%s listener startup took %s seconds"
-                               % (listenerLang, time.time() - waitStart))
+            listenerProc = self.startProcessAndWait(listenerLang, "listener", env = listenerOptions)
+            if not listenerProc:
+                self.fail("Timeout while waiting for %s listener to start" % listenerLang)
             informerProc = self.startProcess(informerLang, "informer",
                                              [ "--listener-pid", str(listenerProc.pid) ],
                                              env = informerOptions)
-            time.sleep(1)
-
             codes = self.waitForProcesses(clazz.getTimeout(60), listenerProc, informerProc)
             failed, reason = self.analyzeExitCodes(codes, ("listener", "informer"))
             if failed:
@@ -222,10 +231,11 @@ class IntegrationTest(unittest.TestCase):
 
             # Start client and server processes
             cookie = str(random.randint(0, 1 << 31))
-            serverProc = self.startProcess(serverLang, "server",
-                                           [ "--cookie", cookie ],
-                                           env = serverOptions)
-            time.sleep(2) # TODO proper waiting
+            serverProc = self.startProcessAndWait(serverLang, "server",
+                                                  [ "--cookie", cookie ],
+                                                  env = serverOptions)
+            if not serverProc:
+                self.fail("Timeout while waiting for %s server to start" % serverLang)
             clientProc = self.startProcess(clientLang, "client",
                                            [ "--cookie", cookie ],
                                            env = clientOptions)

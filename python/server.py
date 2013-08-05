@@ -95,6 +95,7 @@ if __name__ == '__main__':
         terminateNotify()
     localServer.addMethod('terminate', _terminate, type(None), type(None))
 
+    open('test/python-server-ready', 'w').close()
     print("[Python Server] Ready")
     terminateWait()
     time.sleep(1) # give the terminate call time to complete

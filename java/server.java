@@ -20,6 +20,9 @@ import java.lang.InterruptedException;
 import java.lang.Throwable;
 import java.lang.Thread;
 
+import java.io.File;
+import java.io.IOException;
+
 import rsb.InitializeException;
 import rsb.Scope;
 import rsb.Factory;
@@ -133,6 +136,16 @@ public class server {
             // Register "terminate" method.
             Terminate terminate = new Terminate();
             server.addMethod("terminate", terminate);
+
+            // TODO
+            try {
+                File file = new File("test/java-server-ready");
+                file.createNewFile();
+                System.err.println("[Java   Server] Ready");
+            } catch (IOException e) {
+                System.err.println("[Java   Server] Could not create marker file.");
+                System.exit(1);
+            }
 
             // Block until "terminate" method has been called.
             terminate.waitForCall();
