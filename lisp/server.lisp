@@ -61,7 +61,7 @@
 	   (unless (= request *cookie*)
 	     (format *error-output* "Received cookie value ~D not equal to expected value ~D"
 		     request *cookie*)
-	     (sb-ext:quit :unix-status 1))
+	     (sb-ext:exit :code 1))
 	   "pong")
 
 	 ("echo" (request string)
