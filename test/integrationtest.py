@@ -144,8 +144,9 @@ class IntegrationTest(unittest.TestCase):
     @classmethod
     def prepareTransportConfiguration(clazz, transport):
         if transport == 'spread':
-            spread, socket     = '1', '0'
-            options1, options2 = {}, {}
+            spread, socket = '1', '0'
+            options1 = { 'RSB_PLUGINS_CPP_LOAD': 'rsbspread' }
+            options2 = { 'RSB_PLUGINS_CPP_LOAD': 'rsbspread' }
         elif transport == 'socket':
             spread, socket = '0', '1'
             options1 = { 'RSB_TRANSPORT_SOCKET_PORT': str(clazz.nextSocketPort) }
