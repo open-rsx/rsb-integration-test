@@ -30,6 +30,8 @@
   (pbb:emit descriptor :serializer)
   (pbb:emit descriptor :deserializer))
 
+(log:config :warn :thread)
+
 (cl:defpackage :rsb.integration-test
   (:use
    :cl
