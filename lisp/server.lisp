@@ -1,6 +1,6 @@
 ;;; server.lisp --- Server part of the Lisp integration test code.
 ;;
-;; Copyright (C) 2011, 2012 Jan Moringen
+;; Copyright (C) 2011, 2012, 2014 Jan Moringen
 ;;
 ;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 ;;
@@ -53,8 +53,8 @@
   (format t "[Lisp   Server] Providing service on ~A~%"
 	  *client/server-test-uri*)
 
-  (rsb.patterns:with-local-server (server *client/server-test-uri*)
-    (rsb.patterns:with-methods (server)
+  (rsb.patterns.request-reply:with-local-server (server *client/server-test-uri*)
+    (rsb.patterns.request-reply:with-methods (server)
 	(("ping" (request cookie-type)
 	   (format t "[Lisp   Server] \"ping\" method called with request ~A~%"
 		   request)

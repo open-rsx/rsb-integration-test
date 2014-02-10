@@ -1,6 +1,6 @@
 ;;; client.lisp --- Client part of the Lisp integration test code.
 ;;
-;; Copyright (C) 2011, 2012 Jan Moringen
+;; Copyright (C) 2011, 2012, 2014 Jan Moringen
 ;;
 ;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 ;;
@@ -39,53 +39,54 @@
   (format t "[Lisp   Client] Communicating with remote server at ~A~%"
 	  *client/server-test-uri*)
 
-  (rsb.patterns:with-remote-server (server *client/server-test-uri*)
+  (rsb.patterns.request-reply:with-remote-server (server *client/server-test-uri*)
     ;; Test ping method.
     (format t "[Lisp   Client] Calling \"ping\" method with request ~A~%"
 	    *cookie*)
-    (assert (string= (rsb.patterns:call server "ping" *cookie*) "pong"))
+    (assert (string= (rsb.patterns.request-reply:call server "ping" *cookie*) "pong"))
 
     ;; Test echo method.
     (format t "[Lisp   Client] Calling \"echo\" method~%")
-    (assert (string= (rsb.patterns:call server "echo" "hello from Lisp")
+    (assert (string= (rsb.patterns.request-reply:call server "echo" "hello from Lisp")
 		     "hello from Lisp"))
 
     ;; Test calling addone method synchronously and asynchronously.
-    (let ((add-one (rsb.patterns:server-method server "addone")))
+    (let ((add-one (rsb.patterns.request-reply:server-method server "addone")))
       (format t "[Lisp   Client] Calling \"addone\" method (100 times, synchronous)~%")
       (assert (equalp (map 'list add-one (iota 100))
 		      (iota 100 :start 1)))
 
       (format t "[Lisp   Client] Calling \"addone\" method (100 times, asynchronous)~%")
-      (assert (equalp (map 'list #'rsb.patterns:future-result
+      (assert (equalp (map 'list #'rsb.patterns.request-reply:future-result
 			   (map 'list (rcurry add-one :block? nil)
 				(iota 100)))
 		      (iota 100 :start 1))))
 
     ;; Test protocol buffer payload
     (format t "[Lisp   Client] Calling \"putimage\" method~%")
-    (rsb.patterns:call server "putimage"
-		       (make-instance 'running.example:image
-				      :width  1024
-				      :height 1024
-				      :depths (make-array 3
-                                                          :element-type     '(unsigned-byte 32)
-                                                          :initial-contents '(8 8 8))
-				      :data   (make-array (* 3 1024 1024)
-							  :element-type    '(unsigned-byte 8)
-							  :initial-element 3)))
+    (rsb.patterns.request-reply:call
+     server "putimage"
+     (make-instance 'running.example:image
+                    :width  1024
+                    :height 1024
+                    :depths (make-array 3
+                                        :element-type     '(unsigned-byte 32)
+                                        :initial-contents '(8 8 8))
+                    :data   (make-array (* 3 1024 1024)
+                                        :element-type    '(unsigned-byte 8)
+                                        :initial-element 3)))
 
     ;; Test error-producing method.
     (format t "[Lisp   Client] Calling \"error\" method~%")
     (let ((signaled? t))
       (ignore-errors
-	(rsb.patterns:call server "error" "does not matter")
+	(rsb.patterns.request-reply:call server "error" "does not matter")
 	(setf signaled? nil))
       (unless signaled?
 	(error "~@<Method did not signal.~@:>")))
 
     ;; Ask server to terminate.
     (format t "[Lisp   Client] Calling \"terminate\" method~%")
-    (rsb.patterns:call server "terminate" rsb.converter:+no-value+))
+    (rsb.patterns.request-reply:call server "terminate" rsb.converter:+no-value+))
 
   (format t "[Lisp   Client] Done~%"))
