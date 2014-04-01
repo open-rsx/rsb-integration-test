@@ -1,6 +1,6 @@
 ;;; listener.lisp --- Listener part of the Lisp integration test code.
 ;;
-;; Copyright (C) 2011, 2012, 2013 Jan Moringen
+;; Copyright (C) 2011, 2012, 2013, 2014 Jan Moringen
 ;;
 ;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 ;;
@@ -22,7 +22,7 @@
 (defun listener-for-scope (sub-scope expected-size expected-causes nested-scope)
   (bt:make-thread
    (lambda ()
-     (let* ((size-scope     (rsb:make-scope (format nil "/size~D" expected-size)))
+     (let* ((size-scope     (rsb:make-scope (format nil "/size-~D" expected-size)))
 	    (expected-scope (rsb:merge-scopes nested-scope size-scope))
 	    (listen-scope   (rsb:merge-scopes sub-scope size-scope))
 	    (uri            (rsb:scope-string listen-scope)))
@@ -47,7 +47,7 @@
     (return-from listener-main))
 
   (let* ((causes       (list (cons (uuid:make-null-uuid) 0)))
-	 (nested-scope (rsb:make-scope "/sub1/sub2"))
+	 (nested-scope (rsb:make-scope "/sub_1/sub_2"))
 	 (listeners    (map-product
 			(rcurry #'listener-for-scope causes nested-scope)
 			(rsb:super-scopes nested-scope :include-self? t)

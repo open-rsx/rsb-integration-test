@@ -59,7 +59,7 @@ int main(int argc, char *argv[]) {
     vector< Informer<string>::Ptr > informers;
     for (vector<int>::const_iterator it = sizes.begin(); it != sizes.end();
          ++it) {
-        Scope scope(str(format("/size%1%/sub1/sub2") % *it));
+        Scope scope(str(format("/size-%1%/sub_1/sub_2") % *it));
         cout << "[C++    Informer] Processing scope " << scope << endl;
         Informer<string>::Ptr informer = factory.createInformer<string>(scope);
         informers.push_back(informer);

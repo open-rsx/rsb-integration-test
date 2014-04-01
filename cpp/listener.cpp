@@ -97,7 +97,7 @@ int main(void) {
     sizes.push_back(400000);
     for (vector<int>::const_iterator it = sizes.begin(); it != sizes.end();
          ++it) {
-        Scope scope(str(format("/size%1%/sub1/sub2") % *it));
+        Scope scope(str(format("/size-%1%/sub_1/sub_2") % *it));
         vector<Scope> scopes = scope.superScopes(true);
         for (vector<Scope>::const_iterator it_ = scopes.begin() + 1;
              it_ != scopes.end(); ++it_) {

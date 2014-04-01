@@ -2,7 +2,7 @@
  *
  * This file is part of the RSB project.
  *
- * Copyright (C) 2011, 2012 Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
+ * Copyright (C) 2011, 2012, 2014 Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -79,9 +79,9 @@ public class listener {
             try {
                 this.listener.deactivate();
             } catch (RSBException e) {
-            	throw new RuntimeException(e);
+                throw new RuntimeException(e);
             } catch (InterruptedException e) {
-            	throw new RuntimeException(e);
+                throw new RuntimeException(e);
             }
         }
 
@@ -103,17 +103,17 @@ public class listener {
         sizes.add(400000);
         ArrayList<String> components = new ArrayList<String>();
         components.add("/");
-        components.add("sub1");
-        components.add("/sub2");
+        components.add("sub_1");
+        components.add("/sub_2");
         ArrayList<Thread> listeners = new ArrayList<Thread>();
         for (int size : sizes) {
-            String scopeString = "/size" + size;
+            String scopeString = "/size-" + size;
             for (String component : components) {
                 scopeString += component;
                 Scope scope = new Scope(scopeString);
                 try {
                     Thread thread = new Thread(new EventHandler(scope,
-                                                                new Scope("/size" + size),
+                                                                new Scope("/size-" + size),
                                                                 size,
                                                                 120));
                     thread.start();

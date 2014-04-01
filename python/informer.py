@@ -2,7 +2,7 @@
 # ============================================================
 #
 # Copyright (C) 2011 by Johannes Wienke <jwienke at techfak dot uni-bielefeld dot de>
-# Copyright (C) 2011, 2012 Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
+# Copyright (C) 2011, 2012, 2014 Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 #
 # This program is free software; you can redistribute it
 # and/or modify it under the terms of the GNU General
@@ -27,7 +27,7 @@ if __name__ == '__main__':
     listenerPid = int(sys.argv[2])
 
     for size in [ 4, 256, 400000 ]:
-        scope = "/size%d/sub1/sub2" % size
+        scope = "/size-%d/sub_1/sub_2" % size
         print("[Python Informer] Processing scope %s" % scope)
         informer = rsb.createInformer(scope, dataType = str)
 
