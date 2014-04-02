@@ -17,17 +17,16 @@
 ;; You should have received a copy of the GNU General Public License
 ;; along with this program. If not, see <http://www.gnu.org/licenses>.
 
-(cl:in-package :rsb.integration-test)
+(cl:in-package #:rsb.integration-test)
 
 (defun informer-main ()
-  ;; Commandline option boilerplate.
   (setf rsb:*default-configuration* (rsb:options-from-default-sources))
   (make-synopsis
    :item (make-flag    :long-name   "help"
-		       :description "Display help text.")
+                       :description "Display help text.")
    :item (make-lispobj :long-name   "listener-pid"
-		       :typespec    'positive-integer
-		       :description "PID of listener process for inclusion in event meta-data.")
+                       :typespec    'positive-integer
+                       :description "PID of listener process for inclusion in event meta-data.")
    :item (rsb:make-options))
   (make-context)
   (when (getopt :long-name "help")
@@ -35,24 +34,24 @@
     (return-from informer-main))
 
   (let ((listener-pid (getopt :long-name "listener-pid"))
-	(start        (local-time:now))
-	(causes       (list (cons (uuid:make-null-uuid) 0))))
+        (start        (local-time:now))
+        (causes       (list (cons (uuid:make-null-uuid) 0))))
     (unless listener-pid
       (help)
-      (exit 1))
+      (sb-ext:exit :code 1))
 
     (iter (for size in '(4 256 400000))
-	  (let* ((scope (format nil "/size-~D/sub_1/sub_2" size))
-		 (data  (make-string size :initial-element #\c)))
-	    (format t "[Lisp   Informer] ~@<Processing scope ~A~@:>~%" scope)
-	    (rsb:with-informer (informer scope t)
-	      (iter (for i :from 0 :below 120)
-		    (let ((event (rsb:make-event
-				  scope data
-				  :informer-lang "Lisp"
-				  :index         (format nil "~D" (+ listener-pid i))
-				  :causes        causes)))
-		      (setf (rsb:timestamp event :informer-start) start)
-		      (rsb:send informer event)))))))
+          (let* ((scope (format nil "/size-~D/sub_1/sub_2" size))
+                 (data  (make-string size :initial-element #\c)))
+            (format t "[Lisp   Informer] ~@<Processing scope ~A~@:>~%" scope)
+            (rsb:with-informer (informer scope t)
+              (iter (for i :from 0 :below 120)
+                    (let ((event (rsb:make-event
+                                  scope data
+                                  :informer-lang "Lisp"
+                                  :index         (format nil "~D" (+ listener-pid i))
+                                  :causes        causes)))
+                      (setf (rsb:timestamp event :informer-start) start)
+                      (rsb:send informer event)))))))
 
   (format t "[Lisp   Informer] Done~%"))

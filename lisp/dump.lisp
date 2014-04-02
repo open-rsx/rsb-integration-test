@@ -1,6 +1,6 @@
 ;;; dump.lisp --- Dump a single binary for all tests.
 ;;
-;; Copyright (C) 2011, 2012, 2013 Jan Moringen
+;; Copyright (C) 2011, 2012, 2013, 2014 Jan Moringen
 ;;
 ;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 ;;
@@ -17,7 +17,7 @@
 ;; You should have received a copy of the GNU General Public License
 ;; along with this program. If not, see <http://www.gnu.org/licenses>.
 
-(cl:in-package :rsb.integration-test)
+(cl:in-package #:rsb.integration-test)
 
 (defvar *filename->entry-point*
   '(("event_id" . event-id-main)
@@ -31,13 +31,16 @@
   "Entry point function of the test program."
   (make-synopsis)
   (let* ((progname (pathname-name
-		    (pathname (first (com.dvlsoft.clon::cmdline)))))
-	 (entry    (cdr (assoc progname *filename->entry-point*
-			       :test #'string=))))
+                    (pathname (first (com.dvlsoft.clon::cmdline)))))
+         (entry    (cdr (assoc progname *filename->entry-point*
+                               :test #'string=))))
     (if entry
-	(funcall entry)
-	(format *error-output* "~@<Invoke as ~{~A~^ or ~}.~_~_This is ~
-usually done by creating symbolic links~_~_~:*~{~2T~A -> test~_~}~@:>~%"
-		(map 'list #'car *filename->entry-point*)))))
+        (funcall entry)
+        (format *error-output* "~@<Invoke as ~{~A~^ or ~}.~@:_~@:_This ~
+                                is usually done by creating symbolic ~
+                                links~@:_~@:_~:*~{~2T~A ->
+                                test~@:_~}~@:>~%"
+                (mapcar #'car *filename->entry-point*)))))
 
+(rsb:enable-id-random-state-reseed)
 (dump "test" main)

@@ -49,7 +49,7 @@
     (return-from config-main))
   (unless (length= 2 (remainder))
     (help)
-    (exit 1))
+    (sb-ext:exit :code 1))
 
   (with-input-from-file (stream (nth 0 (remainder)))
     (setf rsb:*default-configuration* (rsb:options-from-stream stream)))

@@ -1,6 +1,6 @@
 ;;; common.lisp --- Common stuff used in the Lisp integration test code.
 ;;
-;; Copyright (C) 2011, 2012, 2013 Jan Moringen
+;; Copyright (C) 2011, 2012, 2013, 2014 Jan Moringen
 ;;
 ;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 ;;
@@ -17,7 +17,7 @@
 ;; You should have received a copy of the GNU General Public License
 ;; along with this program. If not, see <http://www.gnu.org/licenses>.
 
-(load-system :sb-posix)
+(load-system :lparallel)
 (load-system :com.dvlsoft.clon)
 (load-system :cl-protobuf)
 (load-system :usocket)
@@ -30,19 +30,22 @@
   (pbb:emit descriptor :serializer)
   (pbb:emit descriptor :deserializer))
 
+
+(setf *print-length* 1000
+      *print-level*  30)
 (log:config :warn :thread)
 
-(cl:defpackage :rsb.integration-test
+(cl:defpackage #:rsb.integration-test
   (:use
-   :cl
-   :alexandria
-   :split-sequence
-   :let-plus
-   :iter
+   #:cl
+   #:alexandria
+   #:split-sequence
+   #:let-plus
+   #:iter
 
-   :com.dvlsoft.clon))
+   #:com.dvlsoft.clon))
 
-(cl:in-package :rsb.integration-test)
+(cl:in-package #:rsb.integration-test)
 
 (defvar *client/server-test-uri* "/rsb-integration-test/request-reply")
 
@@ -57,4 +60,4 @@ cases.")
 (defun write-ready-file (tag)
   (write-string-into-file "" (format nil "test/lisp-~A-ready" tag)
                           :if-does-not-exist :create
-                          :if-exists :supersede))
+                          :if-exists         :supersede))

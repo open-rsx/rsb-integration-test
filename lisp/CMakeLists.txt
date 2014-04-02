@@ -7,7 +7,7 @@ set(SBCL_HOME $ENV{SBCL_HOME})
 if(SBCL_HOME)
     find_program(SBCL_EXECUTABLE sbcl
                  PATHS "${SBCL_HOME}/../../bin"
-             NO_DEFAULT_PATH)
+                 NO_DEFAULT_PATH)
 
     # Configure Lisp environment.
     set(LISP_FASL_DIR  "/tmp/fasl-cache-rsb-integrationtest/"
