@@ -100,7 +100,9 @@ class IntegrationTest(unittest.TestCase):
         binary = os.path.join(binaryPaths[lang], kind + binaryExtensions[lang])
         commandline = binaryExecutorList[lang] + [binary] + list(args)
 
-        self.__logger.info("starting %s with command line: %s and environment %s"
+        self.__logger.info("""starting %s
+\twith command line %s
+\tand environment   %s"""
                            % (kind, commandline, env))
 
         environment = dict(os.environ)
@@ -193,62 +195,75 @@ class IntegrationTest(unittest.TestCase):
         return options1, options2
 
     @classmethod
-    def addListenerInformerPair(clazz, transport, listenerLang, informerLang):
+    def addTestPair(clazz, kind, transport, info1, info2, execute, timeout = 30):
+        (role1, language1) = info1
+        (role2, language2) = info2
+        def notDash(char):
+            return not char == '-'
+        methodName = 'test%s%s%s%s%s' \
+                     % (filter(notDash, role1.capitalize()),
+                        filter(notDash, role2.capitalize()),
+                        transport.capitalize(),
+                        language1.capitalize(), language2.capitalize())
+
         def testFunc(self):
-            self.__logger.info('\n\n\n==================== KIND: pubsub - TRANSPORT: %s - LISTENER: %s - INFORMER: %s ====================' %
-                               (transport, listenerLang, informerLang))
+            self.__logger.info('\n\n\n==================== KIND: %s - TRANSPORT: %s - %s: %s - %s: %s ====================' %
+                               (kind, transport,
+                                role1.upper(), language1,
+                                role2.upper(), language2))
 
             # Prepare environment
-            informerOptions, listenerOptions = clazz.prepareTransportConfiguration(transport)
+            options1, options2 = clazz.prepareTransportConfiguration(transport)
+            process1, process2 = execute(self, options1, options2)
 
+            codes = self.waitForProcesses(clazz.getTimeout(timeout), process1, process2)
+            failed, reason = self.analyzeExitCodes(codes, (role1, role2))
+            if failed:
+                self.fail("%s/%s communication failed for %s %s and %s %s: %s"
+                          % (role1, role2,
+                             language1, role1, language2, role2, reason))
+
+        setattr(clazz, methodName, testFunc)
+
+    @classmethod
+    def addListenerInformerPair(clazz, transport, listenerLang, informerLang):
+        def execute(self, options1, options2):
             # Start listener and informer processes
-            listenerProc = self.startProcessAndWait(listenerLang, "listener", env = listenerOptions)
+            listenerProc = self.startProcessAndWait(listenerLang, "listener",
+                                                    env = options1)
             if not listenerProc:
                 self.fail("Timeout while waiting for %s listener to start" % listenerLang)
             informerProc = self.startProcess(informerLang, "informer",
                                              [ "--listener-pid", str(listenerProc.pid) ],
-                                             env = informerOptions)
-            codes = self.waitForProcesses(clazz.getTimeout(60), listenerProc, informerProc)
-            failed, reason = self.analyzeExitCodes(codes, ("listener", "informer"))
-            if failed:
-                self.fail("Listener/Informer communication failed for %s listener and %s informer: %s"
-                          % (listenerLang, informerLang, reason))
+                                             env = options2)
+            return listenerProc, informerProc
 
-            # TODO check message contents parsed from stdout of the listeners
+        # TODO check message contents parsed from stdout of the listeners
 
-        setattr(clazz,
-                'testListenerInformer' + transport.capitalize() + listenerLang.capitalize() + informerLang.capitalize(),
-                testFunc)
+        clazz.addTestPair('pubsub', transport,
+                          ('listener', listenerLang),
+                          ('informer', informerLang),
+                          execute)
 
     @classmethod
     def addClientServerPair(clazz, transport, clientLang, serverLang):
-        def testFunc(self):
-            self.__logger.info('\n\n\n==================== KIND: rpc - TRANSPORT: %s - CLIENT: %s - SERVER: %s ====================' %
-                               (transport, clientLang, serverLang))
-
-            # Prepare environment
-            clientOptions, serverOptions = clazz.prepareTransportConfiguration(transport)
-
+        def execute(self, options1, options2):
             # Start client and server processes
             cookie = str(random.randint(0, 1 << 31))
             serverProc = self.startProcessAndWait(serverLang, "server",
                                                   [ "--cookie", cookie ],
-                                                  env = serverOptions)
+                                                  env = options2)
             if not serverProc:
                 self.fail("Timeout while waiting for %s server to start" % serverLang)
             clientProc = self.startProcess(clientLang, "client",
                                            [ "--cookie", cookie ],
-                                           env = clientOptions)
+                                           env = options1)
+            return clientProc, serverProc
 
-            codes = self.waitForProcesses(clazz.getTimeout(30), clientProc, serverProc)
-            failed, reason = self.analyzeExitCodes(codes, ("client", "server"))
-            if failed:
-                self.fail("Client/Server communication failed for %s client and %s server: %s"
-                          % (clientLang, serverLang, reason))
-
-        setattr(clazz,
-                'testClientServer' + transport.capitalize() + clientLang.capitalize() + serverLang.capitalize(),
-                testFunc)
+        clazz.addTestPair('rpc', transport,
+                          ('client', clientLang),
+                          ('server', serverLang),
+                          execute)
 
     @classmethod
     def addParserTest(clazz, lang):
@@ -284,7 +299,6 @@ class IntegrationTest(unittest.TestCase):
         setattr(clazz,
                 'testEventIdGeneration' + lang.capitalize(),
                 testFunc)
-
 
 def run():
     # Setup logging
