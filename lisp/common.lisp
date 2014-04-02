@@ -23,6 +23,7 @@
 (load-system :usocket)
 (load-system :network.spread)
 (load-system :cl-rsb)
+(load-system :rsb-introspection)
 
 (let ((descriptor (pbf:load/text #P"../../data/Image.proto")))
   (pbb:emit descriptor :class)
@@ -48,6 +49,8 @@
 (cl:in-package #:rsb.integration-test)
 
 (defvar *client/server-test-uri* "/rsb-integration-test/request-reply")
+
+(defvar *introspection-test-uri* "/rsb-integration-test/introspection")
 
 (deftype cookie-type ()
   'non-negative-integer)

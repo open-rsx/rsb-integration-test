@@ -52,7 +52,7 @@ binaryExtensions = { LANG_CPP:    "",
 
 transports = [ "spread", "socket" ]
 
-tests = [ "parser", "id", "pubsub", "rpc" ]
+tests = [ 'parser', 'id', 'pubsub', 'rpc', 'introspection' ]
 
 values= { LANG_CPP:    { 'true':       '1',
                          'false':      '0',
@@ -232,7 +232,8 @@ class IntegrationTest(unittest.TestCase):
             listenerProc = self.startProcessAndWait(listenerLang, "listener",
                                                     env = options1)
             if not listenerProc:
-                self.fail("Timeout while waiting for %s listener to start" % listenerLang)
+                self.fail("Timeout while waiting for %s listener to start"
+                          % listenerLang)
             informerProc = self.startProcess(informerLang, "informer",
                                              [ "--listener-pid", str(listenerProc.pid) ],
                                              env = options2)
@@ -254,7 +255,8 @@ class IntegrationTest(unittest.TestCase):
                                                   [ "--cookie", cookie ],
                                                   env = options2)
             if not serverProc:
-                self.fail("Timeout while waiting for %s server to start" % serverLang)
+                self.fail("Timeout while waiting for %s server to start"
+                          % serverLang)
             clientProc = self.startProcess(clientLang, "client",
                                            [ "--cookie", cookie ],
                                            env = options1)
@@ -264,6 +266,34 @@ class IntegrationTest(unittest.TestCase):
                           ('client', clientLang),
                           ('server', serverLang),
                           execute)
+
+    @classmethod
+    def addIntrospectionPair(clazz, transport, localLang, remoteLang):
+        if not remoteLang == 'lisp':
+            return
+
+        def execute(self, options1, options2):
+            # Start local and remote introspection processes
+            cookie = str(random.randint(0, 1 << 31))
+            remoteProc = self.startProcessAndWait(remoteLang, "remote-introspection",
+                                                  [ "--cookie", cookie ],
+                                                  env = options2)
+            if not remoteProc:
+                self.fail("Timeout while waiting for %s remote-introspection to start"
+                          % remoteLang)
+            options1['RSB_PLUGINS_CPP_LOAD'] \
+                = ':'.join(options1.get('RSB_PLUGINS_CPP_LOAD', '').split(':')
+                           + [ 'rsbintrospection' ])
+            options1['RSB_INTROSPECTION_ENABLED'] = '1'
+            localProc = self.startProcess(localLang, 'local-introspection',
+                                          [ "--cookie", cookie ],
+                                          env = options1)
+            return localProc, remoteProc
+
+        clazz.addTestPair('introspection', transport,
+                          ('local-introspection',  localLang),
+                          ('remote-introspection', remoteLang),
+                          execute, timeout = 20)
 
     @classmethod
     def addParserTest(clazz, lang):
@@ -405,6 +435,10 @@ def run():
     # each pair of languages.
     if "rpc" in selectedTests:
         map(lambda x: IntegrationTest.addClientServerPair(*x),
+            itertools.product(selectedTransports, selectedLanguages, selectedLanguages))
+
+    if 'introspection' in selectedTests:
+        map(lambda x: IntegrationTest.addIntrospectionPair(*x),
             itertools.product(selectedTransports, selectedLanguages, selectedLanguages))
 
     if options.noTimeout:

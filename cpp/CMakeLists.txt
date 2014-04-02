@@ -11,8 +11,9 @@ protobuf_generate(CPP PROTO_SOURCE PROTO_HEADER
                   PROTOFILES "${CMAKE_SOURCE_DIR}/data/Image.proto")
 
 set(PROGRAMS config.cpp event_id.cpp
-             informer.cpp listener.cpp
-             server.cpp   client.cpp)
+             informer.cpp            listener.cpp
+             server.cpp              client.cpp
+             local-introspection.cpp             )
 
 foreach(PROGRAM ${PROGRAMS})
     get_filename_component(BINARY "${PROGRAM}" NAME_WE)

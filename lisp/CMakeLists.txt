@@ -1,6 +1,7 @@
-set(SCRIPTS "client.lisp"   "server.lisp"
-            "informer.lisp" "listener.lisp"
-            "config.lisp"   "event_id.lisp")
+set(SCRIPTS "config.lisp" "event_id.lisp"
+            "informer.lisp"            "listener.lisp"
+            "client.lisp"              "server.lisp"
+            "local-introspection.lisp" "remote-introspection.lisp")
 
 # Find and check SBCL installation.
 set(SBCL_HOME $ENV{SBCL_HOME})
@@ -32,7 +33,7 @@ if(SBCL_HOME)
     set(NAME         "test")
     set(LOAD_SCRIPTS "")
     foreach(SCRIPT ${SCRIPTS})
-        set(LOAD_SCRIPTS "${LOAD_SCRIPTS} --load ${CMAKE_CURRENT_SOURCE_DIR}/${SCRIPT}")
+        set(LOAD_SCRIPTS "${LOAD_SCRIPTS} --eval \"(with-compilation-unit () (load \\\"${CMAKE_CURRENT_SOURCE_DIR}/${SCRIPT}\\\"))\"")
     endforeach()
     configure_file("${CMAKE_CURRENT_SOURCE_DIR}/sbcl.cmake.in"
                    "${CMAKE_CURRENT_BINARY_DIR}/sbcl.${NAME}.cmake"

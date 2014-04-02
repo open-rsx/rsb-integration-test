@@ -20,12 +20,14 @@
 (cl:in-package #:rsb.integration-test)
 
 (defvar *filename->entry-point*
-  '(("event_id" . event-id-main)
-    ("config"   . config-main)
-    ("listener" . listener-main)
-    ("informer" . informer-main)
-    ("client"   . client-main)
-    ("server"   . server-main)))
+  '(("event_id"             . event-id-main)
+    ("config"               . config-main)
+    ("listener"             . listener-main)
+    ("informer"             . informer-main)
+    ("client"               . client-main)
+    ("server"               . server-main)
+    ("local-introspection"  . local-introspection-main)
+    ("remote-introspection" . remote-introspection-main)))
 
 (defun main ()
   "Entry point function of the test program."

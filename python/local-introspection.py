@@ -1,0 +1,95 @@
+#!/usr/bin/env python
+# ============================================================
+#
+# Copyright (C) 2014 Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
+#
+# This program is free software; you can redistribute it
+# and/or modify it under the terms of the GNU General
+# Public License as published by the Free Software Foundation;
+# either version 2, or (at your option)
+# any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# ============================================================
+
+import sys
+import os
+import time
+import threading
+import optparse
+
+import rsb
+import rsb.introspection
+
+class Step(object):
+    def __init__(self):
+        self.__step      = False
+        self.__lock      = threading.Lock()
+        self.__condition = threading.Condition(lock = self.__lock)
+
+    def wait(self):
+        with self.__lock:
+            while not self.__step:
+                self.__condition.wait()
+
+    def notify(self):
+        with self.__lock:
+            self.__step = True
+            self.__condition.notify()
+
+if __name__ == '__main__':
+
+    # The value of the cookie is not used. The purpose of the
+    # commandline option is for the remote introspection to have
+    # commandline arguments to verify.
+    parser = optparse.OptionParser()
+    parser.add_option('--cookie',
+                      dest    = 'cookie',
+                      type    = long,
+                      default = 0,
+                      help    = 'A cookie for verification in \"ping\" method call.')
+    options, args = parser.parse_args()
+
+    configNoIntrospection = rsb.ParticipantConfig.fromDefaultSources()
+    configNoIntrospection.introspection = False
+    scope = rsb.Scope('/rsb-integration-test/introspection')
+    print '[Python Local  Introspection] Creating participants on %s' % scope
+
+    # This remote-server is for synchronization and coordination only
+    # and thus is not made visible to the remote introspection.
+    with rsb.createRemoteServer(scope, config = configNoIntrospection) as remoteServer:
+        with rsb.createLocalServer(scope) as localServer:
+            localStep = Step()
+            def _localStep():
+                print '[Python Local  Introspection] "local-step" method called'
+                localStep.notify()
+            localServer.addMethod('local-step', _localStep, type(None), type(None))
+
+            # Tell remote-introspection process that we are ready by
+            # calling the "remote-start" method.
+            pid = os.getpid()
+            print '[Python Local  Introspection] Calling "remote-start" method with pid %d' % pid
+            remoteServer.getMethod('remote-start')(pid)
+
+            # Wait for "local-step" call with the participant
+            # configuration unchanged. After receiving the call,
+            # destroy the local-server.
+            localStep.wait()
+
+            # FIXME Workaround to not deactivate server while method
+            # call is in progress.
+            time.sleep(1)
+
+        # Destroying the local-server lets the remote-introspection
+        # receive a Bye event.
+
+        # The "remote-step" call blocks until the remote-introspection
+        # process is done.
+        print '[Python Local  Introspection] Calling "remote-step" method'
+        remoteServer.getMethod('remote-step')()
+
+    print '[Python Local  Introspection] Done'
