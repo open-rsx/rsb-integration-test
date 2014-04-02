@@ -19,20 +19,6 @@
 
 (cl:in-package #:rsb.integration-test)
 
-(defvar *terminate* (list (bt:make-lock)
-                          (bt:make-condition-variable)
-                          nil))
-
-(defun terminate-wait ()
-  (bt:with-lock-held ((first *terminate*))
-    (iter (until (third *terminate*))
-          (bt:condition-wait (second *terminate*) (first *terminate*)))))
-
-(defun terminate-notify ()
-  (bt:with-lock-held ((first *terminate*))
-    (setf (third *terminate*) t)
-    (bt:condition-notify (second *terminate*))))
-
 (defun server-main ()
   ;; Commandline option boilerplate.
   (setf rsb:*default-configuration* (rsb:options-from-default-sources))

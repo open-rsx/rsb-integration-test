@@ -61,3 +61,19 @@ cases.")
   (write-string-into-file "" (format nil "test/lisp-~A-ready" tag)
                           :if-does-not-exist :create
                           :if-exists         :supersede))
+
+;; Termination
+
+(defvar *terminate* (list (bt:make-lock)
+                          (bt:make-condition-variable)
+                          nil))
+
+(defun terminate-wait ()
+  (bt:with-lock-held ((first *terminate*))
+    (iter (until (third *terminate*))
+          (bt:condition-wait (second *terminate*) (first *terminate*)))))
+
+(defun terminate-notify ()
+  (bt:with-lock-held ((first *terminate*))
+    (setf (third *terminate*) t)
+    (bt:condition-notify (second *terminate*))))
