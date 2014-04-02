@@ -78,12 +78,13 @@
 
     ;; Test error-producing method.
     (format t "[Lisp   Client] Calling \"error\" method~%")
-    (let ((signaled? t))
-      (ignore-errors
-       (rsb.patterns.request-reply:call server "error" "does not matter")
-       (setf signaled? nil))
-      (unless signaled?
-        (error "~@<Method did not signal.~@:>")))
+    (handler-case
+        (rsb.patterns.request-reply:call server "error" "does not matter")
+      (error ())
+      (:no-error (&rest args)
+        (error "~@<Method did not signal an error but returned ~{~S~^, ~
+                ~}.~@:>"
+               args)))
 
     ;; Ask server to terminate.
     (format t "[Lisp   Client] Calling \"terminate\" method~%")
