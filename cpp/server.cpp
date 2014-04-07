@@ -2,7 +2,7 @@
  *
  * This file is part of the RSB project
  *
- * Copyright (C) 2011, 2012, 2013 Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
+ * Copyright (C) 2011, 2012, 2013, 2014 Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
  *
  * This program is free software; you can redistribute it
  * and/or modify it under the terms of the GNU General
@@ -64,7 +64,7 @@ private:
     IntegerType expected;
 };
 
-class EchoCallback: public Server::Callback<string, string> {
+class EchoCallback: public LocalServer::Callback<string, string> {
 public:
     boost::shared_ptr<string> call(const string &/*methodName*/,
                                    boost::shared_ptr<string> request) {
@@ -73,7 +73,7 @@ public:
     }
 };
 
-class AddOneCallback: public Server::Callback<IntegerType, IntegerType> {
+class AddOneCallback: public LocalServer::Callback<IntegerType, IntegerType> {
 public:
     boost::shared_ptr<IntegerType> call(const string &/*methodName*/,
                                         boost::shared_ptr<IntegerType> request) {
@@ -84,7 +84,7 @@ public:
     }
 };
 
-class PutimageCallback: public Server::Callback<running::example::Image, void> {
+class PutimageCallback: public LocalServer::Callback<running::example::Image, void> {
 public:
     void call(const string &/*methodName*/,
               boost::shared_ptr<running::example::Image> /*request*/) {
@@ -92,7 +92,7 @@ public:
     }
 };
 
-class ErrorCallback: public Server::Callback<string, string> {
+class ErrorCallback: public LocalServer::Callback<string, string> {
 public:
     boost::shared_ptr<string> call(const string &/*methodName*/,
                                    boost::shared_ptr<string> /*request*/) {
@@ -101,7 +101,7 @@ public:
     }
 };
 
-class TerminateCallback: public Server::Callback<void, void> {
+class TerminateCallback: public LocalServer::Callback<void, void> {
 public:
     TerminateCallback():
         done(false) {
@@ -152,7 +152,7 @@ int main(int argc, char *argv[]) {
     Scope scope("/rsbtest/clientserver");
     cout << "[C++    Server] Providing service on " << scope << endl;
 
-    ServerPtr server = getFactory().createServer(scope);
+    LocalServerPtr server = getFactory().createLocalServer(scope);
 
     shared_ptr<TerminateCallback> terminate(new TerminateCallback());
 
