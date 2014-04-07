@@ -44,7 +44,7 @@
 
 (cl:in-package :rsb.integration-test)
 
-(defvar *client/server-test-uri* "/rsbtest/clientserver")
+(defvar *client/server-test-uri* "/rsb-integration-test/request-reply")
 
 (deftype cookie-type ()
   'non-negative-integer)

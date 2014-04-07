@@ -58,7 +58,7 @@ if __name__ == '__main__':
     options, args = parser.parse_args()
     cookie = options.cookie
 
-    scope = rsb.Scope('/rsbtest/clientserver')
+    scope = rsb.Scope('/rsb-integration-test/request-reply')
     print '[Python Server] Providing service at scope %s' % scope
 
     with rsb.createLocalServer(scope) as localServer:

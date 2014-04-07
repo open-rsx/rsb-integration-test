@@ -149,7 +149,7 @@ int main(int argc, char *argv[]) {
         exit(0);
     }
 
-    Scope scope("/rsbtest/clientserver");
+    Scope scope("/rsb-integration-test/request-reply");
     cout << "[C++    Server] Providing service on " << scope << endl;
 
     LocalServerPtr server = getFactory().createLocalServer(scope);

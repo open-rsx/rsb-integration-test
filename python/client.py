@@ -40,7 +40,7 @@ if __name__ == '__main__':
     options, args = parser.parse_args()
     cookie = options.cookie
 
-    scope = rsb.Scope('/rsbtest/clientserver')
+    scope = rsb.Scope('/rsb-integration-test/request-reply')
     print '[Python Client] Communicating with server at scope %s' % scope
 
     with rsb.createRemoteServer(scope) as remoteServer:

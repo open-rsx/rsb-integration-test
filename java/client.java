@@ -2,7 +2,7 @@
  *
  * This file is part of the RSB project.
  *
- * Copyright (C) 2011, 2012, 2013 Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
+ * Copyright (C) 2011, 2012, 2013, 2014 Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -45,7 +45,7 @@ public class client {
             cookie = Long.parseLong(args[1]);
         }
 
-        Scope scope = new Scope("/rsbtest/clientserver");
+        Scope scope = new Scope("/rsb-integration-test/request-reply");
 
         System.out.println("[Java   Client] Communicating with remote server at " + scope);
 
