@@ -60,7 +60,7 @@ if __name__ == '__main__':
             scope = rsb.Scope("/size%d/sub1/sub2" % size)
             scopes = scope.superScopes(True)
             for superscope in scopes[1:]:
-                listener = rsb.Listener(superscope)
+                listener = rsb.createListener(superscope)
                 listeners.append(listener)
 
                 receiver = Receiver(scope,

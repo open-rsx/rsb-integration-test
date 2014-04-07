@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # ============================================================
 #
-# Copyright (C) 2011, 2012, 2013 Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
+# Copyright (C) 2011, 2012, 2013, 2014 Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 #
 # This program is free software; you can redistribute it
 # and/or modify it under the terms of the GNU General
@@ -23,7 +23,6 @@ import optparse
 
 import rsb
 import rsb.converter
-import rsb.patterns
 
 sys.path.append('build/python')
 from Image_pb2 import Image
@@ -62,44 +61,42 @@ if __name__ == '__main__':
     scope = rsb.Scope('/rsbtest/clientserver')
     print '[Python Server] Providing service at scope %s' % scope
 
-    localServer = rsb.patterns.LocalServer(scope)
+    with rsb.createLocalServer(scope) as localServer:
 
-    def ping(request):
-        print '[Python Server] "ping" method called with request %s' % request
-        assert(request == cookie)
-        return 'pong'
-    localServer.addMethod('ping', ping, long, str)
+        def ping(request):
+            print '[Python Server] "ping" method called with request %s' % request
+            assert(request == cookie)
+            return 'pong'
+        localServer.addMethod('ping', ping, long, str)
 
-    def echo(x):
-        print '[Python Server] "echo" method called'
-        return x
-    localServer.addMethod('echo', echo, str, str)
+        def echo(x):
+            print '[Python Server] "echo" method called'
+            return x
+        localServer.addMethod('echo', echo, str, str)
 
-    def addOne(x):
-        if x == 0:
-            print '[Python Server] "addone" method called (for 0)'
-        return long(x + 1)
-    localServer.addMethod('addone', addOne, long, long)
+        def addOne(x):
+            if x == 0:
+                print '[Python Server] "addone" method called (for 0)'
+            return long(x + 1)
+        localServer.addMethod('addone', addOne, long, long)
 
-    def putImage(x):
-        print '[Python Server] "putImage" method called'
-    localServer.addMethod('putimage', putImage, Image, type(None))
+        def putImage(x):
+            print '[Python Server] "putImage" method called'
+        localServer.addMethod('putimage', putImage, Image, type(None))
 
-    def error(x):
-        print '[Python Server] "error" method called'
-        raise RuntimeError, "intentional error"
-    localServer.addMethod('error', error, str, str)
+        def error(x):
+            print '[Python Server] "error" method called'
+            raise RuntimeError, "intentional error"
+        localServer.addMethod('error', error, str, str)
 
-    def _terminate():
-        print '[Python Server] "terminate" method called'
-        terminateNotify()
-    localServer.addMethod('terminate', _terminate, type(None), type(None))
+        def _terminate():
+            print '[Python Server] "terminate" method called'
+            terminateNotify()
+        localServer.addMethod('terminate', _terminate, type(None), type(None))
 
-    open('test/python-server-ready', 'w').close()
-    print("[Python Server] Ready")
-    terminateWait()
-    time.sleep(1) # give the terminate call time to complete
+        open('test/python-server-ready', 'w').close()
+        print("[Python Server] Ready")
+        terminateWait()
+        time.sleep(1) # give the terminate call time to complete
 
     print '[Python Server] Done'
-
-    localServer.deactivate()

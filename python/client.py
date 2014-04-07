@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # ============================================================
 #
-# Copyright (C) 2011, 2012 Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
+# Copyright (C) 2011, 2012, 2014 Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 #
 # This program is free software; you can redistribute it
 # and/or modify it under the terms of the GNU General
@@ -21,7 +21,6 @@ import optparse
 
 import rsb
 import rsb.converter
-import rsb.patterns
 
 sys.path.append('build/python')
 from Image_pb2 import Image
@@ -44,39 +43,37 @@ if __name__ == '__main__':
     scope = rsb.Scope('/rsbtest/clientserver')
     print '[Python Client] Communicating with server at scope %s' % scope
 
-    remoteServer = rsb.patterns.RemoteServer(scope)
+    with rsb.createRemoteServer(scope) as remoteServer:
 
-    print '[Python Client] Calling "ping" method with request %s' % cookie
-    assert(remoteServer.ping(long(cookie)) == 'pong')
+        print '[Python Client] Calling "ping" method with request %s' % cookie
+        assert(remoteServer.ping(long(cookie)) == 'pong')
 
-    print '[Python Client] Calling "echo" method'
-    assert(remoteServer.echo('hello from Python') == 'hello from Python')
+        print '[Python Client] Calling "echo" method'
+        assert(remoteServer.echo('hello from Python') == 'hello from Python')
 
-    print '[Python Client] Calling "addone" method (100 times, synchronous)'
-    assert(map(remoteServer.addone, range(100)) == range(1, 101))
+        print '[Python Client] Calling "addone" method (100 times, synchronous)'
+        assert(map(remoteServer.addone, range(100)) == range(1, 101))
 
-    print '[Python Client] Calling "addone" method (100 times, asynchronous)'
-    assert(map(lambda x: x.get(),
-               map(remoteServer.addone.async, range(100)))
-           == range(1, 101))
+        print '[Python Client] Calling "addone" method (100 times, asynchronous)'
+        assert(map(lambda x: x.get(),
+                   map(remoteServer.addone.async, range(100)))
+               == range(1, 101))
 
-    print '[Python Client] Calling "putimage" method'
-    image = Image()
-    image.width  = 100
-    image.height = 100
-    image.data   = '1'*(3 * 1024 * 1024)
-    remoteServer.putimage(image)
+        print '[Python Client] Calling "putimage" method'
+        image = Image()
+        image.width  = 100
+        image.height = 100
+        image.data   = '1'*(3 * 1024 * 1024)
+        remoteServer.putimage(image)
 
-    print '[Python Client] Calling "error" method'
-    try:
-        remoteServer.error('does not matter')
-        sys.exit(1)
-    except:
-        pass
+        print '[Python Client] Calling "error" method'
+        try:
+            remoteServer.error('does not matter')
+            sys.exit(1)
+        except:
+            pass
 
-    print '[Python Client] Calling "terminate" method'
-    remoteServer.terminate()
+        print '[Python Client] Calling "terminate" method'
+        remoteServer.terminate()
 
     print '[Python Client] Done'
-
-    remoteServer.deactivate()
