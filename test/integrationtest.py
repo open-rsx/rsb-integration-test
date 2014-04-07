@@ -192,7 +192,7 @@ class IntegrationTest(unittest.TestCase):
                                              env = informerOptions)
             time.sleep(1)
 
-            codes = self.waitForProcesses(60, informerProc, listenerProc)
+            codes = self.waitForProcesses(60, listenerProc, informerProc)
             failed, reason = self.analyzeExitCodes(codes, ("listener", "informer"))
             if failed:
                 self.fail("Listener/Informer communication failed for %s listener and %s informer: %s"
