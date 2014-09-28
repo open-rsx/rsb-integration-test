@@ -21,7 +21,7 @@
 
 (defun server-main ()
   ;; Commandline option boilerplate.
-  (setf rsb:*default-configuration* (rsb:options-from-default-sources))
+  (setf rsb:*configuration* (rsb:options-from-default-sources))
   (make-synopsis
    :item (make-flag    :long-name     "help"
                        :description   "Display help text.")

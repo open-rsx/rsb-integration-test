@@ -1,6 +1,6 @@
 ;;; config.lisp --- Config part of the Lisp integration test code.
 ;;
-;; Copyright (C) 2011, 2012 Jan Moringen
+;; Copyright (C) 2011, 2012, 2014 Jan Moringen
 ;;
 ;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 ;;
@@ -35,13 +35,13 @@
 
 (defun config-main ()
   ;; Commandline option boilerplate.
-  (setf rsb:*default-configuration*
-	(append '(((:transport :spread :enabled) . "1"))
-		(rsb:options-from-default-sources)))
+  (setf rsb:*configuration*
+        (append '(((:transport :spread :enabled) . "1"))
+                (rsb:options-from-default-sources)))
   (make-synopsis
    :postfix "CONFIGFILE OUTPUTFILE"
    :item    (make-flag :long-name   "help"
-		       :description "Display help text.")
+                       :description "Display help text.")
    :item    (rsb:make-options))
   (make-context)
   (when (getopt :long-name "help")
@@ -52,10 +52,10 @@
     (sb-ext:exit :code 1))
 
   (with-input-from-file (stream (nth 0 (remainder)))
-    (setf rsb:*default-configuration* (rsb:options-from-stream stream)))
+    (setf rsb:*configuration* (rsb:options-from-stream stream)))
 
   (with-output-to-file (stream (nth 1 (remainder))
-			       :if-exists :supersede)
+                               :if-exists :supersede)
     (iter (for key   in   *interesting-options*)
-	  (for value next (rsb:option-value key))
-	  (format stream "~{~(~A~)~^.~}: ~A~%" key value))))
+          (for value next (rsb:option-value key))
+          (format stream "~{~(~A~)~^.~}: ~A~%" key value))))
