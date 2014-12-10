@@ -2,7 +2,7 @@
  *
  * This file is part of the RSB project.
  *
- * Copyright (C) 2011 Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
+ * Copyright (C) 2011, 2014 Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -27,7 +27,7 @@ import java.io.IOException;
 import rsb.EventId;
 import rsb.ParticipantId;
 
-public class event_id {
+public class EventIdTest {
 
     public static void main(String[] args) throws IOException{
 	File file = new File("data/event-id-cases.txt");

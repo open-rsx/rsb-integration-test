@@ -27,7 +27,7 @@ import rsb.Event;
 import rsb.EventId;
 import rsb.ParticipantId;
 
-public class informer {
+public class InformerTest {
 
     public static void main(String[] args) throws Throwable {
 

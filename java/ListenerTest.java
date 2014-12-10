@@ -37,7 +37,7 @@ import rsb.AbstractEventHandler;
 import rsb.transport.TransportFactory;
 import rsb.RSBException;
 
-public class listener {
+public class ListenerTest {
 
     private static class EventHandler extends AbstractEventHandler
                                       implements Runnable {

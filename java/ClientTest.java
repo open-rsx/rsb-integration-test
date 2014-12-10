@@ -34,7 +34,7 @@ import rsb.patterns.RemoteServer;
 
 import running.example.RunningExample.Image;
 
-public class client {
+public class ClientTest {
 
     public static void main(String[] args) throws Throwable {
         ProtocolBufferConverter<Image> converter = new ProtocolBufferConverter<Image>(Image.getDefaultInstance());

@@ -35,7 +35,7 @@ import rsb.patterns.DataCallback;
 
 import running.example.RunningExample.Image;
 
-public class server {
+public class ServerTest {
 
     private static class Terminate extends DataCallback<Void, Void> {
 

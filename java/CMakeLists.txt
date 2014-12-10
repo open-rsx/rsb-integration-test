@@ -33,9 +33,9 @@ foreach(FILE ${CONFIGURE_FILES})
                    @ONLY)
 endforeach()
 
-set(JAVA_FILES config.java event_id.java
-               listener.java informer.java
-               client.java   server.java)
+set(JAVA_FILES ConfigTest.java   EventIdTest.java
+               ListenerTest.java InformerTest.java
+               ClientTest.java   ServerTest.java)
 add_custom_command(OUTPUT  ${JAR_FILE}
                    COMMAND ${ANT_EXECUTABLE} dist
                    DEPENDS "${JAVA_FILES}"

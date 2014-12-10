@@ -2,7 +2,7 @@
  *
  * This file is part of the RSB project.
  *
- * Copyright (C) 2011 Jan Moringen jmoringe@techfak.uni-bielefeld.de
+ * Copyright (C) 2011, 2014 Jan Moringen jmoringe@techfak.uni-bielefeld.de
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -24,7 +24,7 @@ import java.io.File;
 import rsb.util.Properties;
 import rsb.util.ConfigLoader;
 
-public class config {
+public class ConfigTest {
 
     public static void main(String[] args) {
 	if (args.length != 2) {
