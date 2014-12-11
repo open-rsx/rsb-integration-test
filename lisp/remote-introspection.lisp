@@ -22,8 +22,8 @@
 ;;; Expectation checking and reporting
 ;;;
 ;;; The generic function `expect-objects' tries naively to match and
-;;; align actual and expected object in order to produce precise error
-;;; reports. Since the approach is naive, it can easily produce
+;;; align actual and expected objects in order to produce precise
+;;; error reports. Since the approach is naive, it can easily produce
 ;;; suboptimal alignments and confuse missing/unexpected vs.
 ;;; mismatched objects as a result.
 ;;;

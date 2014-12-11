@@ -2,7 +2,7 @@
 ;;
 ;; This file is part of the RSB project
 ;;
-;; Copyright (C) 2011 Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
+;; Copyright (C) 2011, 2014 Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 ;;
 ;; This program is free software; you can redistribute it
 ;; and/or modify it under the terms of the GNU General
@@ -20,10 +20,10 @@
 (ql:quickload :uuid)
 
 (with-open-file (stream "./event-id-cases.txt"
-			:direction :output)
+                        :direction :output)
   (loop :repeat 1024 :do
      (let* ((origin (uuid:make-v4-uuid))
-	    (seqnum (random (ash 1 32)))
-	    (id     (uuid:make-v5-uuid
-		     origin (format nil "~(~8,'0X~)" seqnum))))
+            (seqnum (random (ash 1 32)))
+            (id     (uuid:make-v5-uuid
+                     origin (format nil "~(~8,'0X~)" seqnum))))
        (format stream "~(~A ~8,'0X ~A~)~%" origin seqnum id))))

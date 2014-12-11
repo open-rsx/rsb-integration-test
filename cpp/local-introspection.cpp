@@ -87,7 +87,7 @@ int main(int argc, char *argv[]) {
         = getFactory().getDefaultParticipantConfig();
     configNoIntrospection.setIsIntrospectionEnabled(false);
     Scope scope("/rsb-integration-test/introspection");
-    cout << "[C++    Local   Introspection] Creating participants on "
+    cout << "[C++    Local  Introspection] Creating participants on "
          << scope << endl;
 
     {
