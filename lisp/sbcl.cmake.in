@@ -1,12 +1,17 @@
-set(ENV{CC}                       @CMAKE_C_COMPILER@)
+set(ENV{CC}                       "@CMAKE_C_COMPILER@")
 set(ENV{SBCL_HOME}                "@SBCL_HOME@")
 set(ENV{CL_SOURCE_REGISTRY}       "@CL_SOURCE_REGISTRY@")
 set(ENV{ASDF_OUTPUT_TRANSLATIONS} "@ASDF_OUTPUT_TRANSLATIONS@")
 
 execute_process(COMMAND           "@SBCL_EXECUTABLE@"
-                                  --no-sysinit
+                                  --noinform
                                   --disable-debugger
+                                  --no-sysinit --no-userinit
                                   @LISP_INIT@
+                                  --eval "(setf *terminal-io*
+                                                (make-two-way-stream
+                                                  (make-synonym-stream (quote *standard-input*))
+                                                  (make-synonym-stream (quote *standard-output*))))"
                                   --load "@CMAKE_CURRENT_SOURCE_DIR@/sbclrc"
                                   --load "@CMAKE_CURRENT_SOURCE_DIR@/common.lisp"
                                   @LOAD_SCRIPTS@

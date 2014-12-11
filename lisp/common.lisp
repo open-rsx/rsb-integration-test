@@ -1,6 +1,6 @@
 ;;; common.lisp --- Common stuff used in the Lisp integration test code.
 ;;
-;; Copyright (C) 2011, 2012, 2013, 2014 Jan Moringen
+;; Copyright (C) 2011, 2012, 2013, 2014, 2015 Jan Moringen
 ;;
 ;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 ;;
@@ -17,13 +17,12 @@
 ;; You should have received a copy of the GNU General Public License
 ;; along with this program. If not, see <http://www.gnu.org/licenses>.
 
-(load-system :lparallel)
-(load-system :com.dvlsoft.clon)
-(load-system :cl-protobuf)
-(load-system :usocket)
-(load-system :network.spread)
-(load-system :cl-rsb)
-(load-system :rsb-introspection)
+(mapc #'load-system '(:lparallel :com.dvlsoft.clon
+                      :cl-rsb
+                      :rsb-converter-protocol-buffer
+                      :rsb-transport-socket :rsb-transport-spread
+                      :rsb-introspection
+                      :rsb-clon))
 
 (let ((descriptor (pbf:load/text #P"../../data/Image.proto")))
   (pbb:emit descriptor :class)
@@ -67,6 +66,7 @@ cases.")
 
 ;; Termination
 
+;; TODO rename
 (defvar *terminate* (list (bt:make-lock)
                           (bt:make-condition-variable)
                           nil))
