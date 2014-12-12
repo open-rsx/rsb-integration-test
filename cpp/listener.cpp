@@ -35,7 +35,6 @@
 #include <rsb/Factory.h>
 
 using namespace std;
-using namespace boost;
 using namespace rsc::logging;
 using namespace rsc::misc;
 using namespace rsb;
@@ -54,7 +53,7 @@ public:
 
     void handle(EventPtr event) {
         boost::shared_ptr<string> datum
-            = static_pointer_cast<string>(event->getData());
+            = boost::static_pointer_cast<string>(event->getData());
 
         assert(event->getScope() == this->expectedScope);
         assert(datum->size() == this->expectedSize);
@@ -97,7 +96,7 @@ int main(void) {
     sizes.push_back(400000);
     for (vector<int>::const_iterator it = sizes.begin(); it != sizes.end();
          ++it) {
-        Scope scope(str(format("/size-%1%/sub_1/sub_2") % *it));
+        Scope scope(boost::str(boost::format("/size-%1%/sub_1/sub_2") % *it));
         vector<Scope> scopes = scope.superScopes(true);
         for (vector<Scope>::const_iterator it_ = scopes.begin() + 1;
              it_ != scopes.end(); ++it_) {

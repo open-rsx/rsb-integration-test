@@ -36,7 +36,6 @@
 #include <rsb/MetaData.h>
 
 using namespace std;
-using namespace boost;
 using namespace rsc::logging;
 using namespace rsc::misc;
 using namespace rsb;
@@ -46,7 +45,7 @@ int main(int argc, char *argv[]) {
         cerr << "usage: informer --listener-pid LISTENER-PID " << endl;
         return EXIT_FAILURE;
     }
-    int listenerPid = lexical_cast<int>(argv[2]);
+    int listenerPid = boost::lexical_cast<int>(argv[2]);
 
     Factory &factory = getFactory();
 
@@ -59,7 +58,7 @@ int main(int argc, char *argv[]) {
     vector< Informer<string>::Ptr > informers;
     for (vector<int>::const_iterator it = sizes.begin(); it != sizes.end();
          ++it) {
-        Scope scope(str(format("/size-%1%/sub_1/sub_2") % *it));
+        Scope scope(boost::str(boost::format("/size-%1%/sub_1/sub_2") % *it));
         cout << "[C++    Informer] Processing scope " << scope << endl;
         Informer<string>::Ptr informer = factory.createInformer<string>(scope);
         informers.push_back(informer);
@@ -72,7 +71,7 @@ int main(int argc, char *argv[]) {
         event->addCause(EventId(rsc::misc::UUID("00000000-0000-0000-0000-000000000000"), 0));
         for (int j = 0; j < 120; j++) {
             event->mutableMetaData().setUserInfo("index",
-                                                 lexical_cast<string>(listenerPid + j));
+                                                 boost::lexical_cast<string>(listenerPid + j));
             informer->publish(event);
         }
     }

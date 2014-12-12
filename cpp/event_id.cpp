@@ -10,8 +10,6 @@
 
 using namespace std;
 
-using namespace boost;
-
 using namespace rsc::misc;
 using namespace rsc::runtime;
 
@@ -25,7 +23,7 @@ int main() {
         stream >> origin >> hex >> sequenceNumber >> expected;
 
         UUID originId(origin), expectedId(expected);
-        Event e(Scope("/"), shared_ptr<string>(new string("")),
+        Event e(Scope("/"), boost::shared_ptr<string>(new string("")),
                 typeName<string>());
         e.setEventId(originId, sequenceNumber);
         assert(expectedId == e.getId());

@@ -27,7 +27,6 @@
 
 using namespace std;
 
-using namespace boost;
 using namespace boost::program_options;
 
 using namespace rsb;
@@ -67,7 +66,7 @@ int main(int argc, char *argv[]) {
     // Call "ping" method with cookie value.
     {
         cout << "[C++    Client] Calling \"ping\" method" << endl;
-        shared_ptr<IntegerType> request(new IntegerType(cookie));
+        boost::shared_ptr<IntegerType> request(new IntegerType(cookie));
         if (*remoteServer->call<string>("ping", request) != "pong") {
             cerr << "Call to \"ping\" method did produce expected result" << endl;
             return EXIT_FAILURE;
@@ -77,7 +76,7 @@ int main(int argc, char *argv[]) {
     // Call echo method.
     {
         cout << "[C++    Client] Calling \"echo\" method" << endl;
-        shared_ptr<string> request(new string("hello from C++"));
+        boost::shared_ptr<string> request(new string("hello from C++"));
         if (*remoteServer->call<string>("echo", request)
             != "hello from C++") {
             cerr << "Call to \"echo\" method did not produce expected result." << endl;
@@ -89,7 +88,7 @@ int main(int argc, char *argv[]) {
     cout << "[C++    Client] Calling \"addone\" method (100 times, synchronous)" << endl;
     {
         for (IntegerType i = 0; i < 100; ++i) {
-            shared_ptr<IntegerType> request(new IntegerType(i));
+            boost::shared_ptr<IntegerType> request(new IntegerType(i));
             IntegerType result
                 = *remoteServer->call<IntegerType>("addone", request);
             if (result != i + 1) {
@@ -104,7 +103,7 @@ int main(int argc, char *argv[]) {
     {
         vector< RemoteServer::DataFuture<IntegerType> > futures;
         for (IntegerType i = 0; i < 100; ++i) {
-            shared_ptr<IntegerType> request(new IntegerType(i));
+            boost::shared_ptr<IntegerType> request(new IntegerType(i));
             futures.push_back(remoteServer->callAsync<IntegerType>("addone", request));
         }
         for (IntegerType i = 0; i < 100; ++i) {
@@ -128,7 +127,7 @@ int main(int argc, char *argv[]) {
     // Exercise exception mechanism.
     cout << "[C++    Client] Calling \"error\" method" << endl;
     try {
-        shared_ptr<string> request(new string(""));
+        boost::shared_ptr<string> request(new string(""));
         remoteServer->call<string>("error", request);
         cout << "[C++    Client] Call to error method did not produce an exception" << endl;
         return EXIT_FAILURE;

@@ -34,7 +34,6 @@
 
 using namespace std;
 
-using namespace boost;
 using namespace boost::program_options;
 
 using namespace rsb;
@@ -109,21 +108,21 @@ public:
 
     void call(const string &/*methodName*/) {
         cout << "[C++    Server] \"terminate\" method called" << endl;
-        mutex::scoped_lock lock(this->mutex_);
+        boost::mutex::scoped_lock lock(this->mutex_);
         this->done = true;
         this->condition.notify_all();
     }
 
     void wait() {
-        mutex::scoped_lock lock(this->mutex_);
+        boost::mutex::scoped_lock lock(this->mutex_);
         while (!this->done) {
             this->condition.wait(lock);
         }
     }
 private:
-    volatile bool      done;
-    mutex              mutex_;
-    condition_variable condition;
+    volatile bool             done;
+    boost::mutex              mutex_;
+    boost::condition_variable condition;
 };
 
 int main(int argc, char *argv[]) {
@@ -154,7 +153,7 @@ int main(int argc, char *argv[]) {
 
     LocalServerPtr server = getFactory().createLocalServer(scope);
 
-    shared_ptr<TerminateCallback> terminate(new TerminateCallback());
+    boost::shared_ptr<TerminateCallback> terminate(new TerminateCallback());
 
     server->registerMethod("ping",      Server::CallbackPtr(new PingCallback(cookie)));
     server->registerMethod("echo",      Server::CallbackPtr(new EchoCallback()));
