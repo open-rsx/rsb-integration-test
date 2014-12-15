@@ -25,8 +25,9 @@ protobuf_generate(JAVA JAVA_PROTO_SOURCE
 
 set(CONFIGURE_FILES build.xml
                     config.sh event_id.sh
-                    listener.sh informer.sh
-                    client.sh   server.sh)
+                    listener.sh            informer.sh
+                    client.sh              server.sh
+                    local-introspection.sh)
 foreach(FILE ${CONFIGURE_FILES})
     configure_file("${CMAKE_CURRENT_SOURCE_DIR}/${FILE}.in"
                    "${CMAKE_CURRENT_BINARY_DIR}/${FILE}"
