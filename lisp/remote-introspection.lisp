@@ -257,13 +257,13 @@
       (rsb.introspection::introspection-database introspection))
      expectation)))
 
-(defun expected-objects-1 (hostname pid cookie)
+(defun expected-objects-1 (pid cookie)
   "Return a description of the object tree expected at the first
    \"checkpoint\"."
   (let ((host-info    (rsb.introspection:current-host-info))
         (method-scope (rsb:merge-scopes
                        '("local-step") *introspection-test-uri*)))
-    `((:host ,hostname
+    `((:host ,(rsb.introspection:host-info-hostname         host-info)
              ,(rsb.introspection:host-info-machine-type     host-info)
              ,(rsb.introspection:host-info-machine-version  host-info)
              ,(rsb.introspection:host-info-software-type    host-info)
@@ -274,10 +274,11 @@
           (&optional (:listener ,method-scope))
           (&optional (:informer ,method-scope)))))))))
 
-(defun expected-objects-2 (hostname)
+(defun expected-objects-2 ()
   "Return a description of the object tree expected at the second
    \"checkpoint\"."
-  `((:host ,hostname)))
+  (let ((host-info (rsb.introspection:current-host-info)))
+    `((:host ,(rsb.introspection:host-info-hostname host-info)))))
 
 ;;; Entry point
 ;;;
@@ -402,7 +403,6 @@
           ;; local-introspection process is expected to have one
           ;; local-server with one method. See `expected-objects-1'.
           (let ((expected-1 (expected-objects-1
-                             (machine-instance)
                              (lparallel:force local-introspection-pid)
                              cookie)))
 
@@ -446,7 +446,7 @@
           ;; participants since it deactivated its local-server
           ;; participant.
           (check-expectation
-           introspection (expected-objects-2 (machine-instance))))
+           introspection (expected-objects-2)))
 
         ;; Test is done, make the "remote-step" call return. This will
         ;; tell the local-introspection process to terminate.
