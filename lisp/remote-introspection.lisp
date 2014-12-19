@@ -96,6 +96,7 @@
                              (expectation cons))
     (let+ (((&accessors-r/o
              ((&accessors-r/o
+               (id               rsb.introspection:host-info-id)
                (hostname         rsb.introspection:host-info-hostname)
                (machine-type     rsb.introspection:host-info-machine-type)
                (machine-version  rsb.introspection:host-info-machine-version)
@@ -104,7 +105,7 @@
               rsb.introspection:entry-info)
              (children rsb.introspection:entry-children))
             entry)
-           ((expected-kind expected-hostname
+           ((expected-kind expected-id expected-hostname
              &optional
              expected-machine-type  expected-machine-version
              expected-software-type expected-software-version
@@ -114,6 +115,7 @@
        "Host" entry expectation
        (lambda ()
          (assert (eq      expected-kind     :host))
+         (assert (string= expected-id       id))
          (assert (string= expected-hostname hostname))
          (when (and expected-machine-type machine-type)
            (assert (string= expected-machine-type machine-type)))
@@ -263,7 +265,8 @@
   (let ((host-info    (rsb.introspection:current-host-info))
         (method-scope (rsb:merge-scopes
                        '("local-step") *introspection-test-uri*)))
-    `((:host ,(rsb.introspection:host-info-hostname         host-info)
+    `((:host ,(rsb.introspection:host-info-id               host-info)
+             ,(rsb.introspection:host-info-hostname         host-info)
              ,(rsb.introspection:host-info-machine-type     host-info)
              ,(rsb.introspection:host-info-machine-version  host-info)
              ,(rsb.introspection:host-info-software-type    host-info)
@@ -278,7 +281,8 @@
   "Return a description of the object tree expected at the second
    \"checkpoint\"."
   (let ((host-info (rsb.introspection:current-host-info)))
-    `((:host ,(rsb.introspection:host-info-hostname host-info)))))
+    `((:host ,(rsb.introspection:host-info-id       host-info)
+             ,(rsb.introspection:host-info-hostname host-info)))))
 
 ;;; Entry point
 ;;;
