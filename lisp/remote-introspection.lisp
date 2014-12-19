@@ -146,10 +146,10 @@
          (assert (=  expected-process-id process-id))
          ;; FIXME can we do better for Java?
          (unless (search "java" program-name :test #'string-equal)
-           (assert (search expected-program-name program-name)))
-         (assert (ends-with-subseq expected-commandline-arguments
-                                   commandline-arguments
-                                   :test #'string=))
+           (assert (search expected-program-name program-name))
+           (assert (ends-with-subseq expected-commandline-arguments
+                                     commandline-arguments
+                                     :test #'string=)))
          (expect-objects children expected-children)))))
 
   (defmethod expect-objects ((entry       rsb.introspection:participant-entry)
