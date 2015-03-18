@@ -36,7 +36,7 @@ using namespace rsb::patterns;
 
 typedef boost::int64_t IntegerType;
 
-class LocalStepCallback: public Server::Callback<void, void> {
+class LocalStepCallback: public LocalServer::Callback<void, void> {
 public:
     LocalStepCallback():
         done(false) {

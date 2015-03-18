@@ -42,7 +42,7 @@ using namespace rsb::patterns;
 
 typedef boost::int64_t IntegerType;
 
-class PingCallback: public Server::Callback<IntegerType, string> {
+class PingCallback: public LocalServer::Callback<IntegerType, string> {
 public:
     PingCallback(IntegerType expected) :
         expected(expected) {
@@ -155,11 +155,11 @@ int main(int argc, char *argv[]) {
 
     boost::shared_ptr<TerminateCallback> terminate(new TerminateCallback());
 
-    server->registerMethod("ping",      Server::CallbackPtr(new PingCallback(cookie)));
-    server->registerMethod("echo",      Server::CallbackPtr(new EchoCallback()));
-    server->registerMethod("addone",    Server::CallbackPtr(new AddOneCallback()));
-    server->registerMethod("putimage",  Server::CallbackPtr(new PutimageCallback()));
-    server->registerMethod("error",     Server::CallbackPtr(new ErrorCallback()));
+    server->registerMethod("ping",      LocalServer::CallbackPtr(new PingCallback(cookie)));
+    server->registerMethod("echo",      LocalServer::CallbackPtr(new EchoCallback()));
+    server->registerMethod("addone",    LocalServer::CallbackPtr(new AddOneCallback()));
+    server->registerMethod("putimage",  LocalServer::CallbackPtr(new PutimageCallback()));
+    server->registerMethod("error",     LocalServer::CallbackPtr(new ErrorCallback()));
     server->registerMethod("terminate", terminate);
 
     {
