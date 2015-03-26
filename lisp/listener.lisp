@@ -1,6 +1,6 @@
 ;;; listener.lisp --- Listener part of the Lisp integration test code.
 ;;
-;; Copyright (C) 2011, 2012, 2013, 2014 Jan Moringen
+;; Copyright (C) 2011, 2012, 2013, 2014, 2015 Jan Moringen
 ;;
 ;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 ;;
@@ -26,7 +26,7 @@
             (expected-scope (rsb:merge-scopes nested-scope size-scope))
             (listen-scope   (rsb:merge-scopes sub-scope size-scope))
             (uri            (rsb:scope-string listen-scope)))
-       (rsb:with-reader (reader uri)
+       (rsb:with-participant (reader :reader uri)
          (iter (for i :from 0 :below 120)
                (for event next (rsb:receive reader))
                (assert (rsb:scope= (rsb:event-scope event) expected-scope))

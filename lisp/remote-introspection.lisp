@@ -1,6 +1,6 @@
 ;;; remote-introspection.lisp --- Remote introspection test code for Lisp.
 ;;
-;; Copyright (C) 2014 Jan Moringen
+;; Copyright (C) 2014, 2015 Jan Moringen
 ;;
 ;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 ;;
@@ -367,7 +367,7 @@
     ;; This local-server is strictly used for synchronization (and
     ;; publishing of introspection events is disabled for this process
     ;; anyway).
-    (rsb.patterns.request-reply:with-local-server (server *introspection-test-uri*)
+    (rsb:with-participant (server :local-server *introspection-test-uri*)
       (rsb.patterns.request-reply:with-methods (server)
           (("remote-start" (pid non-negative-integer)
              "Called by the local-introspection when it is ready to
@@ -393,10 +393,9 @@
         ;; Hello and Bye events (which are published when the
         ;; local-introspection is started).
         (rsb:with-participant
-            (introspection (rsb:make-participant
-                            :remote-introspection rsb.introspection:+introspection-scope+
-                            :update-interval nil
-                            :change-handler  (curry #'on-database-change :introspection)))
+            (introspection :remote-introspection rsb.introspection:+introspection-scope+
+                           :update-interval nil
+                           :change-handler  (curry #'on-database-change :introspection))
           ;; Tell the test runner that we are ready, then wait for the
           ;; local-introspection program to call our "remote-start"
           ;; method, thereby telling us its PID.
@@ -427,10 +426,9 @@
             ;; same snapshot despite gathering the information
             ;; differently.
             (rsb:with-participant
-                (introspection (rsb:make-participant
-                                :remote-introspection rsb.introspection:+introspection-scope+
-                                :update-interval nil
-                                :change-handler  (curry #'on-database-change :introspection)))
+                (introspection :remote-introspection rsb.introspection:+introspection-scope+
+                               :update-interval nil
+                               :change-handler  (curry #'on-database-change :introspection))
               (drain 4)
               (check-expectation introspection expected-1)))
 
@@ -438,8 +436,9 @@
           ;; process will deactivate its local-server and call our
           ;; "remote-step" method when it is ready.
           (format t "[Lisp   Remote Introspection] Calling \"local-step\" method~%")
-          (rsb.patterns.request-reply:with-remote-server (server *introspection-test-uri*)
-            (rsb.patterns.request-reply:call server "local-step" rsb.converter:+no-value+))
+          (rsb:with-participant (server :remote-server *introspection-test-uri*)
+            (rsb.patterns.request-reply:call
+             server "local-step" rsb.converter:+no-value+))
           (lparallel:force step/start)
 
           ;; Drain expected participant and process removal events.

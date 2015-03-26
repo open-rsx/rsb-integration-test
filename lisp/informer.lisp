@@ -1,6 +1,6 @@
 ;;; informer.lisp --- Informer part of the Lisp integration test code.
 ;;
-;; Copyright (C) 2011, 2012, 2014 Jan Moringen
+;; Copyright (C) 2011, 2012, 2014, 2015 Jan Moringen
 ;;
 ;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 ;;
@@ -44,7 +44,7 @@
           (let* ((scope (format nil "/size-~D/sub_1/sub_2" size))
                  (data  (make-string size :initial-element #\c)))
             (format t "[Lisp   Informer] ~@<Processing scope ~A~@:>~%" scope)
-            (rsb:with-informer (informer scope t)
+            (rsb:with-participant (informer :informer scope)
               (iter (for i :from 0 :below 120)
                     (let ((event (rsb:make-event
                                   scope data

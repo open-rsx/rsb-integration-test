@@ -1,6 +1,6 @@
 ;;; client.lisp --- Client part of the Lisp integration test code.
 ;;
-;; Copyright (C) 2011, 2012, 2014 Jan Moringen
+;; Copyright (C) 2011, 2012, 2014, 2015 Jan Moringen
 ;;
 ;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 ;;
@@ -39,7 +39,7 @@
   (format t "[Lisp   Client] Communicating with remote server at ~A~%"
           *client/server-test-uri*)
 
-  (rsb.patterns.request-reply:with-remote-server (server *client/server-test-uri*)
+  (rsb:with-participant (server :remote-server *client/server-test-uri*)
     ;; Test ping method.
     (format t "[Lisp   Client] Calling \"ping\" method with request ~A~%"
             *cookie*)

@@ -1,6 +1,6 @@
 ;;; local-introspection.lisp --- Local introspection test code for Lisp.
 ;;
-;; Copyright (C) 2014 Jan Moringen
+;; Copyright (C) 2014, 2015 Jan Moringen
 ;;
 ;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 ;;
@@ -45,9 +45,9 @@
   (let ((step (lparallel:promise)))
     ;; This remote-server is for synchronization and coordination only
     ;; and thus is not made visible to the remote introspection.
-    (rsb.patterns.request-reply:with-remote-server (remote-server *introspection-test-uri*
-                                                                  :introspection? nil)
-      (rsb.patterns.request-reply:with-local-server (local-server *introspection-test-uri*)
+    (rsb:with-participant (remote-server :remote-server *introspection-test-uri*
+                                         :introspection? nil)
+      (rsb:with-participant (local-server :local-server *introspection-test-uri*)
         (rsb.patterns.request-reply:with-methods (local-server)
             (("local-step" ()
                (format t "[Lisp   Local  Introspection] \"local-step\" method called~%")
