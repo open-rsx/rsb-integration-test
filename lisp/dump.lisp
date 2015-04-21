@@ -1,6 +1,6 @@
 ;;; dump.lisp --- Dump a single binary for all tests.
 ;;
-;; Copyright (C) 2011, 2012, 2013, 2014 Jan Moringen
+;; Copyright (C) 2011, 2012, 2013, 2014, 2015 Jan Moringen
 ;;
 ;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 ;;
@@ -44,5 +44,5 @@
                                 test~@:_~}~@:>~%"
                 (mapcar #'car *filename->entry-point*)))))
 
-(rsb:enable-id-random-state-reseed)
-(dump "test" main)
+(setf uiop:*image-entry-point* 'main)
+(uiop:dump-image "test" :executable t)
