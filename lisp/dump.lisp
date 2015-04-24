@@ -31,6 +31,10 @@
 
 (defun main ()
   "Entry point function of the test program."
+  (log4cl:remove-all-appenders log4cl:*root-logger*)
+  (log:config :debu9
+              :pattern "%&%<%I%;<;;>;-5p [%D{%H:%M:%S}]%:; [;;];t %g{}{}{:downcase}%:; ;F (%C{}{ }{:downcase})%2.2N - %:_%m%>%n"
+              :stream  *error-output*)
   (make-synopsis)
   (let* ((progname (pathname-name
                     (pathname (first (com.dvlsoft.clon::cmdline)))))

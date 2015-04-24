@@ -33,7 +33,6 @@
 
 (setf *print-length* 1000
       *print-level*  30)
-(log:config :warn :thread)
 
 (cl:defpackage #:rsb.integration-test
   (:use
