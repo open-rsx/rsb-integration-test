@@ -16,6 +16,7 @@
 #
 # ============================================================
 
+import logging
 import sys
 import os
 import time
@@ -42,6 +43,8 @@ class Step(object):
             self.__condition.notify()
 
 if __name__ == '__main__':
+    logging.basicConfig(level=logging.DEBUG,
+                        format='%(asctime)s %(name)-12s %(levelname)-8s\n%(message)s')
 
     # The value of the cookie is not used. The purpose of the
     # commandline option is for the remote introspection to have

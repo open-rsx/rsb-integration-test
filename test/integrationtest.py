@@ -37,11 +37,11 @@ LANG_LISP   = "lisp"
 languages = [ LANG_PYTHON, LANG_CPP, LANG_JAVA, LANG_LISP ]
 
 binaryExecutorList = { LANG_CPP:    [],
-                       LANG_JAVA:   [ "java", "-Djava.net.preferIPv4Stack=true" ],
+                       LANG_JAVA:   [ "java", "-Djava.net.preferIPv4Stack=true", "-Djava.util.logging.config.file=java/logging.properties" ],
                        LANG_PYTHON: [],
                        LANG_LISP:   []}
 
-environmentFiles = { LANG_CPP:    None,
+environmentFiles = { LANG_CPP:    "cpp/environment",
                      LANG_JAVA:   "build/java/environment",
                      LANG_PYTHON: None,
                      LANG_LISP:   None}
@@ -120,7 +120,7 @@ class IntegrationTest(unittest.TestCase):
     def tearDown(self):
         pass
 
-    def startProcess(self, lang, kind, args = [], env = None):
+    def startProcess(self, lang, kind, args = [], env = None, outputFile = None):
         binary = os.path.join(binaryPaths[lang], kind + binaryExtensions[lang])
         commandline = binaryExecutorList[lang] + [binaryNameManglers[lang](binary)] + list(args)
 
@@ -137,7 +137,7 @@ class IntegrationTest(unittest.TestCase):
             environment.update(langEnv)
         if env:
             environment.update(env)
-        return subprocess.Popen(commandline, env = environment)
+        return subprocess.Popen(commandline, env = environment, stdout = outputFile, stderr = outputFile)
 
     def killProcesses(self, *processes):
         for process in processes:
@@ -158,12 +158,12 @@ class IntegrationTest(unittest.TestCase):
             self.killProcesses(*processes)
         return codes
 
-    def startProcessAndWait(self, lang, kind, args = [], env = None, timeout = 5):
+    def startProcessAndWait(self, lang, kind, args = [], env = None, timeout = 5, outputFile = None):
         waitFile = 'test/%s-%s-ready' % (lang, kind)
         if os.path.exists(waitFile):
             self.__logger.warn("Deleting old waitFile %s" % waitFile)
             os.remove(waitFile)
-        proc = self.startProcess(lang, kind, args = args, env = env)
+        proc = self.startProcess(lang, kind, args = args, env = env, outputFile = outputFile)
         waitStart = time.time()
         timeout = self.getTimeout(timeout)
         try:
@@ -254,17 +254,33 @@ class IntegrationTest(unittest.TestCase):
         setattr(clazz, methodName, testFunc)
 
     @classmethod
+    def outputFileName(clazz, test, transport, lang1, lang2, role):
+        return "testoutput/{test}_{transport}_{lang1}-{lang2}_{role}.out".format(
+            test=test, transport=transport, lang1=lang1, lang2=lang2,
+            role=role)
+
+    @classmethod
     def addListenerInformerPair(clazz, transport, listenerLang, informerLang):
         def execute(self, options1, options2):
             # Start listener and informer processes
-            listenerProc = self.startProcessAndWait(listenerLang, "listener",
-                                                    env = options1)
+            listenerProc = self.startProcessAndWait(
+                listenerLang, "listener",
+                env = options1,
+                outputFile = open(clazz.outputFileName("pubsub", transport,
+                                                       informerLang,
+                                                       listenerLang,
+                                                       "listener"), 'w'))
             if not listenerProc:
                 self.fail("Timeout while waiting for %s listener to start"
                           % listenerLang)
-            informerProc = self.startProcess(informerLang, "informer",
-                                             [ "--listener-pid", str(listenerProc.pid) ],
-                                             env = options2)
+            informerProc = self.startProcess(
+                informerLang, "informer",
+                [ "--listener-pid", str(listenerProc.pid) ],
+                env = options2,
+                outputFile = open(clazz.outputFileName("pubsub", transport,
+                                                       informerLang,
+                                                       listenerLang,
+                                                       "informer"), 'w'))
             return listenerProc, informerProc
 
         # TODO check message contents parsed from stdout of the listeners
@@ -279,15 +295,25 @@ class IntegrationTest(unittest.TestCase):
         def execute(self, options1, options2):
             # Start client and server processes
             cookie = str(random.randint(0, 1 << 31))
-            serverProc = self.startProcessAndWait(serverLang, "server",
-                                                  [ "--cookie", cookie ],
-                                                  env = options2)
+            serverProc = self.startProcessAndWait(
+                serverLang, "server",
+                [ "--cookie", cookie ],
+                env = options2,
+                outputFile = open(clazz.outputFileName("rpc", transport,
+                                                       clientLang,
+                                                       serverLang,
+                                                       "server"), 'w'))
             if not serverProc:
                 self.fail("Timeout while waiting for %s server to start"
                           % serverLang)
-            clientProc = self.startProcess(clientLang, "client",
-                                           [ "--cookie", cookie ],
-                                           env = options1)
+            clientProc = self.startProcess(
+                clientLang, "client",
+                [ "--cookie", cookie ],
+                env = options1,
+                outputFile = open(clazz.outputFileName("rpc", transport,
+                                                       clientLang,
+                                                       serverLang,
+                                                       "client"), 'w'))
             return clientProc, serverProc
 
         clazz.addTestPair('rpc', transport,
@@ -303,9 +329,14 @@ class IntegrationTest(unittest.TestCase):
         def execute(self, options1, options2):
             # Start local and remote introspection processes
             cookie = str(random.randint(0, 1 << 31))
-            remoteProc = self.startProcessAndWait(remoteLang, "remote-introspection",
-                                                  [ "--cookie", cookie ],
-                                                  env = options2)
+            remoteProc = self.startProcessAndWait(
+                remoteLang, "remote-introspection",
+                [ "--cookie", cookie ],
+                env = options2,
+                outputFile = open(clazz.outputFileName("introspection", transport,
+                                                       localLang,
+                                                       remoteLang,
+                                                       "remote"), 'w'))
             if not remoteProc:
                 self.fail("Timeout while waiting for %s remote-introspection to start"
                           % remoteLang)
@@ -313,9 +344,14 @@ class IntegrationTest(unittest.TestCase):
                 = ':'.join(options1.get('RSB_PLUGINS_CPP_LOAD', '').split(':')
                            + [ 'rsbintrospection' ])
             options1['RSB_INTROSPECTION_ENABLED'] = '1'
-            localProc = self.startProcess(localLang, 'local-introspection',
-                                          [ "--cookie", cookie ],
-                                          env = options1)
+            localProc = self.startProcess(
+                localLang, 'local-introspection',
+                [ "--cookie", cookie ],
+                env = options1,
+                outputFile = open(clazz.outputFileName("introspection", transport,
+                                                       localLang,
+                                                       remoteLang,
+                                                       "local"), 'w'))
             return localProc, remoteProc
 
         clazz.addTestPair('introspection', transport,
@@ -330,7 +366,9 @@ class IntegrationTest(unittest.TestCase):
             output   = 'test/config-smoke-%s.output' % lang
             expected = 'test/config-smoke.expected'
 
-            configProc = self.startProcess(lang, 'config', [ input, output ])
+            configProc = self.startProcess(lang, 'config', [ input, output ],
+                                           outputFile=open(
+                                               'testoutput/parser-{lang}.out'.format(lang=lang), 'w'))
             configProc.wait()
 
             actual = open(output).read()
@@ -351,7 +389,10 @@ class IntegrationTest(unittest.TestCase):
     @classmethod
     def addEventIdTest(clazz, lang):
         def testFunc(self):
-            configProc = self.startProcess(lang, 'event_id')
+            configProc = self.startProcess(
+                lang, 'event_id',
+                outputFile = open(
+                    'testoutput/eventid-{lang}.out'.format(lang=lang), 'w'))
             if configProc.wait() != 0:
                 self.fail('Event id generation test return non-zero exit code')
         setattr(clazz,
@@ -471,6 +512,12 @@ def run():
 
     if options.noTimeout:
         IntegrationTest.timeout = None
+
+    # prepare output folder
+    try:
+        os.mkdir('testoutput')
+    except OSError:
+        pass
 
     # Execute the generated test suite.
     xmlrunner.XMLTestRunner(output='test-reports').run(unittest.TestLoader().loadTestsFromTestCase(IntegrationTest))

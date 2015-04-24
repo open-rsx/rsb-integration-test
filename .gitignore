@@ -3,3 +3,5 @@
 /test/*.output
 /test/*-ready
 /test-reports
+/testoutput
+/test/spread.conf

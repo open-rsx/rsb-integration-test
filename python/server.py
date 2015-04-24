@@ -16,6 +16,7 @@
 #
 # ============================================================
 
+import logging
 import sys
 import time
 import threading
@@ -44,6 +45,8 @@ def terminateNotify():
         condition.notify()
 
 if __name__ == '__main__':
+    logging.basicConfig(level=logging.DEBUG,
+                        format='%(asctime)s %(name)-12s %(levelname)-8s\n%(message)s')
 
     converter = rsb.converter.ProtocolBufferConverter(messageClass = Image)
     rsb.converter.registerGlobalConverter(converter)

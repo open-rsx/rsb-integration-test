@@ -17,12 +17,15 @@
 #
 # ============================================================
 
+import logging
 import sys
 import time
 import rsb
 import uuid
 
 if __name__ == '__main__':
+    logging.basicConfig(level=logging.DEBUG,
+                        format='%(asctime)s %(name)-12s %(levelname)-8s\n%(message)s')
 
     listenerPid = int(sys.argv[2])
 
