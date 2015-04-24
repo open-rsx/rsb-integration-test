@@ -24,6 +24,7 @@ import os
 import time
 import itertools
 import random
+import ConfigParser
 
 from distutils.spawn import find_executable
 from optparse import OptionParser
@@ -36,17 +37,40 @@ LANG_LISP   = "lisp"
 languages = [ LANG_PYTHON, LANG_CPP, LANG_JAVA, LANG_LISP ]
 
 binaryExecutorList = { LANG_CPP:    [],
-                       LANG_JAVA:   [ "bash" ],
+                       LANG_JAVA:   [ "java", "-Djava.net.preferIPv4Stack=true" ],
                        LANG_PYTHON: [],
                        LANG_LISP:   []}
 
+environmentFiles = { LANG_CPP:    None,
+                     LANG_JAVA:   "build/java/environment",
+                     LANG_PYTHON: None,
+                     LANG_LISP:   None}
+
 binaryPaths = { LANG_CPP:    "build/cpp",
-                LANG_JAVA:   "build/java",
+                LANG_JAVA:   "",
                 LANG_PYTHON: "python",
                 LANG_LISP:   "build/lisp" }
 
+def javaName(original):
+    new = ""
+    previousSpecial = True
+    for s in original:
+        if previousSpecial:
+            new += s.upper()
+            previousSpecial = False
+        elif s.isalnum():
+            new += s
+        else:
+            previousSpecial = True
+    return new + "Test"
+
+binaryNameManglers = { LANG_CPP:    lambda x: x,
+                       LANG_JAVA:   javaName,
+                       LANG_PYTHON: lambda x: x,
+                       LANG_LISP:   lambda x: x }
+
 binaryExtensions = { LANG_CPP:    "",
-                     LANG_JAVA:   ".sh",
+                     LANG_JAVA:   "",
                      LANG_PYTHON: ".py",
                      LANG_LISP:   "" }
 
@@ -98,7 +122,7 @@ class IntegrationTest(unittest.TestCase):
 
     def startProcess(self, lang, kind, args = [], env = None):
         binary = os.path.join(binaryPaths[lang], kind + binaryExtensions[lang])
-        commandline = binaryExecutorList[lang] + [binary] + list(args)
+        commandline = binaryExecutorList[lang] + [binaryNameManglers[lang](binary)] + list(args)
 
         self.__logger.info("""starting %s
 \twith command line %s
@@ -106,9 +130,13 @@ class IntegrationTest(unittest.TestCase):
                            % (kind, commandline, env))
 
         environment = dict(os.environ)
+        if environmentFiles[lang]:
+            parser = ConfigParser.ConfigParser()
+            parser.read([environmentFiles[lang]])
+            langEnv = {k.upper(): v for k,v in parser.items('environment')}
+            environment.update(langEnv)
         if env:
-            for k, v in env.items():
-                environment[k] = v
+            environment.update(env)
         return subprocess.Popen(commandline, env = environment)
 
     def killProcesses(self, *processes):
