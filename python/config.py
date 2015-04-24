@@ -25,7 +25,8 @@ if __name__ == "__main__":
         sys.exit(1)
 
     logging.basicConfig(level=logging.DEBUG,
-                        format='%(asctime)s %(name)-12s %(levelname)-8s\n%(message)s')
+                        format='%(asctime)s %(name)-12s %(levelname)-8s\n%(message)s',
+                        stream=sys.stderr)
 
     config = rsb.ParticipantConfig.fromFile(sys.argv[1])
     with open(sys.argv[2], 'w') as out:

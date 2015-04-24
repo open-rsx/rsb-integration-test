@@ -18,12 +18,14 @@
 
 import logging
 import uuid
+import sys
 
 import rsb
 
 if __name__ == "__main__":
     logging.basicConfig(level=logging.DEBUG,
-                        format='%(asctime)s %(name)-12s %(levelname)-8s\n%(message)s')
+                        format='%(asctime)s %(name)-12s %(levelname)-8s\n%(message)s',
+                        stream=sys.stderr)
     with open('data/event-id-cases.txt') as input:
         for line in input.readlines():
             origin, seqnum, expected = map(str.strip, line.split(' '))

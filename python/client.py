@@ -28,7 +28,8 @@ from Image_pb2 import Image
 
 if __name__ == '__main__':
     logging.basicConfig(level=logging.DEBUG,
-                        format='%(asctime)s %(name)-12s %(levelname)-8s\n%(message)s')
+                        format='%(asctime)s %(name)-12s %(levelname)-8s\n%(message)s',
+                        stream=sys.stderr)
 
     converter = rsb.converter.ProtocolBufferConverter(messageClass = Image)
     rsb.converter.registerGlobalConverter(converter)

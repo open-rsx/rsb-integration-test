@@ -137,7 +137,7 @@ class IntegrationTest(unittest.TestCase):
             environment.update(langEnv)
         if env:
             environment.update(env)
-        return subprocess.Popen(commandline, env = environment, stdout = outputFile, stderr = outputFile)
+        return subprocess.Popen(commandline, env = environment, stderr = outputFile)
 
     def killProcesses(self, *processes):
         for process in processes:

@@ -25,7 +25,8 @@ import uuid
 
 if __name__ == '__main__':
     logging.basicConfig(level=logging.DEBUG,
-                        format='%(asctime)s %(name)-12s %(levelname)-8s\n%(message)s')
+                        format='%(asctime)s %(name)-12s %(levelname)-8s\n%(message)s',
+                        stream=sys.stderr)
 
     listenerPid = int(sys.argv[2])
 
