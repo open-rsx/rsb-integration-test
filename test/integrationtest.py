@@ -223,7 +223,7 @@ class IntegrationTest(unittest.TestCase):
         return options1, options2
 
     @classmethod
-    def addTestPair(clazz, kind, transport, info1, info2, execute, timeout = 50):
+    def addTestPair(clazz, kind, transport, info1, info2, execute, timeout = 120):
         (role1, language1) = info1
         (role2, language2) = info2
         def notDash(char):
