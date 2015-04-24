@@ -55,7 +55,7 @@ public class ServerTest {
                 while (!this.terminate) {
                     this.wait();
                 }
-                Thread.currentThread().sleep(2000);
+                Thread.sleep(2000);
             }
         }
     }

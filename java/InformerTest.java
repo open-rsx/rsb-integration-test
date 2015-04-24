@@ -70,6 +70,7 @@ public class InformerTest {
                 System.exit(1);
             }
         }
+        System.err.println("[Java   Informer] Done");
     }
 
 }
