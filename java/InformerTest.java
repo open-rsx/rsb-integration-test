@@ -46,24 +46,28 @@ public class InformerTest {
                 Informer<String> p = Factory.getInstance().createInformer(scope);
                 p.activate();
 
-                StringBuilder builder = new StringBuilder();
-                for (int i = 0; i < size; ++i) {
-                    builder.append('c');
+                try {
+
+                    StringBuilder builder = new StringBuilder();
+                    for (int i = 0; i < size; ++i) {
+                        builder.append('c');
+                    }
+                    String data = builder.toString();
+
+                    Event event = new Event(scope, String.class, data);
+                    event.addCause(new EventId(new ParticipantId("00000000-0000-0000-0000-000000000000"), 0));
+                    MetaData metaData = event.getMetaData();
+                    metaData.setUserInfo("informer-lang", "Java");
+                    metaData.setUserTime("informer-start", startTime);
+
+                    for (int j = 1; j <= 120; j++) {
+                        metaData.setUserInfo("index", "" + (listenerPid + j));
+                        p.send(event);
+                    }
+
+                } finally {
+                    p.deactivate();
                 }
-                String data = builder.toString();
-
-                Event event = new Event(scope, String.class, data);
-                event.addCause(new EventId(new ParticipantId("00000000-0000-0000-0000-000000000000"), 0));
-                MetaData metaData = event.getMetaData();
-                metaData.setUserInfo("informer-lang", "Java");
-                metaData.setUserTime("informer-start", startTime);
-
-                for (int j = 1; j <= 120; j++) {
-                    metaData.setUserInfo("index", "" + (listenerPid + j));
-                    p.send(event);
-                }
-
-                p.deactivate();
 
             } catch (InitializeException e) {
                 e.printStackTrace();

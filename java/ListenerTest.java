@@ -69,19 +69,23 @@ public class ListenerTest {
         }
 
         public void run() {
-            while (!isDone()) {
-                try {
-                    Thread.sleep(1);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
             try {
-                this.listener.deactivate();
-            } catch (RSBException e) {
-                throw new RuntimeException(e);
-            } catch (InterruptedException e) {
-                throw new RuntimeException(e);
+                while (!isDone()) {
+                    try {
+                        Thread.sleep(1);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                        return;
+                    }
+                }
+            } finally {
+                try {
+                    this.listener.deactivate();
+                } catch (RSBException e) {
+                    throw new RuntimeException(e);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                }
             }
         }
 
