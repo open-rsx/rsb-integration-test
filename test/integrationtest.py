@@ -38,7 +38,7 @@ languages = [ LANG_PYTHON, LANG_CPP, LANG_JAVA, LANG_LISP ]
 
 binaryExecutorList = { LANG_CPP:    [],
                        LANG_JAVA:   [ "java", "-Djava.net.preferIPv4Stack=true", "-Djava.util.logging.config.file=java/logging.properties" ],
-                       LANG_PYTHON: [],
+                       LANG_PYTHON: [ "python", "-u" ],
                        LANG_LISP:   []}
 
 environmentFiles = { LANG_CPP:    "cpp/environment",
