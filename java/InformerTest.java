@@ -62,7 +62,7 @@ public class InformerTest {
 
                     for (int j = 1; j <= 120; j++) {
                         metaData.setUserInfo("index", "" + (listenerPid + j));
-                        p.send(event);
+                        p.publish(event);
                     }
 
                 } finally {
