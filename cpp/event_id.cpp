@@ -25,8 +25,8 @@ int main() {
         UUID originId(origin), expectedId(expected);
         Event e(Scope("/"), boost::shared_ptr<string>(new string("")),
                 typeName<string>());
-        e.setEventId(originId, sequenceNumber);
-        assert(expectedId == e.getId());
+        e.setId(originId, sequenceNumber);
+        assert(expectedId == e.getId().getAsUUID());
     }
 
     return EXIT_SUCCESS;
