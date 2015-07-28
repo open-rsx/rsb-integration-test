@@ -83,7 +83,7 @@ public class ServerTest {
 
             // Implement and register "ping" method.
             DataCallback<String, Long> ping = new DataCallback<String, Long>() {
-                public String invoke(Long request) throws Throwable {
+                public String invoke(Long request) throws Exception {
                     System.out.println("[Java   Server] \"ping\" method called with request " + request);
                     if (!(request.equals(cookie))) {
                         System.err.println("Received cookie value " + request + " not equal to expected value " + cookie);
@@ -106,7 +106,7 @@ public class ServerTest {
             // Implement and register "addone" method.
             DataCallback<Long, Long> addOne
                 = new DataCallback<Long, Long>() {
-                public Long invoke(Long request) throws Throwable {
+                public Long invoke(Long request) throws Exception {
                     if (request == 0) {
                         System.out.println("[Java   Server] \"addone\" method called (for 0)");
                     }
@@ -117,7 +117,7 @@ public class ServerTest {
 
             // Implement and register "putimage" method.
             DataCallback<Object, Image> putImage = new DataCallback<Object, Image>() {
-                public Object invoke(Image request) throws Throwable {
+                public Object invoke(Image request) throws Exception {
                     System.out.println("[Java   Server] \"putimage\" method called");
                     return null;
                 }
@@ -126,9 +126,9 @@ public class ServerTest {
 
             // Implement and register "error" method.
             DataCallback<String, String> error = new DataCallback<String, String>() {
-                public String invoke(String request) throws Throwable {
+                public String invoke(String request) throws Exception {
                     System.out.println("[Java   Server] \"error\" method called");
-                    throw new Throwable("intentional error");
+                    throw new Exception("intentional error");
                 }
             };
             server.addMethod("error", error);
