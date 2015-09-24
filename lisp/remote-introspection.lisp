@@ -96,14 +96,14 @@
                              (expectation cons))
     (let+ (((&accessors-r/o
              ((&accessors-r/o
-               (id               rsb.introspection:host-info-id)
-               (hostname         rsb.introspection:host-info-hostname)
-               (machine-type     rsb.introspection:host-info-machine-type)
-               (machine-version  rsb.introspection:host-info-machine-version)
-               (software-type    rsb.introspection:host-info-software-type)
-               (software-version rsb.introspection:host-info-software-version))
-              rsb.introspection:entry-info)
-             (children rsb.introspection:entry-children))
+               (id               rsb.model:host-info-id)
+               (hostname         rsb.model:host-info-hostname)
+               (machine-type     rsb.model:host-info-machine-type)
+               (machine-version  rsb.model:host-info-machine-version)
+               (software-type    rsb.model:host-info-software-type)
+               (software-version rsb.model:host-info-software-version))
+              rsb.model:node-info)
+             (children rsb.model:node-children))
             entry)
            ((expected-kind expected-id expected-hostname
              &optional
@@ -131,11 +131,11 @@
                              (expectation cons))
     (let+ (((&accessors-r/o
              ((&accessors-r/o
-               (process-id            rsb.introspection:process-info-process-id)
-               (program-name          rsb.introspection:process-info-program-name)
-               (commandline-arguments rsb.introspection:process-info-commandline-arguments))
-              rsb.introspection:entry-info)
-             (children rsb.introspection:entry-children))
+               (process-id            rsb.model:process-info-process-id)
+               (program-name          rsb.model:process-info-program-name)
+               (commandline-arguments rsb.model:process-info-commandline-arguments))
+              rsb.model:node-info)
+             (children rsb.model:node-children))
             entry)
            ((expected-kind expected-process-id
              expected-program-name expected-commandline-arguments
@@ -158,10 +158,10 @@
                              (expectation cons))
     (let+ (((&accessors-r/o
              ((&accessors-r/o
-               (kind  rsb.introspection:participant-info-kind)
-               (scope rsb.introspection:participant-info-scope))
-              rsb.introspection:entry-info)
-             (children rsb.introspection:entry-children))
+               (kind  rsb.model:participant-info-kind)
+               (scope rsb.model:participant-info-scope))
+              rsb.model:node-info)
+             (children rsb.model:node-children))
             entry)
            ((expected-kind expected-scope &rest expected-children)
             expectation))
@@ -265,12 +265,12 @@
   (let ((host-info    (rsb.introspection:current-host-info))
         (method-scope (rsb:merge-scopes
                        '("local-step") *introspection-test-uri*)))
-    `((:host ,(rsb.introspection:host-info-id               host-info)
-             ,(rsb.introspection:host-info-hostname         host-info)
-             ,(rsb.introspection:host-info-machine-type     host-info)
-             ,(rsb.introspection:host-info-machine-version  host-info)
-             ,(rsb.introspection:host-info-software-type    host-info)
-             ,(rsb.introspection:host-info-software-version host-info)
+    `((:host ,(rsb.model:host-info-id               host-info)
+             ,(rsb.model:host-info-hostname         host-info)
+             ,(rsb.model:host-info-machine-type     host-info)
+             ,(rsb.model:host-info-machine-version  host-info)
+             ,(rsb.model:host-info-software-type    host-info)
+             ,(rsb.model:host-info-software-version host-info)
        (:process ,pid "local-introspection" ("--cookie" ,(write-to-string cookie))
         (:local-server ,*introspection-test-uri*
          (:local-method ,method-scope
@@ -281,8 +281,8 @@
   "Return a description of the object tree expected at the second
    \"checkpoint\"."
   (let ((host-info (rsb.introspection:current-host-info)))
-    `((:host ,(rsb.introspection:host-info-id       host-info)
-             ,(rsb.introspection:host-info-hostname host-info)))))
+    `((:host ,(rsb.model:host-info-id       host-info)
+             ,(rsb.model:host-info-hostname host-info)))))
 
 ;;; Entry point
 ;;;
@@ -327,11 +327,11 @@
             "Ignore listener and informer participants which implement
              method the \"local-step\" local-method."
             (when (eq event :participant-added)
-              (let ((info (rsb.introspection:entry-info subject)))
-                (and (member (rsb.introspection:participant-info-kind info)
+              (let ((info (rsb.model:node-info subject)))
+                (and (member (rsb.model:participant-info-kind info)
                              '(:listener :informer))
                      (rsb:scope=
-                      (rsb.introspection:participant-info-scope info)
+                      (rsb.model:participant-info-scope info)
                       (rsb:merge-scopes
                        '("local-step") *introspection-test-uri*)))))))
          ((&flet on-database-change (object subject event)
