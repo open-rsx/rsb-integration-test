@@ -17,7 +17,7 @@
 ;; You should have received a copy of the GNU General Public License
 ;; along with this program. If not, see <http://www.gnu.org/licenses>.
 
-(mapc #'load-system '(:lparallel :com.dvlsoft.clon
+(mapc #'load-system '(:lparallel :net.didierverna.clon
                       :cl-rsb
                       :rsb-converter-protocol-buffer
                       :rsb-transport-socket :rsb-transport-spread
@@ -42,7 +42,7 @@
    #:let-plus
    #:iter
 
-   #:com.dvlsoft.clon))
+   #:net.didierverna.clon))
 
 (cl:in-package #:rsb.integration-test)
 
