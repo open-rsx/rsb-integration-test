@@ -37,7 +37,7 @@
               :stream  *error-output*)
   (make-synopsis)
   (let* ((progname (pathname-name
-                    (pathname (first (com.dvlsoft.clon::cmdline)))))
+                    (pathname (first (uiop:raw-command-line-arguments)))))
          (entry    (cdr (assoc progname *filename->entry-point*
                                :test #'string=))))
     (if entry
