@@ -2,7 +2,7 @@
  *
  * This file is part of the RSB project.
  *
- * Copyright (C) 2011, 2012, 2013, 2014 Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
+ * Copyright (C) 2011-2016 Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -61,12 +61,63 @@ public class ClientTest {
                 throw new Throwable("Incorrect reply from \"ping\" method");
             }
 
-            // Call "echo" method.
-            System.out.println("[Java   Client] Calling \"echo\" method");
+            // Call "echoBoolean" method.
             {
-                String result = server.call("echo", "hello from Java");
-                if (!result.equals("hello from Java")) {
-                    throw new Throwable("Incorrect reply from \"echo\" method");
+                Boolean value = true;
+                System.out.println("[Java   Client] Calling \"echoBoolean\" method with argument "
+                                   + value);
+                if (!server.call("echoBoolean", value).equals(value)) {
+                    throw new Throwable("Incorrect reply from \"echoBoolean\" method");
+                }
+            }
+
+            // Call "echoInt32" method.
+            // {
+            //     Integer value = new Integer(-1);
+            //     System.out.println("[Java   Client] Calling \"echoInt32\" method with argument "
+            //                        + value);
+            //     if (!server.call("echoInt32", value).equals(value)) {
+            //         throw new Throwable("Incorrect reply from \"echoInt32\" method");
+            //     }
+            // }
+
+            // Call "echoInt64" method.
+            {
+                Long value = new Long(1099511627776L);
+                System.out.println("[Java   Client] Calling \"echoInt64\" method with argument "
+                                   + value);
+                if (!server.call("echoInt64", value).equals(value)) {
+                    throw new Throwable("Incorrect reply from \"echoInt64\" method");
+                }
+            }
+
+            // Call "echoFloat" method.
+            // {
+            //     Float value = new Float(1.2345f);
+            //     System.out.println("[Java   Client] Calling \"echoFloat\" method with argument "
+            //                        + value);
+            //     if (!server.call("echoFloat", value).equals(value)) {
+            //         throw new Throwable("Incorrect reply from \"echoFloat\" method");
+            //     }
+            // }
+
+            // Call "echoDouble" method.
+            {
+                Double value = new Double(1e300);
+                System.out.println("[Java   Client] Calling \"echDoubleo\" method with argument "
+                                   + value);
+                if (!server.call("echoDouble", value).equals(value)) {
+                    throw new Throwable("Incorrect reply from \"echoDouble\" method");
+                }
+            }
+
+            // Call "echoString" method.
+            {
+                String value = "hello from Java";
+                System.out.println("[Java   Client] Calling \"echStringo\" method with argument "
+                                   + value);
+                if (!server.call("echoString", value).equals(value)) {
+                    throw new Throwable("Incorrect reply from \"echoString\" method");
                 }
             }
 

@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # ============================================================
 #
-# Copyright (C) 2011, 2012, 2014 Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
+# Copyright (C) 2011-2016 Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 #
 # This program is free software; you can redistribute it
 # and/or modify it under the terms of the GNU General
@@ -52,8 +52,15 @@ if __name__ == '__main__':
         print '[Python Client] Calling "ping" method with request %s' % cookie
         assert(remoteServer.ping(long(cookie)) == 'pong')
 
-        print '[Python Client] Calling "echo" method'
-        assert(remoteServer.echo('hello from Python') == 'hello from Python')
+        for (method, value) in [ ('echoBoolean', True),
+                                 #('echoInt32',   -1),
+                                 ('echoInt64',   1099511627776),
+                                 #('echoFloat',   1.2345),
+                                 ('echoDouble',  1e300),
+                                 ('echoString',  'hello from Python') ]:
+            print '[Python Client] Calling "' + method \
+                + '" method with argument ' + str(value)
+            assert(remoteServer.getMethod(method)(value) == value)
 
         print '[Python Client] Calling "addone" method (100 times, synchronous)'
         assert(map(remoteServer.addone, range(100)) == range(1, 101))

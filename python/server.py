@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # ============================================================
 #
-# Copyright (C) 2011, 2012, 2013, 2014 Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
+# Copyright (C) 2011-2016 Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 #
 # This program is free software; you can redistribute it
 # and/or modify it under the terms of the GNU General
@@ -16,6 +16,7 @@
 #
 # ============================================================
 
+from numbers import Integral
 import logging
 import sys
 import time
@@ -74,9 +75,15 @@ if __name__ == '__main__':
         localServer.addMethod('ping', ping, long, str)
 
         def echo(x):
-            print '[Python Server] "echo" method called'
+            print '[Python Server] "echo*" method called with argument ' + str(x)
             return x
-        localServer.addMethod('echo', echo, str, str)
+        for (method, typ) in [ ('echoBoolean', bool),
+                               #('echoInt32',   int),
+                               ('echoInt64',   Integral),
+                               #('echoFloat',   float),
+                               ('echoDouble',  float),
+                               ('echoString',  str) ]:
+            localServer.addMethod(method, echo, typ, typ)
 
         def addOne(x):
             if x == 0:

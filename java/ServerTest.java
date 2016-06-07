@@ -2,7 +2,7 @@
  *
  * This file is part of the RSB project.
  *
- * Copyright (C) 2011, 2012, 2013, 2014 Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
+ * Copyright (C) 2011-2016 Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
  *
  * This program is free software; you can redistribute it and/or
  * modify it under the terms of the GNU General Public License as
@@ -95,13 +95,59 @@ public class ServerTest {
             server.addMethod("ping", ping);
 
             // Implement and register "echo" method.
-            DataCallback<String, String> echo = new DataCallback<String, String>() {
-                public String invoke(String request) {
-                    System.out.println("[Java   Server] \"echo\" method called");
+            DataCallback<Boolean, Boolean> echoBoolean = new DataCallback<Boolean, Boolean>() {
+                public Boolean invoke(Boolean request) {
+                    System.out.println("[Java   Server] \"echoBoolean\" method called with argument "
+                                       + request);
                     return request;
                 }
             };
-            server.addMethod("echo", echo);
+            server.addMethod("echoBoolean", echoBoolean);
+
+            // DataCallback<Integer, Integer> echoInt32 = new DataCallback<Integer, Integer>() {
+            //     public Integer invoke(Integer request) {
+            //         System.out.println("[Java   Server] \"echoInt32\" method called with argument "
+            //                            + request);
+            //         return request;
+            //     }
+            // };
+            // server.addMethod("echoInt32", echoInt32);
+
+            DataCallback<Long, Long> echoInt64 = new DataCallback<Long, Long>() {
+                public Long invoke(Long request) {
+                    System.out.println("[Java   Server] \"echoInt64\" method called with argument "
+                                       + request);
+                    return request;
+                }
+            };
+            server.addMethod("echoInt64", echoInt64);
+
+            // DataCallback<Float, Float> echoFloat = new DataCallback<Float, Float>() {
+            //     public Float invoke(Float request) {
+            //         System.out.println("[Java   Server] \"echoFloat\" method called with argument "
+            //                            + request);
+            //         return request;
+            //     }
+            // };
+            // server.addMethod("echoFloat", echoFloat);
+
+            DataCallback<Double, Double> echoDouble = new DataCallback<Double, Double>() {
+                public Double invoke(Double request) {
+                    System.out.println("[Java   Server] \"echoDouble\" method called with argument "
+                                       + request);
+                    return request;
+                }
+            };
+            server.addMethod("echoDouble", echoDouble);
+
+            DataCallback<String, String> echoString = new DataCallback<String, String>() {
+                public String invoke(String request) {
+                    System.out.println("[Java   Server] \"echoString\" method called with argument "
+                                       + request);
+                    return request;
+                }
+            };
+            server.addMethod("echoString", echoString);
 
             // Implement and register "addone" method.
             DataCallback<Long, Long> addOne

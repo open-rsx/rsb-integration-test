@@ -2,7 +2,7 @@
  *
  * This file is part of the RSB project
  *
- * Copyright (C) 2011, 2012, 2013, 2014 Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
+ * Copyright (C) 2011-2016 Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
  *
  * This program is free software; you can redistribute it
  * and/or modify it under the terms of the GNU General
@@ -34,6 +34,23 @@ using namespace rsb::converter;
 using namespace rsb::patterns;
 
 typedef boost::int64_t IntegerType;
+
+template <typename T>
+bool callEcho(RemoteServerPtr remoteServer,
+              const std::string& methodName,
+              const T& value) {
+
+    cout << "[C++    Client] Calling \"" << methodName << "\" method"
+         << " with argument " << value << endl;
+    boost::shared_ptr<T> request(new T(value));
+    if (*remoteServer->call<T>(methodName, request) != value) {
+        cerr << "Call to \"" << methodName
+             << "\" method did not produce expected result." << endl;
+        return false;
+    } else {
+        return true;
+    }
+}
 
 int main(int argc, char *argv[]) {
     converterRepository<string>()->registerConverter(Converter<string>::Ptr(new ProtocolBufferConverter<running::example::Image>()));
@@ -73,15 +90,14 @@ int main(int argc, char *argv[]) {
         }
     }
 
-    // Call echo method.
-    {
-        cout << "[C++    Client] Calling \"echo\" method" << endl;
-        boost::shared_ptr<string> request(new string("hello from C++"));
-        if (*remoteServer->call<string>("echo", request)
-            != "hello from C++") {
-            cerr << "Call to \"echo\" method did not produce expected result." << endl;
-            return EXIT_FAILURE;
-        }
+    // Call echo methods.
+    if (!(   callEcho<bool>          (remoteServer, "echoBoolean", true)
+          // && callEcho<boost::int32_t>(remoteServer, "echoInt32",   -1)
+          && callEcho<boost::int64_t>(remoteServer, "echoInt64",   1099511627776)
+          // && callEcho<float>         (remoteServer, "echoFloat",   1.2345)
+          && callEcho<double>        (remoteServer, "echoDouble",  1e300)
+          && callEcho<string>        (remoteServer, "echoString",  "Hello from C++"))) {
+        return EXIT_FAILURE;
     }
 
     // Call a method multiple times with and without overlapping calls.

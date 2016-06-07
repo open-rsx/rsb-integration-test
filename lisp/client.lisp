@@ -1,6 +1,6 @@
 ;;; client.lisp --- Client part of the Lisp integration test code.
 ;;
-;; Copyright (C) 2011, 2012, 2014, 2015 Jan Moringen
+;; Copyright (C) 2011-2016 Jan Moringen
 ;;
 ;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 ;;
@@ -46,9 +46,16 @@
     (assert (string= (rsb.patterns.request-reply:call server "ping" *cookie*) "pong"))
 
     ;; Test echo method.
-    (format t "[Lisp   Client] Calling \"echo\" method~%")
-    (assert (string= (rsb.patterns.request-reply:call server "echo" "hello from Lisp")
-                     "hello from Lisp"))
+    (loop :for (method value) :in '(("echoBoolean"  t)
+                                    #+no ("echoInt32"    -1)
+                                    ("echoInt64"    1099511627776)
+                                    #+no ("echoFloat"    1.2345f0)
+                                    ("echoDouble"   1d300)
+                                    ("echoString"   "hello from Lisp")) :do
+       (format t "[Lisp   Client] Calling ~S method with argument ~S~%"
+               method value)
+       (assert (equal (rsb.patterns.request-reply:call server method value)
+                      value)))
 
     ;; Test calling addone method synchronously and asynchronously.
     (let ((add-one (rsb.patterns.request-reply:server-method server "addone")))

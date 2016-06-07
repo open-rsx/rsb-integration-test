@@ -2,7 +2,7 @@
  *
  * This file is part of the RSB project
  *
- * Copyright (C) 2011, 2012, 2013, 2014 Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
+ * Copyright (C) 2011-2016 Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
  *
  * This program is free software; you can redistribute it
  * and/or modify it under the terms of the GNU General
@@ -63,11 +63,13 @@ private:
     IntegerType expected;
 };
 
-class EchoCallback: public LocalServer::Callback<string, string> {
+template <typename T>
+class EchoCallback: public LocalServer::Callback<T, T> {
 public:
-    boost::shared_ptr<string> call(const string &/*methodName*/,
-                                   boost::shared_ptr<string> request) {
-        cout << "[C++    Server] \"echo\" method called" << endl;
+    boost::shared_ptr<T> call(const string &methodName,
+                              boost::shared_ptr<T> request) {
+        cout << "[C++    Server] \"" << methodName
+             << "\" method called with argument " << *request << endl;
         return request;
     }
 };
@@ -155,12 +157,19 @@ int main(int argc, char *argv[]) {
 
     boost::shared_ptr<TerminateCallback> terminate(new TerminateCallback());
 
-    server->registerMethod("ping",      LocalServer::CallbackPtr(new PingCallback(cookie)));
-    server->registerMethod("echo",      LocalServer::CallbackPtr(new EchoCallback()));
-    server->registerMethod("addone",    LocalServer::CallbackPtr(new AddOneCallback()));
-    server->registerMethod("putimage",  LocalServer::CallbackPtr(new PutimageCallback()));
-    server->registerMethod("error",     LocalServer::CallbackPtr(new ErrorCallback()));
-    server->registerMethod("terminate", terminate);
+    server->registerMethod("ping",        LocalServer::CallbackPtr(new PingCallback(cookie)));
+
+    server->registerMethod("echoBoolean", LocalServer::CallbackPtr(new EchoCallback<bool>()));
+    //server->registerMethod("echoInt32",   LocalServer::CallbackPtr(new EchoCallback<boost::int32_t>()));
+    server->registerMethod("echoInt64",   LocalServer::CallbackPtr(new EchoCallback<boost::int64_t>()));
+    //server->registerMethod("echoFloat",   LocalServer::CallbackPtr(new EchoCallback<float>()));
+    server->registerMethod("echoDouble",  LocalServer::CallbackPtr(new EchoCallback<double>()));
+    server->registerMethod("echoString",  LocalServer::CallbackPtr(new EchoCallback<string>()));
+
+    server->registerMethod("addone",      LocalServer::CallbackPtr(new AddOneCallback()));
+    server->registerMethod("putimage",    LocalServer::CallbackPtr(new PutimageCallback()));
+    server->registerMethod("error",       LocalServer::CallbackPtr(new ErrorCallback()));
+    server->registerMethod("terminate",   terminate);
 
     {
         ofstream stream("test/cpp-server-ready");

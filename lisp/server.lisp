@@ -1,6 +1,6 @@
 ;;; server.lisp --- Server part of the Lisp integration test code.
 ;;
-;; Copyright (C) 2011, 2012, 2013, 2014, 2015 Jan Moringen
+;; Copyright (C) 2011-2016 Jan Moringen
 ;;
 ;; Author: Jan Moringen <jmoringe@techfak.uni-bielefeld.de>
 ;;
@@ -50,8 +50,40 @@
              (sb-ext:exit :code 1))
            "pong")
 
-         ("echo" (request string)
-           (format t "[Lisp   Server] \"echo\" method called~%")
+         ("echoBoolean" (request boolean)
+           (format t "[Lisp   Server] \"echoBoolean\" method called ~
+                      with argument ~S~%"
+                   request)
+           request)
+
+         #+no ("echoInt32" (request (signed-byte 32 ))
+           (format t "[Lisp   Server] \"echoInt32\" method called ~
+                      with argument ~S~%"
+                   request)
+           request)
+
+         ("echoInt64" (request (signed-byte 64))
+           (format t "[Lisp   Server] \"echoInt64\" method called ~
+                      with argument ~S~%"
+                   request)
+           request)
+
+         #+no ("echoFloat" (request single-float)
+           (format t "[Lisp   Server] \"echoFloat\" method called ~
+                      with argument ~S~%"
+                   request)
+           request)
+
+         ("echoDouble" (request double-float)
+           (format t "[Lisp   Server] \"echoDouble\" method called ~
+                      with argument ~S~%"
+                   request)
+           request)
+
+         ("echoString" (request string)
+           (format t "[Lisp   Server] \"echoString\" method called ~
+                      with argument ~S~%"
+                   request)
            request)
 
          ("addone" (request non-negative-integer)
