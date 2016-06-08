@@ -4,7 +4,7 @@ set(CMAKE_ALLOW_LOOSE_LOOP_CONSTRUCTS TRUE)
 project("RSBIntegrationTest")
 
 set(VERSION_MAJOR "0")
-set(VERSION_MINOR "14")
+set(VERSION_MINOR "15")
 
 # --- dependency handling ---
 
