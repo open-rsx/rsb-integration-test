@@ -46,16 +46,20 @@
     (assert (string= (rsb.patterns.request-reply:call server "ping" *cookie*) "pong"))
 
     ;; Test echo method.
-    (loop :for (method value) :in '(("echoBoolean"  t)
+    (loop :for (method value) :in `(("echoBoolean"  t)
                                     #+no ("echoInt32"    -1)
                                     ("echoInt64"    1099511627776)
                                     #+no ("echoFloat"    1.2345f0)
                                     ("echoDouble"   1d300)
-                                    ("echoString"   "hello from Lisp")) :do
+                                    ("echoString"   "hello from Lisp")
+                                    ("echoScope"    ,(rsb:make-scope "/scope")))
+       :do
        (format t "[Lisp   Client] Calling ~S method with argument ~S~%"
                method value)
-       (assert (equal (rsb.patterns.request-reply:call server method value)
-                      value)))
+       (let ((result (rsb.patterns.request-reply:call server method value)))
+         (typecase value
+           (rsb:scope (assert (rsb:scope= result value)))
+           (t         (assert (equal      result value))))))
 
     ;; Test calling addone method synchronously and asynchronously.
     (let ((add-one (rsb.patterns.request-reply:server-method server "addone")))

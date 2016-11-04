@@ -165,6 +165,7 @@ int main(int argc, char *argv[]) {
     //server->registerMethod("echoFloat",   LocalServer::CallbackPtr(new EchoCallback<float>()));
     server->registerMethod("echoDouble",  LocalServer::CallbackPtr(new EchoCallback<double>()));
     server->registerMethod("echoString",  LocalServer::CallbackPtr(new EchoCallback<string>()));
+    server->registerMethod("echoScope",   LocalServer::CallbackPtr(new EchoCallback<Scope>()));
 
     server->registerMethod("addone",      LocalServer::CallbackPtr(new AddOneCallback()));
     server->registerMethod("putimage",    LocalServer::CallbackPtr(new PutimageCallback()));

@@ -121,6 +121,16 @@ public class ClientTest {
                 }
             }
 
+            // Call "echoScope" method.
+            {
+                Scope value = new Scope("/scope");
+                System.out.println("[Java   Client] Calling \"echoScope\" method with argument "
+                                   + value);
+                if (!server.call("echoScope", value).equals(value)) {
+                    throw new Throwable("Incorrect reply from \"echoScope\" method");
+                }
+            }
+
             // Test calling "addone" method synchronously and asynchronously.
             System.out.println("[Java   Client] Calling \"addone\" method (100 times, synchronous)");
             for (long i = 0; i < 100; ++i) {

@@ -149,6 +149,15 @@ public class ServerTest {
             };
             server.addMethod("echoString", echoString);
 
+            DataCallback<Scope, Scope> echoScope = new DataCallback<Scope, Scope>() {
+                public Scope invoke(Scope request) {
+                    System.out.println("[Java   Server] \"echoScope\" method called with argument "
+                                       + request);
+                    return request;
+                }
+            };
+            server.addMethod("echoScope", echoScope);
+
             // Implement and register "addone" method.
             DataCallback<Long, Long> addOne
                 = new DataCallback<Long, Long>() {

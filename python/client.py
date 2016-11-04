@@ -57,7 +57,8 @@ if __name__ == '__main__':
                                  ('echoInt64',   1099511627776),
                                  #('echoFloat',   1.2345),
                                  ('echoDouble',  1e300),
-                                 ('echoString',  'hello from Python') ]:
+                                 ('echoString',  'hello from Python'),
+                                 ('echoScope',   rsb.Scope('/scope')) ]:
             print '[Python Client] Calling "' + method \
                 + '" method with argument ' + str(value)
             assert(remoteServer.getMethod(method)(value) == value)

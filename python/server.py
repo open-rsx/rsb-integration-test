@@ -82,7 +82,8 @@ if __name__ == '__main__':
                                ('echoInt64',   Integral),
                                #('echoFloat',   float),
                                ('echoDouble',  float),
-                               ('echoString',  str) ]:
+                               ('echoString',  str),
+                               ('echoScope',   rsb.Scope) ]:
             localServer.addMethod(method, echo, typ, typ)
 
         def addOne(x):

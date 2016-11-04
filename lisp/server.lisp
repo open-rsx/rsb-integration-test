@@ -86,6 +86,12 @@
                    request)
            request)
 
+         ("echoScope" (request rsb:scope)
+           (format t "[Lisp   Server] \"echoScope\" method called ~
+                      with argument ~S~%"
+                   request)
+           request)
+
          ("addone" (request non-negative-integer)
            (when (zerop request)
              (format t "[Lisp   Server] \"addone\" method called (for 0)~%"))

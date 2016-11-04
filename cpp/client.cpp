@@ -96,7 +96,8 @@ int main(int argc, char *argv[]) {
           && callEcho<boost::int64_t>(remoteServer, "echoInt64",   1099511627776)
           // && callEcho<float>         (remoteServer, "echoFloat",   1.2345)
           && callEcho<double>        (remoteServer, "echoDouble",  1e300)
-          && callEcho<string>        (remoteServer, "echoString",  "Hello from C++"))) {
+          && callEcho<string>        (remoteServer, "echoString",  "Hello from C++")
+          && callEcho<Scope>         (remoteServer, "echoScope",   Scope("/scope/")))) {
         return EXIT_FAILURE;
     }
 
