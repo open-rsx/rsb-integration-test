@@ -1,0 +1,47 @@
+language: python
+dist: xenial
+python:
+  - 3.6
+env:
+  CC: gcc
+addons:
+  apt:
+    packages:
+      - cmake
+      - g++
+      - git
+      - libboost-date-time-dev
+      - libboost-filesystem-dev
+      - libboost-program-options-dev
+      - libboost-regex-dev
+      - libboost-signals-dev
+      - libboost-system-dev
+      - libboost-thread-dev
+      - libprotobuf-dev
+      - protobuf-compiler
+      - python
+      - python-xmlrunner
+      - make
+      - unzip
+      - wget
+before_install:
+  - mkdir upstream
+  - cd upstream
+  - wget "https://dl.bintray.com/open-rsx/travis-artifacts/rsc-${CC}-master.tar.gz"
+  - "tar -xzf rsc-*.tar.gz"
+  - wget "https://dl.bintray.com/open-rsx/travis-artifacts/rsb-cpp-${CC}-master.tar.gz"
+  - "tar -xzf rsb-cpp-*.tar.gz"
+  - wget "https://dl.bintray.com/open-rsx/travis-artifacts/rsb-python-master.tar.gz"
+  - "tar -xzf rsb-python-*.tar.gz"
+  - cd ..
+install:
+  - ls upstream
+  - pip install wheel xmlrunner
+  - pip install upstream/rsb_python-*.whl
+script:
+  - mkdir -p build && cd build
+  - ls ../upstream
+  - cmake -DCMAKE_PREFIX_PATH="$(pwd)/../upstream/rsc;$(pwd)/../upstream/rsb-cpp" ..
+  - make -j3
+  - cd ..
+  - python test/integrationtest.py -r socket --socket-port 55223 python cpp
