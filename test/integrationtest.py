@@ -24,7 +24,7 @@ import os
 import time
 import itertools
 import random
-import ConfigParser
+import configparser
 
 from distutils.spawn import find_executable
 from optparse import OptionParser
@@ -131,7 +131,7 @@ class IntegrationTest(unittest.TestCase):
 
         environment = dict(os.environ)
         if environmentFiles[lang]:
-            parser = ConfigParser.ConfigParser()
+            parser = configparser.ConfigParser()
             parser.read([environmentFiles[lang]])
             langEnv = {k.upper(): v for k,v in parser.items('environment')}
             environment.update(langEnv)
@@ -152,7 +152,7 @@ class IntegrationTest(unittest.TestCase):
         timeout   = self.getTimeout(timeout)
         while (timeout is None or time.time() < waitStart + timeout) \
               and None in codes:
-            codes = map(lambda x: x.poll(), processes)
+            codes = [x.poll() for x in processes]
             time.sleep(0.1)
         if None in codes:
             self.killProcesses(*processes)
@@ -214,7 +214,7 @@ class IntegrationTest(unittest.TestCase):
             options2 = { 'RSB_TRANSPORT_SOCKET_PORT': str(clazz.nextSocketPort) }
             clazz.nextSocketPort += 1
         else:
-            raise ValueError, "Unknown transport `%s'" % transport
+            raise ValueError("Unknown transport `%s'" % transport)
 
         os.environ['RSB_TRANSPORT_INPROCESS_ENABLED'] = '0'
         os.environ['RSB_TRANSPORT_SPREAD_ENABLED']    = spread
@@ -223,14 +223,16 @@ class IntegrationTest(unittest.TestCase):
         return options1, options2
 
     @classmethod
-    def addTestPair(clazz, kind, transport, info1, info2, execute, timeout = 120):
-        (role1, language1) = info1
-        (role2, language2) = info2
-        def notDash(char):
-            return not char == '-'
+    def addTestPair(clazz, kind, transport, info1, info2, execute, timeout = 10):
+        role1, language1 = info1
+        role2, language2 = info2
+
+        def name_without_dashes(role):
+            return ''.join([c for c in role if c != '-'])
+
         methodName = 'test%s%s%s%s%s' \
-                     % (filter(notDash, role1.capitalize()),
-                        filter(notDash, role2.capitalize()),
+                     % (name_without_dashes(role1).capitalize(),
+                        name_without_dashes(role2).capitalize(),
                         transport.capitalize(),
                         language1.capitalize(), language2.capitalize())
 
@@ -373,13 +375,13 @@ class IntegrationTest(unittest.TestCase):
 
             actual = open(output).read()
             expected = open(expected).read()
-            for key in ['lang'] + values[lang].keys():
+            for key in ['lang'] + list(values[lang].keys()):
                 if key == 'lang':
                     value = lang
                 else:
                     value = values[lang][key]
                 expected = expected.replace('@%s@' % key.upper(), value)
-            print expected
+            print(expected)
 
             self.assertEqual(actual, expected)
         setattr(clazz,
@@ -487,28 +489,25 @@ def run():
 
     # Add a test method for the configuration test for each language.
     if "parser" in selectedTests:
-        map(IntegrationTest.addParserTest, selectedLanguages)
+        list(map(IntegrationTest.addParserTest, selectedLanguages))
 
     # Add a test method for the event id generation mechanism for each
     # language.
     if "id" in selectedTests:
-        map(IntegrationTest.addEventIdTest, selectedLanguages)
+        list(map(IntegrationTest.addEventIdTest, selectedLanguages))
 
     # Add a test method for the listener/informer communication test
     # for each pair of languages.
     if "pubsub" in selectedTests:
-        map(lambda x: IntegrationTest.addListenerInformerPair(*x),
-            itertools.product(selectedTransports, selectedLanguages, selectedLanguages))
+        list([IntegrationTest.addListenerInformerPair(*x) for x in itertools.product(selectedTransports, selectedLanguages, selectedLanguages)])
 
     # Add a test method for the client/server communication test for
     # each pair of languages.
     if "rpc" in selectedTests:
-        map(lambda x: IntegrationTest.addClientServerPair(*x),
-            itertools.product(selectedTransports, selectedLanguages, selectedLanguages))
+        list([IntegrationTest.addClientServerPair(*x) for x in itertools.product(selectedTransports, selectedLanguages, selectedLanguages)])
 
     if 'introspection' in selectedTests:
-        map(lambda x: IntegrationTest.addIntrospectionPair(*x),
-            itertools.product(selectedTransports, selectedLanguages, selectedLanguages))
+        list([IntegrationTest.addIntrospectionPair(*x) for x in itertools.product(selectedTransports, selectedLanguages, selectedLanguages)])
 
     if options.noTimeout:
         IntegrationTest.timeout = None

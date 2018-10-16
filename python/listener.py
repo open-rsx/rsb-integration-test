@@ -23,6 +23,7 @@ import uuid
 import sys
 from threading import Condition
 
+
 if __name__ == '__main__':
     logging.basicConfig(level=logging.DEBUG,
                         format='%(asctime)s %(name)-12s %(levelname)-8s\n%(message)s',
@@ -32,13 +33,13 @@ if __name__ == '__main__':
 
         def __init__(self, expectedScope, expectedSize, expectedCause, expectedCount):
             self.expectedScope = expectedScope
-            self.expectedSize  = expectedSize
+            self.expectedSize = expectedSize
             self.expectedCause = expectedCause
 
             self.expectedCount = expectedCount
-            self.counter       = 0
+            self.counter = 0
 
-            self.condition     = Condition()
+            self.condition = Condition()
 
         def __call__(self, event):
             assert(event.scope == self.expectedScope)
@@ -48,42 +49,44 @@ if __name__ == '__main__':
 
             with self.condition:
                 self.counter += 1
-                if self.isDone():
-                    self.condition.notifyAll()
+                if self.is_done():
+                    self.condition.notify_all()
 
-        def isDone(self):
+        def is_done(self):
             return self.counter == self.expectedCount
 
     listeners = []
     receivers = []
     try:
-        for size in [ 4, 256, 400000 ]:
+        for size in [4, 256, 400000]:
             # Create listeners for all scopes below the /sizeSIZE scope:
             # * /size-SIZE
             # * /size-SIZE/sub_1
             # * /size-SIZE/sub_1/sub_2
             scope = rsb.Scope("/size-%d/sub_1/sub_2" % size)
-            scopes = scope.superScopes(True)
+            scopes = scope.super_scopes(True)
             for superscope in scopes[1:]:
-                listener = rsb.createListener(superscope)
+                listener = rsb.create_listener(superscope)
                 listeners.append(listener)
 
                 receiver = Receiver(scope,
                                     size,
-                                    rsb.EventId(uuid.UUID('00000000-0000-0000-0000-000000000000'), 0),
+                                    rsb.EventId(
+                                        uuid.UUID('00000000-0000-0000-0000-000000000000'), 0),
                                     120)
                 receivers.append(receiver)
-                listener.addHandler(receiver)
+                listener.add_handler(receiver)
 
         open('test/python-listener-ready', 'w').close()
         print("[Python Listener] Ready")
 
         for receiver in receivers:
             with receiver.condition:
-                while not receiver.isDone():
-                    print("[Python Listener] Waiting for receiver %s" % receiver.expectedScope)
+                while not receiver.is_done():
+                    print("[Python Listener] Waiting for receiver %s" %
+                          receiver.expectedScope)
                     receiver.condition.wait(60)
-                    assert(receiver.isDone())
+                    assert(receiver.is_done())
     finally:
         for listener in listeners:
             listener.deactivate()

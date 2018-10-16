@@ -23,33 +23,35 @@ import time
 import rsb
 import uuid
 
+
 if __name__ == '__main__':
     logging.basicConfig(level=logging.DEBUG,
                         format='%(asctime)s %(name)-12s %(levelname)-8s\n%(message)s',
                         stream=sys.stderr)
 
-    listenerPid = int(sys.argv[2])
+    listener_pid = int(sys.argv[2])
 
-    for size in [ 4, 256, 400000 ]:
+    for size in [4, 256, 400000]:
         scope = "/size-%d/sub_1/sub_2" % size
         print("[Python Informer] Processing scope %s" % scope)
-        informer = rsb.createInformer(scope, dataType = str)
+        informer = rsb.create_informer(scope, data_type=str)
 
         for i in range(120):
-            event = rsb.Event(scope = scope,
-                              data = 'c' * size,
-                              type = str,
-                              userInfos = {
-                    "informer-lang": "Python",
-                    "index":         str(listenerPid + i)
-                    },
-                              userTimes = {
-                    "informer-start": time.time()
-                    },
-                              causes = set([
-                        rsb.EventId(uuid.UUID('00000000-0000-0000-0000-000000000000'), 0)
-                        ]))
-            informer.publishEvent(event)
+            event = rsb.Event(scope=scope,
+                              data='c' * size,
+                              data_type=str,
+                              user_infos={
+                                  "informer-lang": "Python",
+                                  "index":         str(listener_pid + i)
+                              },
+                              user_times={
+                                  "informer-start": time.time()
+                              },
+                              causes=set([
+                                  rsb.EventId(
+                                      uuid.UUID('00000000-0000-0000-0000-000000000000'), 0)
+                              ]))
+            informer.publish_event(event)
 
         informer.deactivate()
 

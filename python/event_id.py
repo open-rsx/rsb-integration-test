@@ -28,8 +28,9 @@ if __name__ == "__main__":
                         stream=sys.stderr)
     with open('data/event-id-cases.txt') as input:
         for line in input.readlines():
-            origin, seqnum, expected = map(str.strip, line.split(' '))
+            origin, seqnum, expected = list(map(str.strip, line.split(' ')))
             originId, seqnum, expectedId = \
-                (uuid.UUID(hex = origin), int(seqnum, 16), uuid.UUID(hex = expected))
-            event = rsb.Event(id = rsb.EventId(participantId = originId, sequenceNumber = seqnum))
-            assert event.id.getAsUUID() == expectedId
+                (uuid.UUID(hex=origin), int(seqnum, 16), uuid.UUID(hex=expected))
+            event = rsb.Event(event_id=rsb.EventId(
+                participant_id=originId, sequence_number=seqnum))
+            assert event.event_id.get_as_uuid() == expectedId
