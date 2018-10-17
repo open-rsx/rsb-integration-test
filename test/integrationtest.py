@@ -21,6 +21,7 @@ import logging
 import xmlrunner
 import subprocess
 import os
+import sys
 import time
 import itertools
 import random
@@ -519,7 +520,9 @@ def run():
         pass
 
     # Execute the generated test suite.
-    xmlrunner.XMLTestRunner(output='test-reports').run(unittest.TestLoader().loadTestsFromTestCase(IntegrationTest))
+    result = xmlrunner.XMLTestRunner(output='test-reports').run(unittest.TestLoader().loadTestsFromTestCase(IntegrationTest))
+    if not result.wasSuccessful():
+        sys.exit(1)
 
 if __name__ == "__main__":
     run()
