@@ -18,6 +18,7 @@ addons:
       - libboost-system-dev
       - libboost-thread-dev
       - libprotobuf-dev
+      - maven
       - protobuf-compiler
       - python
       - python-xmlrunner
@@ -33,15 +34,18 @@ before_install:
   - "tar -xzf rsb-cpp-*.tar.gz"
   - wget "https://dl.bintray.com/open-rsx/travis-artifacts/rsb-python-master.tar.gz"
   - "tar -xzf rsb-python-*.tar.gz"
+  - wget "https://dl.bintray.com/open-rsx/travis-artifacts/rsb-java-master.tar.gz"
+  - "tar -xzf rsb-java-*.tar.gz"
   - cd ..
 install:
   - ls upstream
   - pip install wheel xmlrunner
   - pip install upstream/rsb_python-*.whl
+  - mvn org.apache.maven.plugins:maven-dependency-plugin:3.1.1:get -DremoteRepositories=file://$(pwd)/upstream/rsb-java -Dartifact=rsb:rsb:1.0-SNAPSHOT
 script:
   - mkdir -p build && cd build
   - ls ../upstream
   - cmake -DCMAKE_PREFIX_PATH="$(pwd)/../upstream/rsc;$(pwd)/../upstream/rsb-cpp" ..
   - make -j3
   - cd ..
-  - python test/integrationtest.py -r socket --socket-port 55223 python cpp
+  - python test/integrationtest.py -r socket --socket-port 55223 python cpp java
