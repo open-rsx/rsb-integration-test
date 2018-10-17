@@ -16,6 +16,8 @@
  *
  * ============================================================ */
 
+package rsb.integration.test;
+
 import java.lang.InterruptedException;
 import java.lang.Throwable;
 import java.lang.Thread;

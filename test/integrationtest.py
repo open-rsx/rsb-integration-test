@@ -37,13 +37,21 @@ LANG_LISP   = "lisp"
 
 languages = [ LANG_PYTHON, LANG_CPP, LANG_JAVA, LANG_LISP ]
 
-binaryExecutorList = { LANG_CPP:    [],
-                       LANG_JAVA:   [ "java", "-Djava.net.preferIPv4Stack=true", "-Djava.util.logging.config.file=java/logging.properties" ],
-                       LANG_PYTHON: [ "python", "-u" ],
-                       LANG_LISP:   []}
+binaryExecutorList = {
+    LANG_CPP: [],
+    LANG_JAVA: [
+        "java",
+        "-cp",
+        "build/java/integration-test-1.0-SNAPSHOT-jar-with-dependencies.jar",
+        "-Djava.net.preferIPv4Stack=true",
+        "-Djava.util.logging.config.file=java/logging.properties",
+    ],
+    LANG_PYTHON: ["python", "-u"],
+    LANG_LISP: []
+}
 
 environmentFiles = { LANG_CPP:    "cpp/environment",
-                     LANG_JAVA:   "build/java/environment",
+                     LANG_JAVA:   None,
                      LANG_PYTHON: None,
                      LANG_LISP:   None}
 
@@ -53,7 +61,7 @@ binaryPaths = { LANG_CPP:    "build/cpp",
                 LANG_LISP:   "build/lisp" }
 
 def javaName(original):
-    new = ""
+    new = "rsb.integration.test."
     previousSpecial = True
     for s in original:
         if previousSpecial:
