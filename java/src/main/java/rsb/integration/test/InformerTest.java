@@ -16,6 +16,8 @@
  *
  * ============================================================ */
 
+package rsb.integration.test;
+
 import java.util.ArrayList;
 
 import rsb.Factory;

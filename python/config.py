@@ -28,15 +28,22 @@ if __name__ == "__main__":
                         format='%(asctime)s %(name)-12s %(levelname)-8s\n%(message)s',
                         stream=sys.stderr)
 
-    config = rsb.ParticipantConfig.fromFile(sys.argv[1])
+    config = rsb.ParticipantConfig.from_file(sys.argv[1])
     with open(sys.argv[2], 'w') as out:
-        out.write('qualityofservice.reliability: %s\n' % config.getQualityOfServiceSpec().getReliability())
-        out.write('qualityofservice.ordering: %s\n' % config.getQualityOfServiceSpec().getOrdering())
-        out.write('errorhandling.onhandlererror: %s\n' % 'EXIT') # TODO fake
-        out.write('transport.inprocess.enabled: %s\n' % 'False') # TODO fake
+        out.write('qualityofservice.reliability: %s\n' %
+                  config.quality_of_service_spec.reliability.name)
+        out.write('qualityofservice.ordering: %s\n' %
+                  config.quality_of_service_spec.ordering.name)
+        out.write('errorhandling.onhandlererror: %s\n' % 'EXIT')  # TODO fake
 
-        spread = config.getTransport('spread')
-        out.write('transport.spread.host: %s\n' % spread.getOptions().get('host'))
-        out.write('transport.spread.port: %s\n' % spread.getOptions().get('port'))
-        out.write('transport.spread.enabled: %s\n' % spread.isEnabled())
-        out.write('transport.spread.converter.python.utf-8-string: %s\n' % spread.getConverterRules()['utf-8-string'])
+        out.write('transport.inprocess.enabled: %s\n' %
+                  config.get_transport('inprocess').enabled)
+
+        spread = config.get_transport('spread')
+        out.write('transport.spread.host: %s\n' %
+                  spread.options.get('host'))
+        out.write('transport.spread.port: %s\n' %
+                  spread.options.get('port'))
+        out.write('transport.spread.enabled: %s\n' % spread.enabled)
+        out.write('transport.spread.converter.python.utf-8-string: %s\n' %
+                  spread.converter_rules['utf-8-string'])

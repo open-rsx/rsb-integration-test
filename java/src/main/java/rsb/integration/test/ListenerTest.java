@@ -16,6 +16,8 @@
  *
  * ============================================================ */
 
+package rsb.integration.test;
+
 import java.lang.Integer;
 import java.lang.Runnable;
 import java.lang.Throwable;

@@ -17,6 +17,8 @@
  *
  * ============================================================ */
 
+package rsb.integration.test;
+
 import java.lang.Thread;
 
 import rsb.Scope;
