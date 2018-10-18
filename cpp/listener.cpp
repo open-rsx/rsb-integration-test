@@ -111,7 +111,7 @@ int main(void) {
     }
 
     {
-        ofstream stream("test/cpp-listener-ready");
+        ofstream stream("ready");
     }
     cout << "[C++    Listener] Ready" << endl;
 

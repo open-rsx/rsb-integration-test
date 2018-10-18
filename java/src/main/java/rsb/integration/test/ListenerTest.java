@@ -134,7 +134,7 @@ public class ListenerTest {
         }
 
         try {
-            File file = new File("test/java-listener-ready");
+            File file = new File("ready");
             file.createNewFile();
             System.err.println("[Java   Listener] Ready");
         } catch (IOException e) {

@@ -173,7 +173,7 @@ int main(int argc, char *argv[]) {
     server->registerMethod("terminate",   terminate);
 
     {
-        ofstream stream("test/cpp-server-ready");
+        ofstream stream("ready");
     }
 
     terminate->wait();

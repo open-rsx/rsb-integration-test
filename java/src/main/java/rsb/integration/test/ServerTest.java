@@ -196,7 +196,7 @@ public class ServerTest {
 
             // TODO
             try {
-                File file = new File("test/java-server-ready");
+                File file = new File("ready");
                 file.createNewFile();
                 System.err.println("[Java   Server] Ready");
             } catch (IOException e) {

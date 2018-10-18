@@ -17,6 +17,7 @@
 # ============================================================
 
 from numbers import Integral
+import os.path
 import logging
 import sys
 import time
@@ -26,7 +27,7 @@ import optparse
 import rsb
 import rsb.converter
 
-sys.path.append('build/python')
+sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'build/python'))
 from Image_pb2 import Image
 
 terminate = False
@@ -112,7 +113,7 @@ if __name__ == '__main__':
             terminate_notify()
         local_server.add_method('terminate', _terminate, type(None), type(None))
 
-        open('test/python-server-ready', 'w').close()
+        open('ready', 'w').close()
         print("[Python Server] Ready")
         terminate_wait()
         time.sleep(1)  # give the terminate call time to complete

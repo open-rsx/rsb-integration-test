@@ -39,7 +39,7 @@ before_install:
   - cd ..
 install:
   - ls upstream
-  - pip install wheel xmlrunner
+  - pip install wheel pytest
   - pip install upstream/rsb_python-*.whl
   - mvn org.apache.maven.plugins:maven-dependency-plugin:3.1.1:get -DremoteRepositories=file://$(pwd)/upstream/rsb-java -Dartifact=rsb:rsb:1.0-SNAPSHOT
 script:
@@ -48,4 +48,6 @@ script:
   - cmake -DCMAKE_PREFIX_PATH="$(pwd)/../upstream/rsc;$(pwd)/../upstream/rsb-cpp" ..
   - make -j3
   - cd ..
-  - python test/integrationtest.py -r socket --socket-port 55223 python cpp java
+  - pytest -v --basetemp=tmp
+after_failure:
+  - tail -n 100 $(find tmp -type f)

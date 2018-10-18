@@ -77,7 +77,7 @@ if __name__ == '__main__':
                 receivers.append(receiver)
                 listener.add_handler(receiver)
 
-        open('test/python-listener-ready', 'w').close()
+        open('ready', 'w').close()
         print("[Python Listener] Ready")
 
         for receiver in receivers:
