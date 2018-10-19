@@ -59,7 +59,7 @@ client. This is intended to protect against crosstalk between test
 cases.")
 
 (defun write-ready-file (tag)
-  (write-string-into-file "" (format nil "test/lisp-~A-ready" tag)
+  (write-string-into-file "" "ready"
                           :if-does-not-exist :create
                           :if-exists         :supersede))
 

@@ -1,7 +1,6 @@
 *.pyc
 /build*
-/test/*.output
-/test/*-ready
-/test-reports
-/testoutput
-/test/spread.conf
+/java/build/
+/java/target/
+/tags
+.mypy_cache

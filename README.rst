@@ -15,7 +15,7 @@ command from the project root directory:
 
 .. code-block:: sh
 
-   $ python test/integrationtest.py
+   $ pytest
 
 When invoked without commandline options like in the above example,
 the test runner will execute all tests for all implementations and all
