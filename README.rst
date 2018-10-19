@@ -24,6 +24,20 @@ available transports.
 When invoked with the ``--help`` commandline option, the test runner
 prints a help text which explains how to run tests selectively.
 
+Acknowledgments
+===============
+
+The development of this software has been supported as follows:
+
+- This research was funded by the EC 7th Framework Programme
+  (FP7/2007-2013), in the TA2 (grant agreement ICT-2007-214 793) and
+  HUMAVIPS (grant aggrement ICT-2009-247525) projects.
+- The development of this software was supported by CoR-Lab, Research
+  Institute for Cognition and Robotics Bielefeld University.
+- This work was supported by the Cluster of Excellence Cognitive
+  Interaction Technology ‘CITEC’ (EXC 277) at Bielefeld University,
+  which is funded by the German Research Foundation (DFG).
+
 Project Architecture
 ====================
 
