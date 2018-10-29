@@ -25,6 +25,7 @@ addons:
       - make
       - unzip
       - wget
+      - sbcl
 before_install:
   - mkdir upstream
   - cd upstream
@@ -39,9 +40,15 @@ before_install:
   - cd ..
 install:
   - ls upstream
+
   - pip install wheel pytest
   - pip install upstream/rsb_python-*.whl
+
   - mvn org.apache.maven.plugins:maven-dependency-plugin:3.1.1:get -DremoteRepositories=file://$(pwd)/upstream/rsb-java -Dartifact=rsb:rsb:1.0-SNAPSHOT
+
+  - wget -O quicklisp.lisp https://beta.quicklisp.org/quicklisp.lisp
+  - sbcl --noinform --no-userinit --load quicklisp.lisp --eval '(quicklisp-quickstart:install)' --quit
+
 script:
   - mkdir -p build && cd build
   - ls ../upstream
