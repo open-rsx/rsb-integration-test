@@ -58,6 +58,9 @@ def transport(transport_name, request):
     if transport_name == 'spread':
         spread, socket = '1', '0'
         transport.environment['RSB_PLUGINS_CPP_LOAD'] = 'rsbspread'
+        transport.environment['RSB_PLUGINS_PYTHON_LOAD'] = \
+            'rsb.transport.spread'
+        transport.environment['RSB_PLUGINS_JAVA_LOAD'] = 'rsb.transport.spread'
         transport.environment['RSB_TRANSPORT_SPREAD_PORT'] = \
             str(request.config.getoption('spread_port'))
     elif transport_name == 'socket':

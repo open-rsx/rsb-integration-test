@@ -1,53 +1,46 @@
 language: python
 dist: xenial
+sudo: yes
 python:
   - 3.6
 env:
-  CC: gcc
-addons:
-  apt:
-    packages:
-      - cmake
-      - g++
-      - git
-      - libboost-date-time-dev
-      - libboost-filesystem-dev
-      - libboost-program-options-dev
-      - libboost-regex-dev
-      - libboost-signals-dev
-      - libboost-system-dev
-      - libboost-thread-dev
-      - libprotobuf-dev
-      - maven
-      - protobuf-compiler
-      - python
-      - python-xmlrunner
-      - make
-      - unzip
-      - wget
+  - CC=gcc TRANSPORT=spread
+  - CC=gcc TRANSPORT=socket
 before_install:
+  - sudo add-apt-repository http://packages.cor-lab.de/ubuntu/
+  - wget -q http://packages.cor-lab.de/keys/cor-lab.asc -O- | sudo apt-key add -
+  - sudo apt-get update -q
+  - sudo apt-get install spread cmake g++ git libboost-date-time-dev libboost-filesystem-dev libboost-program-options-dev libboost-regex-dev libboost-signals-dev libboost-system-dev libboost-thread-dev libprotobuf-dev maven protobuf-compiler python python-xmlrunner make unzip wget tree
   - mkdir upstream
   - cd upstream
   - wget "https://dl.bintray.com/open-rsx/travis-artifacts/rsc-${CC}-master.tar.gz"
   - "tar -xzf rsc-*.tar.gz"
   - wget "https://dl.bintray.com/open-rsx/travis-artifacts/rsb-cpp-${CC}-master.tar.gz"
   - "tar -xzf rsb-cpp-*.tar.gz"
+  - wget "https://dl.bintray.com/open-rsx/travis-artifacts/rsb-spread-cpp-${CC}-master.tar.gz"
+  - "tar -xzf rsb-spread-cpp-*.tar.gz"
   - wget "https://dl.bintray.com/open-rsx/travis-artifacts/rsb-python-master.tar.gz"
   - "tar -xzf rsb-python-*.tar.gz"
+  - wget "https://dl.bintray.com/open-rsx/travis-artifacts/rsb-spread-python-master.tar.gz"
+  - "tar -xzf rsb-spread-python-*.tar.gz"
   - wget "https://dl.bintray.com/open-rsx/travis-artifacts/rsb-java-master.tar.gz"
   - "tar -xzf rsb-java-*.tar.gz"
+  - wget "https://dl.bintray.com/open-rsx/travis-artifacts/rsb-spread-java-master.tar.gz"
+  - "tar -xzf rsb-spread-java-*.tar.gz"
   - cd ..
 install:
-  - ls upstream
   - pip install wheel pytest
-  - pip install upstream/rsb_python-*.whl
+  - pip install https://github.com/open-rsx/spread-python3/archive/v1.6.tar.gz
+  - pip install upstream/rsb_python*.whl
+  - pip install upstream/rsb_spread_python*.whl
   - mvn org.apache.maven.plugins:maven-dependency-plugin:3.1.1:get -DremoteRepositories=file://$(pwd)/upstream/rsb-java -Dartifact=rsb:rsb:1.0-SNAPSHOT
+  - mvn org.apache.maven.plugins:maven-dependency-plugin:3.1.1:get -DremoteRepositories=file://$(pwd)/upstream/rsb-spread-java -Dartifact=rsb:rsb-spread-java:1.0-SNAPSHOT
 script:
   - mkdir -p build && cd build
-  - ls ../upstream
   - cmake -DCMAKE_PREFIX_PATH="$(pwd)/../upstream/rsc;$(pwd)/../upstream/rsb-cpp" ..
   - make -j3
   - cd ..
-  - pytest -v --basetemp=tmp
+  - export RSB_PLUGINS_CPP_PATH="$(find $(pwd)/upstream -wholename '*lib/rsb*/plugins' -type d -printf '%p:')"
+  - pytest -v --basetemp=tmp "--transports=${TRANSPORT}"
 after_failure:
   - tail -n 100 $(find tmp -type f)

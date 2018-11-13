@@ -45,7 +45,8 @@ binary_executor_list = {
             'build/java/'
             'integration-test-1.0-SNAPSHOT-jar-with-dependencies.jar'),
         '-Djava.net.preferIPv4Stack=true',
-        '-Djava.util.logging.config.file=java/logging.properties',
+        '-Djava.util.logging.config.file=' + os.path.join(
+            test_base, 'java/logging.properties'),
     ],
     LANG_PYTHON: ['python', '-u'],
     LANG_LISP: []

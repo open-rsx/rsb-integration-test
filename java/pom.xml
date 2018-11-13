@@ -18,6 +18,11 @@
             <artifactId>rsb</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>
+        <dependency>
+            <groupId>rsb</groupId>
+            <artifactId>rsb-spread-java</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
     </dependencies>
 
     <build>
